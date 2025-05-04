@@ -207,11 +207,10 @@ const Cart = () => {
                         if (!isAddressConfirmed) {
                             toast.error('Please confirm your delivery address');
                             return;
-                        }else{
-                            toast.success('order successfully placed!');
                         }
-                        // Handle cash payment submission
-                        // navigate('/order-confirmation');
+                        // Save cart data to localStorage before navigating
+                        localStorage.setItem('cartData', JSON.stringify(cartData));
+                        navigate('/order-confirmation');
                     }}
                     className="bg-white-500 text-pink-500 px-6 py-3 rounded-full shadow hover:text-white hover:bg-pink-500 cursor-pointer text-lg font-semibold transition-colors duration-200"
                 >

@@ -40,6 +40,7 @@ import AdminPannel from './components/adminPanel/adminPannel'
 import ProtectedRouteAdmin from './context/ProtectdRouteAdmin'
 import Settings from './components/Settings/Settings'
 import Review from './components/Review/Review'
+import OrderConfirmation from './components/OrderConfirmation.jsx/OrderConfirmation'
 
 
 const router = createBrowserRouter([
@@ -72,6 +73,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <PaymentPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'order-confirmation',
+        element: (
+          <ProtectedRoute>
+            <OrderConfirmation/>
           </ProtectedRoute>
         ),
       },

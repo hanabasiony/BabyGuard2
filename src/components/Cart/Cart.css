@@ -1,0 +1,15 @@
+@keyframes moveRightLeft {
+    0% {
+        transform: translateX(-20px);
+    }
+    50% {
+        transform: translateX(20px);
+    }
+    100% {
+        transform: translateX(-20px);
+    }
+}
+
+.animate-moveRightLeft {
+    animation: moveRightLeft 2s ease-in-out infinite;
+} 

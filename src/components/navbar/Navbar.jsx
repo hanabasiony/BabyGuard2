@@ -97,7 +97,7 @@ export default function Navbar() {
     <>
      
 
-      <nav className="bg-pink-50 shadow pe-7 shadow-pink-300 px-2 fixed mb-6 py-2 w-full">
+      <nav className="bg-pink-50 shadow pe-7 shadow-pink-300 px-2 fixed  py-2 w-full ">
         <div className="container mx-auto flex items-center justify-between max-w-[1200px]">
           {/* Left Side: Logo & Links */}
           <div className="flex items-center">

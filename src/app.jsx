@@ -15,9 +15,7 @@ import Categories from './components/categories/categories'
 // import Brands from './components/Brands'
 import Brands from './components/Brands/Brands';
 import AuthcontextProvider from './context/AuthContext'
-
 // import Test from './components/test/test'
-
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import PassSend from './components/PassSend/PassSend'
@@ -41,6 +39,7 @@ import ProtectedRouteAdmin from './context/ProtectdRouteAdmin'
 import Settings from './components/Settings/Settings'
 import Review from './components/Review/Review'
 import OrderConfirmation from './components/OrderConfirmation.jsx/OrderConfirmation'
+import AddChild from './components/AddChild/AddChild'
 
 
 const router = createBrowserRouter([
@@ -111,6 +110,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      { path: 'add-child', element: <AddChild/> },
       { path: 'aboutUs', element: <AboutUs /> },
       { path: 'cart', element: <Cart /> },
     ],
@@ -121,15 +121,6 @@ const router = createBrowserRouter([
     </ProtectedRouteAdmin>,
   },
 ]);
-
-
-// const adminRouter =createBrowserRouter([
-//   {
-//     path: '', element: <>  <Layout /> </>, children: [
-//       { path: '', element: <AdminHome/> },
-//     ]
-//   }
-// ])
 
 const client = new QueryClient({
   defaultOptions:{
@@ -148,7 +139,7 @@ export  function App() {
           <CartContextProvider>
 
           <RouterProvider router={router} />
-          {/* <AdminRouterProvider router={adminRouter} /> */}
+          
           <Toaster 
            toastOptions={{
             className: '',

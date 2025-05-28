@@ -18,6 +18,8 @@ const OrderConfirmation = () => {
         }, 0);
     };
 
+    
+
     const totalPrice = calculateTotalPrice();
 
     return (

@@ -13,6 +13,7 @@ const Cart = () => {
     const [loading, setLoading] = useState(true);
     const [isAddressConfirmed, setIsAddressConfirmed] = useState(false);
     const { handleUpdateQuantity, loadingProducts, productQuantities, handleDeleteProduct } = useContext(CartContext);
+    const [loadingPayment, setLoadingPayment] = useState(true);
 
     const fetchCartData = async () => {
         try {
@@ -48,6 +49,30 @@ const Cart = () => {
         }
     };
 
+    // const updateCartStatus = async () => {
+    //     try {
+    //         const cartId = localStorage.getItem('cartId');
+    //         const token = localStorage.getItem('token');
+
+            
+
+    //         const response = await axios.patch(`http://localhost:8000/api/carts/status/${cartId}`, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`
+    //             }
+    //         });
+
+    //         // Check if the cart has any products
+    //         console.log(response.data);
+    //         console.log(response.data.data);
+    //         setLoadingPayment(false);
+    //         toast.success('Cart status updated');
+    //     } catch (error) {
+    //         console.log(error);
+    //         setLoadingPayment(false);
+    //     }
+    // };
+
     useEffect(() => {
         fetchCartData();
     }, [productQuantities]);
@@ -64,6 +89,7 @@ const Cart = () => {
     if (loading) {
         return <LoaderScreen />;
     }
+    
 
     if (!cartData || !cartData.products || cartData.products.length === 0) {
         return (
@@ -211,10 +237,12 @@ const Cart = () => {
                         // Save cart data to localStorage before navigating
                         localStorage.setItem('cartData', JSON.stringify(cartData));
                         navigate('/order-confirmation');
+                        updateCartStatus();
+                        setLoadingPayment(true);
                     }}
                     className="bg-white-500 text-pink-500 px-6 py-3 rounded-full shadow hover:text-white hover:bg-pink-500 cursor-pointer text-lg font-semibold transition-colors duration-200"
                 >
-                    Place Order (Cash)
+                    {loadingPayment ? 'loading...' : 'Place Order (Cash)'}
                 </button>
 
 

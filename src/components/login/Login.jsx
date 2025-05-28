@@ -92,7 +92,7 @@ export default function Login() {
                 // If cart already exists, try to fetch it
                 try {
                     const existingCart = await axios.get(
-                        'http://localhost:8000/api/carts',
+                        'http://localhost:8000/api/carts/pending',
                         {
                             headers: {
                                 Authorization: `Bearer ${token}`

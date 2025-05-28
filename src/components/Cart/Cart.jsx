@@ -12,8 +12,33 @@ const Cart = () => {
     const [cartData, setCartData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isAddressConfirmed, setIsAddressConfirmed] = useState(false);
-    const { handleUpdateQuantity, loadingProducts, productQuantities, handleDeleteProduct } = useContext(CartContext);
+    
+    const { handleUpdateQuantity, loadingProducts, productQuantities, handleDeleteProduct, resetCart } = useContext(CartContext);
     const [loadingPayment, setLoadingPayment] = useState(true);
+
+    const updateCartStatus = async () => {
+        try {
+            const cartId = localStorage.getItem('cartId');
+            const token = localStorage.getItem('token');
+
+            const response = await axios.patch(
+                `http://localhost:8000/api/carts/status/${cartId}`,
+                {}, // empty body object
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            console.log(response.data);
+            console.log(response.data.data);
+            toast.success('Cart status updated');
+        } catch (error) {
+            console.log(error);
+            toast.error('Failed to update cart status');
+        }
+    };
 
     const fetchCartData = async () => {
         try {
@@ -48,30 +73,6 @@ const Cart = () => {
             setLoading(false);
         }
     };
-
-    // const updateCartStatus = async () => {
-    //     try {
-    //         const cartId = localStorage.getItem('cartId');
-    //         const token = localStorage.getItem('token');
-
-            
-
-    //         const response = await axios.patch(`http://localhost:8000/api/carts/status/${cartId}`, {
-    //             headers: {
-    //                 Authorization: `Bearer ${token}`
-    //             }
-    //         });
-
-    //         // Check if the cart has any products
-    //         console.log(response.data);
-    //         console.log(response.data.data);
-    //         setLoadingPayment(false);
-    //         toast.success('Cart status updated');
-    //     } catch (error) {
-    //         console.log(error);
-    //         setLoadingPayment(false);
-    //     }
-    // };
 
     useEffect(() => {
         fetchCartData();
@@ -113,7 +114,7 @@ const Cart = () => {
                     <h2 className="text-2xl font-semibold text-gray-700 mb-4">Your cart is empty</h2>
                     <p className="text-gray-500 mb-6">Looks like you haven't added any products to your cart yet.</p>
                     <button
-                        onClick={() => navigate('/products')}
+                        // onClick={() => navigate('/products')}
                         className="bg-pink-400 hover:bg-pink-500 text-white font-medium py-2 px-6 rounded-full cursor-pointer transition-colors duration-200"
                     >
                         Continue Shopping
@@ -229,23 +230,28 @@ const Cart = () => {
             {/* Payment Options */}
             <div className="mt-6 text-center flex flex-col gap-4 justify-between w-[60%] mx-auto">
                 <button
-                    onClick={() => {
+                    onClick={async () => {
                         if (!isAddressConfirmed) {
                             toast.error('Please confirm your delivery address');
                             return;
                         }
-                        // Save cart data to localStorage before navigating
-                        localStorage.setItem('cartData', JSON.stringify(cartData));
-                        navigate('/order-confirmation');
-                        updateCartStatus();
-                        setLoadingPayment(true);
+                        try {
+                            // Save cart data to localStorage before navigating
+                            localStorage.setItem('cartData', JSON.stringify(cartData));
+                            await updateCartStatus();
+                            // Reset cart after successful order placement
+                            resetCart();
+                            navigate('/order-confirmation');
+                        } catch (error) {
+                            console.error('Error placing order:', error);
+                            toast.error('Failed to place order');
+                        } finally {
+                            setLoadingPayment(false);
+                        }
                     }}
-                    className="bg-white-500 text-pink-500 px-6 py-3 rounded-full shadow hover:text-white hover:bg-pink-500 cursor-pointer text-lg font-semibold transition-colors duration-200"
-                >
-                    {loadingPayment ? 'loading...' : 'Place Order (Cash)'}
+                    className="bg-white-500 text-pink-500 px-6 py-3 rounded-full shadow hover:text-white hover:bg-pink-500 cursor-pointer text-lg font-semibold transition-colors duration-200" >
+                    Place Order (Cash)
                 </button>
-
-
 
                 <button
                     onClick={() => {

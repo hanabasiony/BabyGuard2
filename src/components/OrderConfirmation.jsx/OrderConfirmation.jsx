@@ -18,7 +18,7 @@ const OrderConfirmation = () => {
         }, 0);
     };
 
-    
+
 
     const totalPrice = calculateTotalPrice();
 
@@ -38,6 +38,7 @@ const OrderConfirmation = () => {
                         <p className="text-gray-600 mb-1"><span className="font-medium">Order Number:</span> {orderId}</p>
                         <p className="text-gray-600 mb-1"><span className="font-medium">Payment Method:</span> Cash on Delivery</p>
                         <p className="text-gray-600"><span className="font-medium">Total Amount:</span> {totalPrice} EGP</p>
+                        <p className="text-gray-600"><span className="font-medium">Status: </span> Waiting for cash payment EGP</p>
                     </div>
                     <div>
                         <h3 className="text-lg font-medium text-gray-700 mb-2">Delivery Address</h3>
@@ -75,7 +76,7 @@ const OrderConfirmation = () => {
             <div className="text-center">
                 <button
                     onClick={() => navigate('/products')}
-                    className="bg-pink-500 text-white px-8 py-3 rounded-full hover:bg-pink-600 transition-colors duration-200 font-medium"
+                    className="bg-pink-500 cursor-pointer  text-white px-8 py-3 rounded-full hover:bg-pink-600 transition-colors duration-200 font-medium"
                 >
                     Continue Shopping
                 </button>

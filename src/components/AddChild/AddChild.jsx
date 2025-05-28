@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
 const AddChild = () => {
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState(null);
     const [successMsg, setSuccessMsg] = useState(false);
+    const navigate = useNavigate();
 
     const initialValues = {
         name: '',
@@ -74,7 +75,7 @@ const AddChild = () => {
                 setLoading(false);
                 formik.resetForm();
                 console.log(response);
-                
+                navigate('/childProfile');
                 
 
                 setTimeout(() => {
@@ -86,8 +87,6 @@ const AddChild = () => {
                     const errorData = error.response.data.errors;
                     const firstKey = Object.keys(errorData)[0];
                     setErrorMsg(errorData[firstKey].msg);
-                } else {
-                    setErrorMsg("An error occurred while adding the child");
                 }
                 console.log(error);
                 

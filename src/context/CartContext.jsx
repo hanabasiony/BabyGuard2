@@ -12,6 +12,7 @@ export default function CartContextProvider({ children }) {
         return savedQuantities ? JSON.parse(savedQuantities) : {};
     });
     const [loadingProducts, setLoadingProducts] = useState({});
+    const [ userDta , setUserData ] = useState(null)
 
     // Save quantities to localStorage whenever they change
     useEffect(() => {
@@ -26,20 +27,33 @@ export default function CartContextProvider({ children }) {
         localStorage.removeItem('cartId');
         localStorage.removeItem('cartDetails');
     };
+    const userData = localStorage.getItem('userData')
+    // console.log(userData);
 
-    const createCart = async () => {
+
+    
+        
+
+        const createCart = async () => {
         try {
             const token = localStorage.getItem('token');
+            const userDataString = localStorage.getItem('userData');
+            const userData = userDataString ? JSON.parse(userDataString) : null;
+
+            if (!userData) {
+                throw new Error('User data not found');
+            }
+
             const response = await axios.post(
                 'http://localhost:8000/api/carts',
                 {
                     cart: {
-                        "governorate": "Cairo",
-                        "city": "1st Settlement",
-                        "street": "Main Street",
-                        "buildingNumber": 123,
-                        "apartmentNumber": 45,
-                        "paymentType": "Cash"
+                        governorate: userData.governorate || "Cairo",
+                        city: userData.city || "1st Settlement",
+                        street: userData.street || "Main Street",
+                        buildingNumber: userData.buildingNumber || 123,
+                        apartmentNumber: userData.apartmentNumber || 45,
+                        paymentType: "Cash"
                     }
                 },
                 {
@@ -49,6 +63,7 @@ export default function CartContextProvider({ children }) {
                 }
             );
             localStorage.setItem('cartId', response.data.data._id);
+            
             return response.data.data._id;
         } catch (error) {
             console.error('Error creating cart:', error);

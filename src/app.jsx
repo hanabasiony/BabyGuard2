@@ -15,9 +15,7 @@ import Categories from './components/categories/categories'
 // import Brands from './components/Brands'
 import Brands from './components/Brands/Brands';
 import AuthcontextProvider from './context/AuthContext'
-
 // import Test from './components/test/test'
-
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import PassSend from './components/PassSend/PassSend'
@@ -41,17 +39,9 @@ import ProtectedRouteAdmin from './context/ProtectdRouteAdmin'
 import Settings from './components/Settings/Settings'
 import Review from './components/Review/Review'
 import OrderConfirmation from './components/OrderConfirmation.jsx/OrderConfirmation'
-import VaccinationForm from './components/VaccineReservation/VaccinationForm'
-import Dashboard from './components/Admin/Dashboard'
-import AdminDashboardLayout from './components/Admin/AdminDashboardLayout'
-import Complaints from './components/Admin/Complaints'
-import OTPInput  from './components/PaymentPage/otp'
-import ManageUsers from './components/Admin/ManageUsers'
-import ManageNurses from './components/Admin/ManageNurses'
-import Vaccinations from './components/Admin/Vaccinations'
-import Appointments from './components/Admin/Appointments'
-import ProductStore from './components/Admin/ProductStore'
-import TipsArticles from './components/Admin/TipsArticles'
+import AddChild from './components/AddChild/AddChild'
+import MyOrders from './components/MyOrders/MyOrders'
+import { UserDataProvider } from './components/GetUserData/GetUserData'
 
 
 const router = createBrowserRouter([
@@ -79,21 +69,11 @@ const router = createBrowserRouter([
       { path: 'PassSend/VerifyResetCode', element: <VerifyResetCode /> },
       { path: 'PassSend/VerifyResetCode/PassReset', element: <PassReset /> },
       { path: 'vacciens', element: <Vacciens /> },
-      { path: 'VaccineReservation', element: <VaccinationForm/>},
-      { path: 'Admin', element: <AdminDashboardLayout/>},
       {
         path: 'payment',
         element: (
           <ProtectedRoute>
             <PaymentPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'otp',
-        element: (
-          <ProtectedRoute>
-            <OTPInput />
           </ProtectedRoute>
         ),
       },
@@ -115,6 +95,15 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: 'myOrders',
+        element: (
+          <ProtectedRoute>
+            <MyOrders/>
+          </ProtectedRoute>
+        ),
+      },
+
+      {
         path: 'review',
         element: (
           <ProtectedRoute>
@@ -132,25 +121,21 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      { path: 'add-child', element: <AddChild/> },
       { path: 'aboutUs', element: <AboutUs /> },
       { path: 'cart', element: <Cart /> },
     ],
   },
   {
-    path: 'adminPannel', element: <ProtectedRouteAdmin>
+    path: 'adminPannel', 
+    element: <ProtectedRouteAdmin>
       <AdminPannel />
     </ProtectedRouteAdmin>,
+    children: [
+      
+    ]
   },
 ]);
-
-
-// const adminRouter =createBrowserRouter([
-//   {
-//     path: '', element: <>  <Layout /> </>, children: [
-//       { path: '', element: <AdminHome/> },
-//     ]
-//   }
-// ])
 
 const client = new QueryClient({
   defaultOptions:{
@@ -163,30 +148,27 @@ const client = new QueryClient({
 export  function App() {
 
   return (
-    <>
-      <QueryClientProvider client={client}>
-        <AuthcontextProvider>
-          <CartContextProvider>
-
-          <RouterProvider router={router} />
-          {/* <AdminRouterProvider router={adminRouter} /> */}
-          <Toaster 
-           toastOptions={{
-            className: '',
-            style: {
-              margin: '100px 0px 0px 0px ',
-              position: 'absloute',
-              zIndex: '999999',
-              color: '#713200',
-            },
-          }}
-          
-          />
-
-          </CartContextProvider>
-        </AuthcontextProvider>
-      </QueryClientProvider>
-      
-    </>
+    <UserDataProvider>
+      <AuthcontextProvider>
+        <CartContextProvider>
+          <QueryClientProvider client={client}>
+            <RouterProvider router={router} />
+            
+            <Toaster 
+             toastOptions={{
+              className: '',
+              style: {
+                margin: '100px 0px 0px 0px ',
+                position: 'absloute',
+                zIndex: '999999',
+                color: '#713200',
+              },
+            }}
+            
+            />
+          </QueryClientProvider>
+        </CartContextProvider>
+      </AuthcontextProvider>
+    </UserDataProvider>
   )
 }

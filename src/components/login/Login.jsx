@@ -16,9 +16,7 @@ export default function Login() {
     const [errorMsg, setErrorMsg] = useState(null)
     const [successMsg, setSuccessMsg] = useState(false)
     const [hasPendingCart, setHasPendingCart] = useState(false)
-    const { refreshUserData } = useUserData()
-    const [ userData, setUserData ] = useState(null)
-    
+    const { fetchUserData } = useUserData()
 
     let user = {
         email: '',
@@ -53,10 +51,10 @@ export default function Login() {
     async function handleLogin(values) {
         setLoading(true)
         try {
-            console.log('Attempting login with values:', values)
+            console.log('1. Starting login process...')
             
             const response = await axios.post('http://localhost:8000/api/auth/login', values)
-            console.log('Login response:', response.data)
+            console.log('2. Login successful:', response.data)
             
             const { token, role } = response.data
 
@@ -65,27 +63,42 @@ export default function Login() {
             localStorage.setItem('token', token)
             localStorage.setItem('role', role)
 
+            console.log('3. Token stored, attempting to fetch user data...')
+
             // Fetch user data after successful login
-            // try {
-            //     const userResponse = await axios.get('http://localhost:8000/api/user/me', {
-            //         headers: {
-            //             Authorization: `Bearer ${token}`
-            //         }
-            //     });
-            //     console.log('User data fetched:', userResponse.data);
-            //     // Refresh user data in the context
-            //     refreshUserData();
-            // } catch (userError) {
-            //     console.error('Error fetching user data:', userError);
-            //     toast.error('Failed to load user data');
-            // }
+            try {
+                // console.log('4. Making request to /api/user/me...')
+                const userResponse = await axios.get('http://localhost:8000/api/user/me', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                // console.log('5. User data received:', userResponse.data);
+                
+                // Check if we have a valid response with data
+               
+                  
+                    localStorage.setItem('userData', JSON.stringify(userResponse.data));
+                    console.log('7. User data stored successfully');
+                    // Refresh user data in context
+                    // await fetchUserData();
+               
+            } catch (userError) {
+                console.error('Error fetching user data:', userError.response || userError);
+                console.error('Error details:', {
+                    status: userError.response?.status,
+                    data: userError.response?.data,
+                    message: userError.message
+                });
+                toast.error('Failed to load user data');
+            }
 
             // Initialize cart
             let cartInitialized = false;
 
             // First try to get pending cart
             try {
-                console.log('Checking for pending cart...');
+                console.log('8. Checking for pending cart...');
                 const pendingCartResponse = await axios.get(
                     'http://localhost:8000/api/carts/pending',
                     {
@@ -95,17 +108,14 @@ export default function Login() {
                     }
                 );
                 
-                console.log('Pending cart response:', pendingCartResponse);
+                console.log('9. Pending cart response:', pendingCartResponse.data);
                 
                 if (pendingCartResponse.data && pendingCartResponse.data.data) {
-                    console.log('Pending cart found:', pendingCartResponse.data.data);
+                    console.log('10. Pending cart found, storing data...');
                     cartInitialized = true;
                     
                     // Store pending cart data
                     const cartData = pendingCartResponse.data.data;
-                    // getUserData()
-                    // console.log(userData);
-                    
                     localStorage.setItem('cartId', cartData._id);
                     localStorage.setItem('cartDetails', JSON.stringify({
                         governorate: cartData.governorate,
@@ -117,17 +127,17 @@ export default function Login() {
                         Online: cartData.Online
                     }));
                 } else {
-                    console.log('No pending cart data in response:', pendingCartResponse.data);
+                    console.log('11. No pending cart data in response');
                 }
             } catch (error) {
                 console.error('Error checking pending cart:', error.response || error);
-                console.log('No pending cart found, will create new cart');
+                console.log('12. No pending cart found, will create new cart');
             }
 
             // If no pending cart was found or there was an error, create a new cart
             if (!cartInitialized) {
                 try {
-                    console.log('Creating new cart...');
+                    console.log('13. Creating new cart...');
                     const cartResponse = await axios.post(
                         'http://localhost:8000/api/carts', 
                         cart,
@@ -139,7 +149,7 @@ export default function Login() {
                     );
                     
                     if (cartResponse.data) {
-                        console.log('New cart created successfully:', cartResponse.data);
+                        console.log('14. New cart created successfully:', cartResponse.data);
                         cartInitialized = true;
                         
                         // Store new cart data
@@ -157,7 +167,7 @@ export default function Login() {
                         }));
                     }
                 } catch (createError) {
-                    console.error('Error creating new cart:', createError);
+                    console.error('Error creating new cart:', createError.response || createError);
                     toast.error('Failed to initialize cart. Please try again.');
                     navigate('/error');
                     return;
@@ -166,48 +176,31 @@ export default function Login() {
 
             // Proceed with navigation if cart was initialized
             if (cartInitialized) {
-                console.log('Cart initialized successfully, proceeding with navigation');
+                console.log('15. Cart initialized successfully, proceeding with navigation');
                 if (role === 'parent') {
                     navigate('/products');
                 } else {
                     navigate('/adminPannel');
                 }
             } else {
-                console.error('Cart initialization failed');
+                console.error('16. Cart initialization failed');
                 toast.error('Failed to initialize cart. Please try again.');
                 navigate('/error');
             }
             
         } catch (error) {
-            console.error('Login error:', error)
-            console.error('Error response:', error.response)
+            console.error('Login error:', error.response || error)
+            console.error('Error details:', {
+                status: error.response?.status,
+                data: error.response?.data,
+                message: error.message
+            });
             setErrorMsg(error.response?.data?.message || 'Login failed')
             setTimeout(() => setErrorMsg(null), 2000)
         } finally {
             setLoading(false)
         }
     }
-
-
-        // const getUserData = ()=>{
-        //     const res = axios.get('http://localhost:8000/api/user/me',{
-        //         headers: {
-        //             Authorization: `Bearer ${token}`
-        //         }
-        //     })
-        //     .then((res)=>{
-        //         console.log(res);
-        //         console.log(res.data.user);
-        //         setUserData(res.data.user)
-                
-        //     })
-        //     .catch((err)=>{
-        //         console.log(err);
-                
-        //     })
-
-        // }
-    
 
     return (
         <div className="wrapper   bg-pink-50 py-70  ">

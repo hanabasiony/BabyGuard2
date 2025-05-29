@@ -27,22 +27,33 @@ export default function CartContextProvider({ children }) {
         localStorage.removeItem('cartId');
         localStorage.removeItem('cartDetails');
     };
+    const userData = localStorage.getItem('userData')
+    // console.log(userData);
+
+
     
         
 
         const createCart = async () => {
         try {
             const token = localStorage.getItem('token');
+            const userDataString = localStorage.getItem('userData');
+            const userData = userDataString ? JSON.parse(userDataString) : null;
+
+            if (!userData) {
+                throw new Error('User data not found');
+            }
+
             const response = await axios.post(
                 'http://localhost:8000/api/carts',
                 {
                     cart: {
-                        "governorate": "Cairo",
-                        "city": "1st Settlement",
-                        "street": "Main Street",
-                        "buildingNumber": 123,
-                        "apartmentNumber": 45,
-                        "paymentType": "Cash"
+                        governorate: userData.governorate || "Cairo",
+                        city: userData.city || "1st Settlement",
+                        street: userData.street || "Main Street",
+                        buildingNumber: userData.buildingNumber || 123,
+                        apartmentNumber: userData.apartmentNumber || 45,
+                        paymentType: "Cash"
                     }
                 },
                 {

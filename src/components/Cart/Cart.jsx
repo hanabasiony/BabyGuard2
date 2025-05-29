@@ -12,9 +12,24 @@ const Cart = () => {
     const [cartData, setCartData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isAddressConfirmed, setIsAddressConfirmed] = useState(false);
+    // const [userData, setUserData] = useState(null);
     
     const { handleUpdateQuantity, loadingProducts, productQuantities, handleDeleteProduct, resetCart } = useContext(CartContext);
     const [loadingPayment, setLoadingPayment] = useState(true);
+
+    let userDataParsed = null;
+    try {
+        const userData = localStorage.getItem('userData');
+        console.log('Raw userData from localStorage:', userData);
+        if (userData) {
+            userDataParsed = JSON.parse(userData);
+            console.log('Parsed userData:', userDataParsed);
+        } else {
+            console.log('No userData found in localStorage');
+        }
+    } catch (error) {
+        console.error('Error parsing userData:', error);
+    }
 
     const updateCartStatus = async () => {
         try {
@@ -39,6 +54,7 @@ const Cart = () => {
             toast.error('Failed to update cart status');
         }
     };
+    console.log(userDataParsed);
 
     const fetchCartData = async () => {
         try {
@@ -126,8 +142,6 @@ const Cart = () => {
 
     const { cart, products } = cartData;
     const cartDetails = JSON.parse(localStorage.getItem('cartDetails') || '{}');
-    const address = cartDetails.address || 'No address provided';
-    // console.log(cartDetails.paymentType);
 
     return (
         <div className="max-w-5xl py-30 mx-auto p-6 bg-whitw min-h-screen">
@@ -202,11 +216,15 @@ const Cart = () => {
             <div className="bg-white rounded-2xl shadow p-6 mb-6">
                 <h2 className="text-xl font-semibold text-gray-700 mb-4">Delivery Address</h2>
                 <div className="mb-4">
-                    <p className="text-gray-600">
-                        <span className='font-semibold'>governorate: {cartDetails.governorate},</span><br />
-                        <span className='font-semibold'>city: {cartDetails.city}</span><br />
-                        <span className='font-semibold'>street: {cartDetails.street}, Building {cartDetails.buildingNumber}, Apartment {cartDetails.apartmentNumber}</span>
-                    </p>
+                    {userDataParsed ? (
+                        <p className="text-gray-600">
+                            <span className='font-semibold'>Governorate: {userDataParsed.governorate || 'Not set'}</span><br />
+                            <span className='font-semibold'>City: {userDataParsed.city || 'Not set'}</span><br />
+                            <span className='font-semibold'>Street: {userDataParsed?.street || 'Not set'}, Building: {userDataParsed.buildingNumber || 'Not set'}, Apartment: {userDataParsed.apartmentNumber || 'Not set'}</span>
+                        </p>
+                    ) : (
+                        <p className="text-red-500">Please update your address in your profile</p>
+                    )}
                 </div>
                 <div className="flex items-center gap-4">
                     <label className="flex items-center gap-2 cursor-pointer">
@@ -255,12 +273,11 @@ const Cart = () => {
 
                 <button
                     onClick={() => {
-                    //     if (!isAddressConfirmed) {
-                    //         toast.error('Please confirm your delivery address');
-                    //         return;
-                    //     }
+                        if (!isAddressConfirmed) {
+                            toast.error('Please confirm your delivery address');
+                            return;
+                        }
                         navigate('/payment');
-                    // }}
                     }}
                     className="bg-pink-500 text-white px-6 py-3 rounded-full shadow hover:bg-pink-600 cursor-pointer text-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 w-full"
                 >

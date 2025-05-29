@@ -129,16 +129,16 @@ export default function Navbar() {
                 Child profile
               </NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink to="/contactUs" className=" hover:text-pink-600     text-pink-400 font-semibold">
                 Contact us
               </NavLink>
-            </li>
-            <li>
+            </li> */}
+            {/* <li>
               <NavLink to="/aboutUs" className=" hover:text-pink-600     text-pink-400 font-semibold">
                 About us
               </NavLink>
-            </li>
+            </li> */}
           </ul>
 
           {/* Right Side: Socials & Buttons */}
@@ -187,8 +187,8 @@ export default function Navbar() {
               <li><NavLink to="/products" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Products</NavLink></li>
               <li><NavLink to="/categories" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Categories</NavLink></li>
               <li><NavLink to="/" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Pergnancy tips</NavLink></li>
-              <li><NavLink to="/" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Contant us</NavLink></li>
-              <li><NavLink to="/aboutUs" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>About us</NavLink></li>
+              {/* <li><NavLink to="/" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Contant us</NavLink></li> */}
+              {/* <li><NavLink to="/aboutUs" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>About us</NavLink></li> */}
               <li><NavLink to="/cart" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>
                 <i className="fa-solid fa-cart-shopping text-xl text-pink-500"></i>
               </NavLink></li>

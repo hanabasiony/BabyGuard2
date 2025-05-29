@@ -12,6 +12,7 @@ export default function CartContextProvider({ children }) {
         return savedQuantities ? JSON.parse(savedQuantities) : {};
     });
     const [loadingProducts, setLoadingProducts] = useState({});
+    const [ userDta , setUserData ] = useState(null)
 
     // Save quantities to localStorage whenever they change
     useEffect(() => {
@@ -26,8 +27,10 @@ export default function CartContextProvider({ children }) {
         localStorage.removeItem('cartId');
         localStorage.removeItem('cartDetails');
     };
+    
+        
 
-    const createCart = async () => {
+        const createCart = async () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.post(
@@ -49,6 +52,7 @@ export default function CartContextProvider({ children }) {
                 }
             );
             localStorage.setItem('cartId', response.data.data._id);
+            
             return response.data.data._id;
         } catch (error) {
             console.error('Error creating cart:', error);

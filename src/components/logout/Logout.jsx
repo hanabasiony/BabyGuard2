@@ -41,6 +41,8 @@ export default function Logout() {
                 localStorage.removeItem('role');
                 localStorage.removeItem('cartTimestamp');
                 localStorage.removeItem('userData');
+                localStorage.removeItem('cartData')
+
 
                 // Reset context state
                 setuserToken(null);

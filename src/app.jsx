@@ -40,6 +40,8 @@ import Settings from './components/Settings/Settings'
 import Review from './components/Review/Review'
 import OrderConfirmation from './components/OrderConfirmation.jsx/OrderConfirmation'
 import AddChild from './components/AddChild/AddChild'
+import MyOrders from './components/MyOrders/MyOrders'
+import { UserDataProvider } from './components/GetUserData/GetUserData'
 
 
 const router = createBrowserRouter([
@@ -93,6 +95,15 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: 'myOrders',
+        element: (
+          <ProtectedRoute>
+            <MyOrders/>
+          </ProtectedRoute>
+        ),
+      },
+
+      {
         path: 'review',
         element: (
           <ProtectedRoute>
@@ -133,30 +144,27 @@ const client = new QueryClient({
 export  function App() {
 
   return (
-    <>
-      <QueryClientProvider client={client}>
-        <AuthcontextProvider>
-          <CartContextProvider>
-
-          <RouterProvider router={router} />
-          
-          <Toaster 
-           toastOptions={{
-            className: '',
-            style: {
-              margin: '100px 0px 0px 0px ',
-              position: 'absloute',
-              zIndex: '999999',
-              color: '#713200',
-            },
-          }}
-          
-          />
-
-          </CartContextProvider>
-        </AuthcontextProvider>
-      </QueryClientProvider>
-      
-    </>
+    <UserDataProvider>
+      <AuthcontextProvider>
+        <CartContextProvider>
+          <QueryClientProvider client={client}>
+            <RouterProvider router={router} />
+            
+            <Toaster 
+             toastOptions={{
+              className: '',
+              style: {
+                margin: '100px 0px 0px 0px ',
+                position: 'absloute',
+                zIndex: '999999',
+                color: '#713200',
+              },
+            }}
+            
+            />
+          </QueryClientProvider>
+        </CartContextProvider>
+      </AuthcontextProvider>
+    </UserDataProvider>
   )
 }

@@ -18,6 +18,7 @@ export default function Home() {
     const [error, setError] = useState(null);
     const { productQuantities, handleAddToCart, handleUpdateQuantity, loadingProducts, handleDeleteProduct } = useContext(CartContext);
 
+    
     useEffect(() => {
         const fetchProducts = async () => {
             try {

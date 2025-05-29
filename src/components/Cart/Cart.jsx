@@ -12,8 +12,10 @@ const Cart = () => {
     const [cartData, setCartData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isAddressConfirmed, setIsAddressConfirmed] = useState(false);
-    // const [userData, setUserData] = useState(null);
-    
+    const [pendingCartProducts, setPendingCartProducts] = useState(
+        JSON.parse(localStorage.getItem('productQuantitiesOfPendingCart') || '[]')
+    );
+
     const { handleUpdateQuantity, loadingProducts, productQuantities, handleDeleteProduct, resetCart } = useContext(CartContext);
     const [loadingPayment, setLoadingPayment] = useState(true);
 
@@ -33,8 +35,10 @@ const Cart = () => {
 
     const updateCartStatus = async () => {
         try {
-            const cartId = localStorage.getItem('cartId');
             const token = localStorage.getItem('token');
+            const cartId = localStorage.getItem('cartId');
+
+
 
             const response = await axios.patch(
                 `http://localhost:8000/api/carts/status/${cartId}`,
@@ -54,20 +58,12 @@ const Cart = () => {
             toast.error('Failed to update cart status');
         }
     };
-    console.log(userDataParsed);
 
     const fetchCartData = async () => {
         try {
-            const cartId = localStorage.getItem('cartId');
             const token = localStorage.getItem('token');
 
-            if (!cartId) {
-                setCartData(null);
-                setLoading(false);
-                return;
-            }
-
-            const response = await axios.get(`http://localhost:8000/api/carts/${cartId}`, {
+            const response = await axios.get('http://localhost:8000/api/carts/pending', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -94,19 +90,75 @@ const Cart = () => {
         fetchCartData();
     }, [productQuantities]);
 
-    const handleQuantityChange = async (e, productId, change) => {
+    const handleQuantityChange = async (e, product, change) => {
         try {
-            await handleUpdateQuantity(e, productId, change);
+            const token = localStorage.getItem('token');
+            const cartId = localStorage.getItem('cartId');
+            const currentQuantity = product.quantity || 0;
+            const newQuantity = currentQuantity + change;
+
+            if (newQuantity <= 0) {
+                // If quantity would be 0 or negative, delete the product
+                await handleDeleteProductWithUpdate(e, product.productId);
+                return;
+            }
+
+            // Update the quantity in the cart
+            await axios.patch(
+                `http://localhost:8000/api/carts/${cartId}/products/${product.productId}`,
+                { quantity: newQuantity },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            // Update local state
             await fetchCartData();
+
+            // Update pending cart products if they exist
+            const updatedPendingProducts = pendingCartProducts.map(p => 
+                p.productId === product.productId 
+                    ? { ...p, quantity: newQuantity }
+                    : p
+            );
+            setPendingCartProducts(updatedPendingProducts);
+            localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
+
+            toast.success(`Quantity updated to ${newQuantity}`);
         } catch (error) {
             console.error('Error updating quantity:', error);
+            if (error.response?.data?.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error('Failed to update quantity');
+            }
+        }
+    };
+
+    const handleDeleteProductWithUpdate = async (e, productId) => {
+        try {
+            await handleDeleteProduct(e, productId);
+            await fetchCartData();
+
+            // Remove from pending cart products
+            const updatedPendingProducts = pendingCartProducts.filter(
+                product => product.productId !== productId
+            );
+            setPendingCartProducts(updatedPendingProducts);
+            localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
+
+            toast.success('Product removed from cart');
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            toast.error('Failed to remove product from cart');
         }
     };
 
     if (loading) {
         return <LoaderScreen />;
     }
-    
 
     if (!cartData || !cartData.products || cartData.products.length === 0) {
         return (
@@ -130,7 +182,7 @@ const Cart = () => {
                     <h2 className="text-2xl font-semibold text-gray-700 mb-4">Your cart is empty</h2>
                     <p className="text-gray-500 mb-6">Looks like you haven't added any products to your cart yet.</p>
                     <button
-                        // onClick={() => navigate('/products')}
+                        onClick={() => navigate('/')}
                         className="bg-pink-400 hover:bg-pink-500 text-white font-medium py-2 px-6 rounded-full cursor-pointer transition-colors duration-200"
                     >
                         Continue Shopping
@@ -141,7 +193,6 @@ const Cart = () => {
     }
 
     const { cart, products } = cartData;
-    const cartDetails = JSON.parse(localStorage.getItem('cartDetails') || '{}');
 
     return (
         <div className="max-w-5xl py-30 mx-auto p-6 bg-whitw min-h-screen">
@@ -166,9 +217,10 @@ const Cart = () => {
                         <div>
                             <h3 className="text-lg font-semibold text-gray-700">{product.name}</h3>
                             <p className="text-pink-500 font-medium text-sm">Price: {product.price} EGP</p>
+                            <p className="text-gray-500 text-sm">Required Age: {product.requiredAge}</p>
                             <button
                                 className="mt-2 flex items-center text-xs text-pink-400 cursor-pointer hover:underline"
-                                onClick={(e) => handleDeleteProduct(e, product.productId)}
+                                onClick={(e) => handleDeleteProductWithUpdate(e, product.productId)}
                             >
                                 <Trash className="w-4 h-4 mr-1" /> Remove
                             </button>
@@ -194,14 +246,14 @@ const Cart = () => {
                         ) : (
                             <>
                                 <button
-                                    onClick={(e) => handleQuantityChange(e, product.productId, -1)}
+                                    onClick={(e) => handleQuantityChange(e, product, -1)}
                                     className="bg-pink-200 text-pink-800 px-2 py-1 cursor-pointer rounded-full hover:bg-pink-300"
                                 >
                                     <Minus size={16} />
                                 </button>
                                 <span className="text-md font-semibold text-gray-700">{product.quantity}</span>
                                 <button
-                                    onClick={(e) => handleQuantityChange(e, product.productId, 1)}
+                                    onClick={(e) => handleQuantityChange(e, product, 1)}
                                     className="bg-pink-200 cursor-pointer text-pink-800 px-2 py-1 rounded-full hover:bg-pink-300"
                                 >
                                     <Plus size={16} />
@@ -257,6 +309,9 @@ const Cart = () => {
                             // Save cart data to localStorage before navigating
                             localStorage.setItem('cartData', JSON.stringify(cartData));
                             await updateCartStatus();
+                            // Clear pending cart when order is placed
+                            localStorage.removeItem('productQuantitiesOfPendingCart');
+                            setPendingCartProducts([]);
                             // Reset cart after successful order placement
                             resetCart();
                             navigate('/order-confirmation');
@@ -282,17 +337,17 @@ const Cart = () => {
                     className="bg-pink-500 text-white px-6 py-3 rounded-full shadow hover:bg-pink-600 cursor-pointer text-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 w-full"
                 >
                     <span>Proceed to Payment</span>
-                    <svg 
-                        className="w-5 h-5" 
-                        fill="none" 
-                        stroke="currentColor" 
+                    <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
                         viewBox="0 0 24 24"
                     >
-                        <path 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                            strokeWidth={2} 
-                            d="M14 5l7 7m0 0l-7 7m7-7H3" 
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"
                         />
                     </svg>
                 </button>

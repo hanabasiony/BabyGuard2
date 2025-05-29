@@ -52,10 +52,10 @@ export default function Login() {
         setLoading(true)
         try {
             console.log('1. Starting login process...')
-            
+
             const response = await axios.post('http://localhost:8000/api/auth/login', values)
             console.log('2. Login successful:', response.data)
-            
+
             const { token, role } = response.data
 
             setSuccessMsg(true)
@@ -74,15 +74,15 @@ export default function Login() {
                     }
                 });
                 // console.log('5. User data received:', userResponse.data);
-                
+
                 // Check if we have a valid response with data
-               
-                  
-                    localStorage.setItem('userData', JSON.stringify(userResponse.data));
-                    console.log('7. User data stored successfully');
-                    // Refresh user data in context
-                    // await fetchUserData();
-               
+
+
+                localStorage.setItem('userData', JSON.stringify(userResponse.data));
+                console.log('7. User data stored successfully');
+                // Refresh user data in context
+                // await fetchUserData();
+
             } catch (userError) {
                 console.error('Error fetching user data:', userError.response || userError);
                 console.error('Error details:', {
@@ -107,28 +107,35 @@ export default function Login() {
                         }
                     }
                 );
-                
+
                 console.log('9. Pending cart response:', pendingCartResponse.data);
+                console.log('pending cart id :', pendingCartResponse.data.data.cart._id);
+                localStorage.setItem('cartId', pendingCartResponse.data.data.cart._id);
+                // if (pendingCartResponse.data && pendingCartResponse.data.data) {
+                console.log('10. Pending cart found, storing data...');
+                cartInitialized = true;
+
+                // Store pending cart data
+                const cartData = pendingCartResponse.data.data.cart;
+                localStorage.setItem('cartId', cartData._id);
+                const pendingCartProducts = pendingCartResponse.data.data.products;
+                localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(pendingCartProducts));
+
+                // Update productQuantities in localStorage with pending cart products
                 
-                if (pendingCartResponse.data && pendingCartResponse.data.data) {
-                    console.log('10. Pending cart found, storing data...');
-                    cartInitialized = true;
-                    
-                    // Store pending cart data
-                    const cartData = pendingCartResponse.data.data;
-                    localStorage.setItem('cartId', cartData._id);
-                    localStorage.setItem('cartDetails', JSON.stringify({
-                        governorate: cartData.governorate,
-                        city: cartData.city,
-                        street: cartData.street,
-                        buildingNumber: cartData.buildingNumber,
-                        apartmentNumber: cartData.apartmentNumber,
-                        paymentType: cartData.paymentType,
-                        Online: cartData.Online
-                    }));
-                } else {
-                    console.log('11. No pending cart data in response');
-                }
+
+                localStorage.setItem('cartDetails', JSON.stringify({
+                    governorate: cartData.governorate,
+                    city: cartData.city,
+                    street: cartData.street,
+                    buildingNumber: cartData.buildingNumber,
+                    apartmentNumber: cartData.apartmentNumber,
+                    paymentType: cartData.paymentType,
+                    Online: cartData.Online
+                }));
+                // } else {
+                // console.log('11. No pending cart data in response');
+                // }
             } catch (error) {
                 console.error('Error checking pending cart:', error.response || error);
                 console.log('12. No pending cart found, will create new cart');
@@ -139,7 +146,7 @@ export default function Login() {
                 try {
                     console.log('13. Creating new cart...');
                     const cartResponse = await axios.post(
-                        'http://localhost:8000/api/carts', 
+                        'http://localhost:8000/api/carts',
                         cart,
                         {
                             headers: {
@@ -147,11 +154,11 @@ export default function Login() {
                             }
                         }
                     );
-                    
+
                     if (cartResponse.data) {
                         console.log('14. New cart created successfully:', cartResponse.data);
                         cartInitialized = true;
-                        
+
                         // Store new cart data
                         const cartData = cartResponse.data.data;
                         localStorage.setItem('cartId', cartData._id);
@@ -187,7 +194,7 @@ export default function Login() {
                 toast.error('Failed to initialize cart. Please try again.');
                 navigate('/error');
             }
-            
+
         } catch (error) {
             console.error('Login error:', error.response || error)
             console.error('Error details:', {
@@ -204,8 +211,8 @@ export default function Login() {
 
     return (
         <div className="wrapper   bg-pink-50 py-70  ">
-            <form 
-                className="max-w-md mx-auto px-8" 
+            <form
+                className="max-w-md mx-auto px-8"
                 onSubmit={(e) => {
                     e.preventDefault();
                     console.log('Form submitted');

@@ -42,6 +42,8 @@ export default function Logout() {
                 localStorage.removeItem('cartTimestamp');
                 localStorage.removeItem('userData');
                 localStorage.removeItem('cartData')
+                localStorage.removeItem('productQuantities')
+                localStorage.removeItem('productQuantitiesOfPendingCart')
 
 
                 // Reset context state

@@ -41,6 +41,17 @@ import ProtectedRouteAdmin from './context/ProtectdRouteAdmin'
 import Settings from './components/Settings/Settings'
 import Review from './components/Review/Review'
 import OrderConfirmation from './components/OrderConfirmation.jsx/OrderConfirmation'
+import VaccinationForm from './components/VaccineReservation/VaccinationForm'
+import Dashboard from './components/Admin/Dashboard'
+import AdminDashboardLayout from './components/Admin/AdminDashboardLayout'
+import Complaints from './components/Admin/Complaints'
+import OTPInput  from './components/PaymentPage/otp'
+import ManageUsers from './components/Admin/ManageUsers'
+import ManageNurses from './components/Admin/ManageNurses'
+import Vaccinations from './components/Admin/Vaccinations'
+import Appointments from './components/Admin/Appointments'
+import ProductStore from './components/Admin/ProductStore'
+import TipsArticles from './components/Admin/TipsArticles'
 
 
 const router = createBrowserRouter([
@@ -68,11 +79,21 @@ const router = createBrowserRouter([
       { path: 'PassSend/VerifyResetCode', element: <VerifyResetCode /> },
       { path: 'PassSend/VerifyResetCode/PassReset', element: <PassReset /> },
       { path: 'vacciens', element: <Vacciens /> },
+      { path: 'VaccineReservation', element: <VaccinationForm/>},
+      { path: 'Admin', element: <AdminDashboardLayout/>},
       {
         path: 'payment',
         element: (
           <ProtectedRoute>
             <PaymentPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'otp',
+        element: (
+          <ProtectedRoute>
+            <OTPInput />
           </ProtectedRoute>
         ),
       },

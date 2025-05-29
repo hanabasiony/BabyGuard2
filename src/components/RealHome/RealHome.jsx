@@ -1,13 +1,13 @@
 import React from "react"
 import Slider from "react-slick"
-// import img4 from '../../assets/photo_2025-04-17_10-54-11.jpg'
-// import img5 from "../../assets/photo_2025-04-17_10-54-11 (2).jpg"
-// import img6 from "../../assets/photo_2025-04-17_15-08-14.jpg"
-// import img7 from "../../assets/photo_2025-04-17_15-19-23.jpg"
-// import img8 from "../../assets/photo_2025-04-17_15-19-24 (2).jpg"
-// import img9 from "../../assets/photo_2025-04-17_15-19-24.jpg"
-// import img10 from "../../assets/img10.jpg"
-// import img11 from "../../assets/img11.jpg"
+import img4 from '../../assets/images/IMG_3224.JPG'
+import img5 from "../../assets/images/IMG_3225.JPG"
+import img6 from "../../assets/images/IMG_3223.JPG"
+import img7 from "../../assets/images/IMG_3220.JPG"
+import img8 from "../../assets/images/IMG_3222.JPG"
+import img9 from "../../assets/images/IMG_3226.JPG"
+import img10 from "../../assets/images/IMG_3219.JPG"
+import img11 from "../../assets/images/IMG_3218.JPG"
 
 
 export default function Home() {
@@ -15,8 +15,8 @@ export default function Home() {
     
       <div className="min-h-screen ">
         {/* Hero Section */}
-        <section className="container px-14 bg-gradient-to-r from-pink-50 to-blue-50  mx-auto px-4 py-12 md:py-20 flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 space-y-6">
+        <section className=" bg-gradient-to-r from-pink-50 to-blue-50  mx-auto px-4 py-12 md:py-20 flex flex-col md:flex-row items-center">
+          <div className="md:w-1/2 space-y-6 ml-8 mr-8">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800">Your Kid's Health is Your Wealth</h1>
             <p className="text-gray-600 max-w-md">
               Track your baby's growth, get expert tips, and ensure their healthy development with Baby Guard.
@@ -27,7 +27,7 @@ export default function Home() {
           </div>
 
           <div className="md:w-1/2 mt-8 md:mt-0 flex justify-center w-full">
-  <div className="rounded-lg p-4 bg-transparent w-full max-w-md md-p4">
+  <div className="rounded-lg p-4 bg-transparent w-full max-w-md md-p4 mt-6">
     <Slider
       dots={true}
       infinite={true}
@@ -53,8 +53,8 @@ export default function Home() {
 
         
         {/* Core Features */}
-        <section className="container mx-auto px-12 py-12">
-          <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12">Core Features</h2>
+        <section className=" mx-auto px-12 py-12 ">
+          <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12 mt-10">Core Features</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-pink-50 border-none rounded-lg shadow-sm p-6">
               <div className="bg-pink-200 w-10 h-10 rounded-full flex items-center justify-center mb-4">
@@ -65,7 +65,7 @@ export default function Home() {
             </div>
   
             <div className="bg-blue-50 border-none rounded-lg shadow-sm p-6">
-              <div className="bg-blue-200 w-10 h-10 rounded-full flex items-center justify-center mb-4">
+              <div className="bg-blue-200 w-10 h-10 rounded-full flex items-center justify-center">
                 <span className="text-blue-600">🔔</span>
               </div>
               <h3 className="font-semibold text-lg mb-2">Vaccine Alerts</h3>
@@ -83,7 +83,7 @@ export default function Home() {
         </section>
   
         {/* Pregnancy Tips */}
-        <section className="container mx-auto px-14 py-12 bg-gradient-to-r from-pink-50 to-blue-50 ">
+        <section className=" mx-auto px-14 py-12 bg-gradient-to-r from-pink-50 to-blue-50 ">
           <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12">Pregnancy Tips</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="rounded-lg shadow-lg overflow-hidden">
@@ -96,9 +96,7 @@ export default function Home() {
               <div className="p-4">
                 <h3 className="font-semibold text-lg mb-2">First Trimester Nutrition</h3>
                 <p className="text-gray-600 text-sm">Essential nutrients for early pregnancy.</p>
-                <div className="mt-4">
-                  <button className="text-pink-500 p-0 hover:text-pink-600 text-sm font-medium">Read More</button>
-                </div>
+
               </div>
             </div>
   
@@ -111,9 +109,7 @@ export default function Home() {
               <div className="p-4">
                 <h3 className="font-semibold text-lg mb-2">Safe Exercises</h3>
                 <p className="text-gray-600 text-sm">Stay active during pregnancy.</p>
-                <div className="mt-4">
-                  <button className="text-pink-500 p-0 hover:text-pink-600 text-sm font-medium">Read More</button>
-                </div>
+                
               </div>
             </div>
   
@@ -126,16 +122,14 @@ export default function Home() {
               <div className="p-4">
                 <h3 className="font-semibold text-lg mb-2">Month by Month Guide</h3>
                 <p className="text-gray-600 text-sm">What to expect during pregnancy.</p>
-                <div className="mt-4">
-                  <button className="text-pink-500 p-0 hover:text-pink-600 text-sm font-medium">Read More</button>
-                </div>
+
               </div>
             </div>
           </div>
         </section>
   
         {/* Featured Products */}
-        <section className="container mx-auto px-16 py-12">
+        <section className="mx-auto px-16 py-12">
           <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12">Featured Products</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-pink-50 border-none rounded-lg shadow-sm p-6">
@@ -173,7 +167,7 @@ export default function Home() {
         </section>
   
         {/* Testimonials */}
-        <section className="container mx-auto px-14 py-12 bg-gradient-to-r from-pink-50 to-blue-50">
+        <section className="mx-auto px-14 py-12 bg-gradient-to-r from-pink-50 to-blue-50">
           <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12">What Parents Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 

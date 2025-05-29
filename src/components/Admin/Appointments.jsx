@@ -1,0 +1,357 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+function Appointments() {
+  // State for appointments data
+  const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [showUnassignedOnly, setShowUnassignedOnly] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [nurses, setNurses] = useState([]);
+  const [selectedNurse, setSelectedNurse] = useState('');
+
+  // Fetch appointments data from API
+  useEffect(() => {
+    fetchAppointments();
+    fetchNurses();
+  }, []);
+
+  // Filter appointments based on search, date, and unassigned filter
+  useEffect(() => {
+    let filtered = [...appointments];
+    
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(appointment => 
+        appointment.parentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        appointment.childName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        appointment.vaccine.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        appointment.location.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Filter by date
+    if (selectedDate) {
+      const dateObj = new Date(selectedDate);
+      filtered = filtered.filter(appointment => {
+        const appDate = new Date(appointment.date);
+        return appDate.toDateString() === dateObj.toDateString();
+      });
+    }
+    
+    // Filter by unassigned only
+    if (showUnassignedOnly) {
+      filtered = filtered.filter(appointment => appointment.status === 'Pending');
+    }
+    
+    setFilteredAppointments(filtered);
+  }, [searchTerm, selectedDate, showUnassignedOnly, appointments]);
+
+  const fetchAppointments = () => {
+    setIsLoading(true);
+    
+    // REPLACE THIS WITH YOUR API ENDPOINT
+    // axios.get('YOUR_API_URL/appointments')
+    //   .then(response => {
+    //     setAppointments(response.data);
+    //     setFilteredAppointments(response.data);
+    //     setIsLoading(false);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching appointments:', error);
+    //     setIsLoading(false);
+    //   });
+    
+    // Mock data for preview
+    setTimeout(() => {
+      const mockAppointments = [
+        {
+          id: 1,
+          parentName: 'Sarah Johnson',
+          parentAvatar: 'https://via.placeholder.com/40',
+          childName: 'Emily Johnson',
+          childAge: '2 years',
+          vaccine: 'MMR Vaccine',
+          location: '123 Healthcare Ave, NY',
+          date: 'Apr 20, 2025',
+          time: '10:00 AM',
+          status: 'Pending',
+          nurse: null
+        },
+        {
+          id: 2,
+          parentName: 'David Wilson',
+          parentAvatar: 'https://via.placeholder.com/40',
+          childName: 'Lucas Wilson',
+          childAge: '1 year',
+          vaccine: 'DPT Vaccine',
+          location: '456 Medical Center, NY',
+          date: 'Apr 22, 2025',
+          time: '2:30 PM',
+          status: 'Assigned',
+          nurse: {
+            id: 1,
+            name: 'Dr. Jessica Smith',
+            avatar: 'https://via.placeholder.com/40'
+          }
+        }
+      ];
+      
+      setAppointments(mockAppointments);
+      setFilteredAppointments(mockAppointments);
+      setIsLoading(false);
+    }, 500);
+  };
+
+  const fetchNurses = () => {
+    // REPLACE THIS WITH YOUR API ENDPOINT
+    // axios.get('YOUR_API_URL/nurses')
+    //   .then(response => {
+    //     setNurses(response.data);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching nurses:', error);
+    //   });
+    
+    // Mock data for preview
+    const mockNurses = [
+      { id: 1, name: 'Dr. Jessica Smith' },
+      { id: 2, name: 'Dr. Michael Brown' },
+      { id: 3, name: 'Nurse Emily Davis' },
+      { id: 4, name: 'Nurse Robert Johnson' }
+    ];
+    
+    setNurses(mockNurses);
+  };
+
+  const handleAssignNurse = (appointmentId) => {
+    if (!selectedNurse) {
+      alert('Please select a nurse first');
+      return;
+    }
+
+    // REPLACE WITH YOUR API CALL
+    // axios.put(`YOUR_API_URL/appointments/${appointmentId}/assign`, {
+    //   nurseId: selectedNurse
+    // })
+    //   .then(response => {
+    //     fetchAppointments();
+    //     setSelectedNurse('');
+    //   })
+    //   .catch(error => {
+    //     console.error('Error assigning nurse:', error);
+    //   });
+    
+    // For demo purposes
+    const selectedNurseObj = nurses.find(nurse => nurse.id === parseInt(selectedNurse));
+    
+    const updatedAppointments = appointments.map(appointment => {
+      if (appointment.id === appointmentId) {
+        return {
+          ...appointment,
+          status: 'Assigned',
+          nurse: {
+            id: selectedNurseObj.id,
+            name: selectedNurseObj.name,
+            avatar: 'https://via.placeholder.com/40'
+          }
+        };
+      }
+      return appointment;
+    });
+    
+    setAppointments(updatedAppointments);
+    setFilteredAppointments(updatedAppointments);
+    setSelectedNurse('');
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 ">
+      <div className="max-w-6xl mx-auto">
+
+ {/* Appointment Requests Section */}
+ <div className="mt-6">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Appointment Requests</h2>
+          
+          <div className="flex items-center mb-4">
+            <div className="relative flex-grow">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="Search requests..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <button className="ml-3 p-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 flex items-center">
+              <svg className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              Filter
+            </button>
+          </div>
+        </div>
+
+{/* 
+        Header with filters */}
+        <div className="mb-6 flex flex-wrap items-center gap-4">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <input
+              type="date"
+              className="pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              placeholder="mm/dd/yyyy"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
+          </div>
+          
+          <label className="inline-flex items-center">
+            <input
+              type="checkbox"
+              className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              checked={showUnassignedOnly}
+              onChange={(e) => setShowUnassignedOnly(e.target.checked)}
+            />
+            <span className="ml-2 text-sm text-gray-700">Show unassigned only</span>
+          </label>
+        </div>
+
+        {/* Appointments Grid */}
+        {isLoading ? (
+          <div className="text-center py-10">
+            <p className="text-gray-500">Loading appointments...</p>
+          </div>
+        ) : filteredAppointments.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-gray-500">No appointments found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredAppointments.map((appointment) => (
+              <div 
+                key={appointment.id} 
+                className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200"
+              >
+                <div className="p-4">
+                  {/* Status Header */}
+                  <div className="flex justify-between items-center mb-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      appointment.status === 'Pending' 
+                        ? 'bg-yellow-100 text-yellow-800' 
+                        : 'bg-green-100 text-green-800'
+                    }`}>
+                      {appointment.status}
+                    </span>
+                    <button className="text-gray-400 hover:text-gray-500">
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  {/* Parent Info */}
+                  <div className="flex items-center mb-4">
+                    <img 
+                      src={appointment.parentAvatar || "/placeholder.svg"} 
+                      alt={appointment.parentName} 
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
+                    <div className="ml-3">
+                      <h3 className="text-lg font-medium text-gray-800">{appointment.parentName}</h3>
+                      <p className="text-sm text-gray-500">Parent</p>
+                    </div>
+                  </div>
+                  
+                  {/* Child Info */}
+                  <div className="mb-2 flex items-center">
+                    <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <span className="text-sm text-gray-700">{appointment.childName} ({appointment.childAge})</span>
+                  </div>
+                  
+                  {/* Vaccine Info */}
+                  <div className="mb-2 flex items-center">
+                    <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-sm text-gray-700">{appointment.vaccine}</span>
+                  </div>
+                  
+                  {/* Location Info */}
+                  <div className="mb-2 flex items-center">
+                    <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span className="text-sm text-gray-700">{appointment.location}</span>
+                  </div>
+                  
+                  {/* Date/Time Info */}
+                  <div className="mb-4 flex items-center">
+                    <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-sm text-gray-700">{appointment.date} - {appointment.time}</span>
+                  </div>
+                  
+                  {/* Nurse Assignment */}
+                  {appointment.status === 'Pending' ? (
+                    <div>
+                      <div className="mb-3">
+                        <select
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          value={selectedNurse}
+                          onChange={(e) => setSelectedNurse(e.target.value)}
+                        >
+                          <option value="">Select Nurse</option>
+                          {nurses.map(nurse => (
+                            <option key={nurse.id} value={nurse.id}>{nurse.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <button
+                        onClick={() => handleAssignNurse(appointment.id)}
+                        className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md flex justify-center items-center"
+                      >
+                        Assign & Send Request
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <img 
+                        src={appointment.nurse.avatar || "/placeholder.svg"} 
+                        alt={appointment.nurse.name} 
+                        className="h-8 w-8 rounded-full object-cover"
+                      />
+                      <div className="ml-3">
+                        <h4 className="text-sm font-medium text-gray-800">{appointment.nurse.name}</h4>
+                        <p className="text-xs text-gray-500">Assigned Nurse</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+       
+      </div>
+    </div>
+  );
+}
+
+export default Appointments;

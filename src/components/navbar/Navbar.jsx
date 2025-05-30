@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 // import logo from '../../assets/images/freshcart-logo.svg'
 import logobaby from '../../assets/images/logo-new2.png'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
@@ -18,12 +18,19 @@ import axios from 'axios';
 
 export default function Navbar() {
   const { userToken, setuserToken } = useContext(authContext)
-   const { totalItems } = useContext(CartContext)
+  const { totalItems, productQuantities } = useContext(CartContext)
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [cartCount, setCartCount] = useState(0);
+
+  // Update cart count whenever productQuantities changes
+  useEffect(() => {
+    const count = Object.values(productQuantities).reduce((total, quantity) => total + quantity, 0);
+    setCartCount(count);
+  }, [productQuantities]);
 
   async function handleLogout() {
     try {
@@ -151,18 +158,16 @@ export default function Navbar() {
                       <Settings className="w-6 h-6" />
                     </NavLink>
                   </li>
-                  <div className="cart">
-                    <NavLink to="/cart">
-                      <div className="relative inline-block">
-                        <ShoppingCart className="w-6 h-6 text-pink-700" />
-                        {totalItems > 0 && (
-                          <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-                            {totalItems}
-                          </span>
-                        )}
-                      </div>
+                  <li>
+                    <NavLink to="/cart" className="relative">
+                      <ShoppingCart className="w-6 h-6 text-pink-700" />
+                      {cartCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                          {cartCount}
+                        </span>
+                      )}
                     </NavLink>
-                  </div>
+                  </li>
                 </>
               ) : (
                 <li>
@@ -189,9 +194,16 @@ export default function Navbar() {
               <li><NavLink to="/" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Pergnancy tips</NavLink></li>
               {/* <li><NavLink to="/" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Contant us</NavLink></li> */}
               {/* <li><NavLink to="/aboutUs" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>About us</NavLink></li> */}
-              <li><NavLink to="/cart" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>
-                <i className="fa-solid fa-cart-shopping text-xl text-pink-500"></i>
-              </NavLink></li>
+              <li>
+                <NavLink to="/cart" className="text-gray-600 hover:text-pink-400 relative" onClick={() => setIsOpen(false)}>
+                  <ShoppingCart className="w-6 h-6 text-pink-700" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                      {cartCount}
+                    </span>
+                  )}
+                </NavLink>
+              </li>
               <li><NavLink to="/settings" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>
                 <Settings className="w-6 h-6" />
               </NavLink></li>

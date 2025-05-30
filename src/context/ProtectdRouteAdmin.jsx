@@ -1,18 +1,14 @@
-
 import React from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
 export default function ProtectedRouteAdmin({children}) {
-    const navigate = useNavigate();
-
-    if(localStorage.getItem('token') === null || localStorage.getItem('role') !== 'admin'){
-        return <Navigate to='/login' />
+    // Check if user is authenticated and is an admin
+    if (localStorage.getItem('token') === null || localStorage.getItem('role') !== 'admin') {
+        // If not admin or not authenticated, redirect to login
+        return <Navigate to='/login' replace />
     }
 
-    return (
-        <>
-            {children}
-        </>
-    )
+    // If user is admin, render the protected content
+    return children;
 }
 

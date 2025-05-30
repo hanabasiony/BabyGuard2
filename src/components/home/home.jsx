@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import { CartContext } from '../../context/CartContext'
 import { useContext } from 'react'
 import toast from 'react-hot-toast'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Star, StarHalf } from 'lucide-react'
 import './home.css'
 
 export default function Home() {
@@ -43,7 +43,7 @@ export default function Home() {
                             id: product.productId,
                             quantity: product.quantity
                         }));
-                        
+
                         setProductsId(pendingProducts);
                         console.log('Set pending products:', pendingProducts);
 
@@ -120,8 +120,8 @@ export default function Home() {
             localStorage.setItem('productQuantities', JSON.stringify(newQuantities));
 
             // Update pending cart products if they exist
-            const updatedPendingProducts = pendingCartProducts.map(product => 
-                product.productId === productId 
+            const updatedPendingProducts = pendingCartProducts.map(product =>
+                product.productId === productId
                     ? { ...product, quantity: newQuantity }
                     : product
             );
@@ -160,13 +160,13 @@ export default function Home() {
         e.preventDefault();
         try {
             await handleDeleteProduct(e, productId);
-            
+
             // Update local quantities
             const newQuantities = { ...localProductQuantities };
             delete newQuantities[productId];
             setLocalProductQuantities(newQuantities);
             localStorage.setItem('productQuantities', JSON.stringify(newQuantities));
-            
+
             // Update productsId state
             setProductsId(prevProducts => prevProducts.filter(product => product.id !== productId));
 
@@ -176,7 +176,7 @@ export default function Home() {
             );
             setPendingCartProducts(updatedPendingProducts);
             localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
-            
+
             toast.success('Product removed from cart');
         } catch (error) {
             console.error('Error deleting product:', error);
@@ -184,12 +184,57 @@ export default function Home() {
         }
     };
 
+    const renderStars = (rating) => {
+        const stars = [];
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 !== 0;
+
+        // Add full stars
+        for (let i = 0; i < fullStars; i++) {
+            stars.push(
+                <Star key={`full-${i}`} className="w-4 h-4 text-yellow-400 fill-current" />
+            );
+        }
+
+        // Add half star if needed
+        if (hasHalfStar) {
+            stars.push(
+                <StarHalf key="half" className="w-4 h-4 text-yellow-400 fill-current" />
+            );
+        }
+
+        // Add empty stars
+        const emptyStars = 5 - Math.ceil(rating);
+        for (let i = 0; i < emptyStars; i++) {
+            stars.push(
+                <Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />
+            );
+        }
+
+        return stars;
+    };
+
     if (loading) {
-        return <LoaderScreen />;
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Oval
+                    height={80}
+                    width={80}
+                    color="#ec4899"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                    visible={true}
+                    ariaLabel='oval-loading'
+                    secondaryColor="#f9a8d4"
+                    strokeWidth={2}
+                    strokeWidthSecondary={2}
+                />
+            </div>
+        );
     }
 
     if (error) {
-        return <div className="error-message">{error}</div>;
+        return <div className="min-h-screen flex items-center justify-center text-red-500">Error: {error.message}</div>;
     }
 
     return (
@@ -201,7 +246,7 @@ export default function Home() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4  md:gap-6 mx-auto justify-items-center">
                         {products.map((product) => {
                             const currentQuantity = localProductQuantities[product._id] || 0;
-                            
+
                             return (
                                 <Link
                                     to={`/productDetails/${product._id}`}
@@ -213,9 +258,32 @@ export default function Home() {
                                         alt={product.name}
                                         className='w-24 h-24 mb-4 object-cover'
                                     />
-                                    <h3 className='text-lg font-semibold text-blue-600 mb-1'>{product.name}</h3>
-                                    <h2 className='text-blue-600'>{product.description}</h2>
-                                    <p className='text-blue-400 mb-3 font-semibold'>EGP: {product.price}</p>
+                                    <h3 className='text-lg font-semibold text-black-600 mb-1'>{product.name}</h3>
+                                    <h2 className='text-black-600 text-sm mb-2'>{product.description}</h2>
+                                    <p className='text-black-400 mb-2 font-semibold'>EGP: {product.price}</p>
+
+                                    {/* Rating and Reviews Section */}
+                                    <div className="flex flex-col items-center mb-3">
+                                        <div className="flex items-center gap-1 mb-1">
+                                            {renderStars(product.rating)}
+                                            <span className="text-sm text-gray-600 ml-1">
+                                                ({product.rating.toFixed(1)})
+                                            </span>
+                                        </div>
+                                        {/* <div className="text-sm text-gray-500">
+                                            {product.totalReviews} {product.totalReviews === 1 ? 'review' : 'reviews'}
+                                        </div> */}
+                                    </div>
+
+                                    {/* Features Section */}
+                                    {/* <div className="text-sm text-gray-600 mb-3">
+                                        <p className="font-medium">Age: {product.requiredAge}</p>
+                                        <div className="mt-1">
+                                            {product.features.slice(0, 2).map((feature, index) => (
+                                                <p key={index} className="text-xs">• {feature}</p>
+                                            ))}
+                                        </div>
+                                    </div> */}
 
                                     {loadingProducts[product._id] ? (
                                         <div className="absolute bottom-3">

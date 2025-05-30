@@ -42,6 +42,10 @@ import OrderConfirmation from './components/OrderConfirmation.jsx/OrderConfirmat
 import AddChild from './components/AddChild/AddChild'
 import MyOrders from './components/MyOrders/MyOrders'
 import { UserDataProvider } from './components/GetUserData/GetUserData'
+import VaccinationForm from './components/VaccineReservation/VaccinationForm'
+import OTPInput from './components/PaymentPage/otp'
+// import AdminDashboardLayout from './components/Admin/AdminDashboardLayout'
+
 
 
 const router = createBrowserRouter([
@@ -69,6 +73,15 @@ const router = createBrowserRouter([
       { path: 'PassSend/VerifyResetCode', element: <VerifyResetCode /> },
       { path: 'PassSend/VerifyResetCode/PassReset', element: <PassReset /> },
       { path: 'vacciens', element: <Vacciens /> },
+      { path: 'VaccineReservation', element: <VaccinationForm /> },
+      { path: 'payment', element: <PaymentPage /> },
+      { path: 'otp', element: <OTPInput /> },
+      // { path: 'Admin', element: <AdminDashboardLayout /> },
+
+
+
+
+
       {
         path: 'payment',
         element: (

@@ -1,7 +1,6 @@
 import { useState } from 'preact/hooks'
 import '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/react-fontawesome'
-
 import './app.css'
 import { createBrowserRouter } from 'react-router-dom'
 import { RouterProvider } from 'react-router-dom'
@@ -53,6 +52,7 @@ import ProductStore from './components/Admin/ProductStore'
 import TipsArticles from './components/Admin/TipsArticles'
 import Complaints from './components/Admin/Complaints'
 import AdminDashboardLayout from './components/Admin/AdminDashboardLayout'
+import PaymentForm from './components/PaymentPage/PaymentForm'
 
 
 
@@ -98,6 +98,18 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: 'PaymentForm',
+        element: (
+          <ProtectedRoute>
+            <PaymentForm />
+          </ProtectedRoute>
+        ),
+      },
+      
+
+
+
       {
         path: 'order-confirmation',
         element: (

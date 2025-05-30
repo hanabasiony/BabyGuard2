@@ -1,7 +1,9 @@
 import img2 from "../../assets/images/img1payment.jpeg"
 import img3 from "../../assets/images/img2payment.jpeg"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
+import { toast } from "react-hot-toast"
 
 export default function PaymentPage(){
     const navigate = useNavigate();
@@ -9,42 +11,64 @@ export default function PaymentPage(){
         parentName: '',
         address: '',
         city: '',
-        zipCode: '',
         phone: '',
         email: '',
-        note: ''
     });
 
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [cartData, setCartData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [isAddressConfirmed, setIsAddressConfirmed] = useState(false);
+
+    useEffect(() => {
+        fetchCartData();
+    }, []);
+
+    const fetchCartData = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                toast.error('Please login first');
+                navigate('/login');
+                return;
+            }
+
+            const response = await axios.get('http://localhost:8000/api/carts/pending', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (response.data && response.data.data) {
+                setCartData(response.data.data);
+                // Pre-fill form with user data if available
+                const userData = JSON.parse(localStorage.getItem('userData'));
+                if (userData && userData.user) {
+                    setFormData(prev => ({
+                        ...prev,
+                        parentName: `${userData.user.fName} ${userData.user.lName}`,
+                        address: userData.user.street,
+                        city: userData.user.city,
+                        phone: userData.user.phoneNumber,
+                        email: userData.user.email
+                    }));
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching cart:', error);
+            toast.error('Failed to fetch cart data');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const validateForm = () => {
         const newErrors = {};
         
-        // Required fields validation
-        if (!formData.parentName.trim()) {
-            newErrors.parentName = 'Parent name is required';
-        }
-        if (!formData.address.trim()) {
-            newErrors.address = 'Address is required';
-        }
-        if (!formData.city.trim()) {
-            newErrors.city = 'City is required';
-        }
-        if (!formData.zipCode.trim()) {
-            newErrors.zipCode = 'ZIP code is required';
-        } else if (!/^\d{5}$/.test(formData.zipCode)) {
-            newErrors.zipCode = 'ZIP code must be 5 digits';
-        }
-        if (!formData.phone.trim()) {
-            newErrors.phone = 'Phone number is required';
-        } else if (!/^01[0125][0-9]{8}$/.test(formData.phone)) {
-            newErrors.phone = 'Please enter a valid Egyptian phone number';
-        }
-        if (!formData.email.trim()) {
-            newErrors.email = 'Email is required';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Please enter a valid email address';
+        // Checkbox validation
+        if (!isAddressConfirmed) {
+            newErrors.addressConfirmation = 'Please confirm your delivery address';
         }
 
         setErrors(newErrors);
@@ -66,6 +90,17 @@ export default function PaymentPage(){
         }
     };
 
+    const handleCheckboxChange = (e) => {
+        setIsAddressConfirmed(e.target.checked);
+        // Clear error when checkbox is checked
+        if (errors.addressConfirmation && e.target.checked) {
+             setErrors(prev => ({
+                ...prev,
+                addressConfirmation: ''
+            }));
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -73,22 +108,42 @@ export default function PaymentPage(){
         if (validateForm()) {
             // Here you would typically handle the form submission
             console.log('Form submitted:', formData);
-            // Navigate to OTP page
-            navigate('/otp');
+            // Navigate to Payment Form page
+            navigate('/PaymentForm');
+        } else {
+            setIsSubmitting(false);
         }
-        
-        setIsSubmitting(false);
     };
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex justify-center items-center bg-pink-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+            </div>
+        );
+    }
+
+    if (!cartData || !cartData.products || cartData.products.length === 0) {
+        return (
+            <div className="min-h-screen flex justify-center items-center bg-pink-50">
+                <div className="text-center">
+                    <h2 className="text-2xl font-semibold text-gray-700 mb-4">Your cart is empty</h2>
+                    <button
+                        onClick={() => navigate('/products')}
+                        className="bg-pink-500 text-white px-6 py-3 rounded-full hover:bg-pink-600"
+                    >
+                        Continue Shopping
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
-      <div className="min-h-screen  flex justify-center items-center py-35 bg-pink-50 ">
+      <div className="min-h-screen flex justify-center items-center py-35 bg-pink-50">
         <div className="w-full max-w-4xl bg-white rounded-3xl shadow-sm p-8">
-       
-  
-          {/* Checkout Title */}
           <h2 className="text-4xl font-bold text-blue-800 text-center mb-12">Checkout</h2>
   
-          {/* Main Content */}
           <form onSubmit={handleSubmit}>
             <div className="grid md:grid-cols-2 gap-8">
               {/* Delivery Information */}
@@ -103,10 +158,9 @@ export default function PaymentPage(){
                     type="text"
                     id="parentName"
                     value={formData.parentName}
-                    onChange={handleChange}
-                    className={`w-full border ${errors.parentName ? 'border-red-500' : 'border-gray-300'} rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    disabled={true}
+                    className={`w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 cursor-not-allowed`}
                   />
-                  {errors.parentName && <p className="text-red-500 text-sm">{errors.parentName}</p>}
                 </div>
   
                 <div className="space-y-2">
@@ -117,13 +171,12 @@ export default function PaymentPage(){
                     type="text"
                     id="address"
                     value={formData.address}
-                    onChange={handleChange}
-                    className={`w-full border ${errors.address ? 'border-red-500' : 'border-gray-300'} rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    disabled={true}
+                    className={`w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 cursor-not-allowed`}
                   />
-                  {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
                 </div>
   
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
                     <label htmlFor="city" className="block text-gray-700 font-medium">
                       City
@@ -132,23 +185,9 @@ export default function PaymentPage(){
                       type="text"
                       id="city"
                       value={formData.city}
-                      onChange={handleChange}
-                      className={`w-full border ${errors.city ? 'border-red-500' : 'border-gray-300'} rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                      disabled={true}
+                      className={`w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 cursor-not-allowed`}
                     />
-                    {errors.city && <p className="text-red-500 text-sm">{errors.city}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="zipCode" className="block text-gray-700 font-medium">
-                      ZIP Code
-                    </label>
-                    <input
-                      type="text"
-                      id="zipCode"
-                      value={formData.zipCode}
-                      onChange={handleChange}
-                      className={`w-full border ${errors.zipCode ? 'border-red-500' : 'border-gray-300'} rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    />
-                    {errors.zipCode && <p className="text-red-500 text-sm">{errors.zipCode}</p>}
                   </div>
                 </div>
   
@@ -160,10 +199,9 @@ export default function PaymentPage(){
                     type="tel"
                     id="phone"
                     value={formData.phone}
-                    onChange={handleChange}
-                    className={`w-full border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    disabled={true}
+                    className={`w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 cursor-not-allowed`}
                   />
-                  {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
                 </div>
   
                 <div className="space-y-2">
@@ -174,21 +212,26 @@ export default function PaymentPage(){
                     type="email"
                     id="email"
                     value={formData.email}
-                    onChange={handleChange}
-                    className={`w-full border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  />
-                  {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-                </div>
-  
-                <div className="space-y-2">
-                  <textarea
-                    id="note"
-                    value={formData.note}
-                    onChange={handleChange}
-                    placeholder="Add a note (e.g., special delivery instructions)"
-                    className="w-full border border-gray-300 rounded-md p-3 h-24 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-500"
+                    disabled={true}
+                    className={`w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100 cursor-not-allowed`}
                   />
                 </div>
+
+                {/* Address Confirmation Checkbox */}
+                <div className="flex items-center">
+                    <input
+                        type="checkbox"
+                        id="addressConfirmation"
+                        checked={isAddressConfirmed}
+                        onChange={handleCheckboxChange}
+                        className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <label htmlFor="addressConfirmation" className="ml-2 block text-sm text-gray-900">
+                        I confirm the delivery information is correct.
+                    </label>
+                </div>
+                 {errors.addressConfirmation && <p className="text-red-500 text-sm mt-2">{errors.addressConfirmation}</p>}
+
               </div>
   
               {/* Order Summary */}
@@ -196,49 +239,31 @@ export default function PaymentPage(){
                 <h3 className="text-2xl font-semibold text-blue-800 mb-6">Order Summary</h3>
   
                 <div className="space-y-4 mb-8">
-                  {/* Product 1 */}
-
-<div className="flex items-center gap-4 pb-4 border-b border-gray-100">
-                    <div className="bg-gray-100 rounded-lg p-2 w-16 h-16 flex items-center justify-center">
-                      <img
-                        src={img2}
-                        alt="Soft Cotton Onesie"
-                      
-                      />
+                  {cartData.products.map((product) => (
+                    <div key={product.productId} className="flex items-center gap-4 pb-4 border-b border-gray-100">
+                      <div className="bg-gray-100 rounded-lg p-2 w-16 h-16 flex items-center justify-center">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium">{product.name}</h4>
+                        <p className="text-gray-600">EGP {product.price}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-medium">{product.quantity}</span>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium">Soft Cotton Onesie</h4>
-                      <p className="text-gray-600">EGP 150</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="font-medium">2</span>
-                    </div>
-                  </div>
-  
-                  {/* Product 2 */}
-                  <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
-                    <div className="bg-gray-100 rounded-lg p-2 w-16 h-16 flex items-center justify-center">
-                      <img
-                        src={img3}
-                        alt="Musical Baby Toy"
-                        
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium">Musical Baby Toy</h4>
-                      <p className="text-gray-600">EGP 300</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="font-medium">1</span>
-                    </div>
-                  </div>
+                  ))}
                 </div>
   
                 {/* Totals */}
                 <div className="space-y-2 border-b border-gray-200 pb-4 mb-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium">EGP 600</span>
+                    <span className="font-medium">EGP {cartData.cart.totalPrice}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Shipping</span>
@@ -248,13 +273,13 @@ export default function PaymentPage(){
   
                 <div className="flex justify-between items-center mb-8">
                   <span className="text-xl font-bold text-blue-800">Total</span>
-                  <span className="text-xl font-bold text-blue-800">EGP 600</span>
+                  <span className="text-xl font-bold text-blue-800">EGP {cartData.cart.totalPrice}</span>
                 </div>
   
                 <button 
                   type="submit"
-                  disabled={isSubmitting}
-                  className={`w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-4 px-6 rounded-full transition duration-300 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={isSubmitting || !isAddressConfirmed}
+                  className={`w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-4 px-6 rounded-full transition duration-300 ${isSubmitting || !isAddressConfirmed ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {isSubmitting ? 'Processing...' : 'Place Order'}
                 </button>
@@ -264,4 +289,4 @@ export default function PaymentPage(){
         </div>
       </div>
     )
-  }
+}

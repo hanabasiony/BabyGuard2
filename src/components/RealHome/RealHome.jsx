@@ -1,4 +1,5 @@
 import React from "react"
+import { useNavigate } from "react-router-dom"
 import Slider from "react-slick"
 import img4 from '../../assets/images/IMG_3224.JPG'
 import img5 from "../../assets/images/IMG_3225.JPG"
@@ -11,6 +12,8 @@ import img11 from "../../assets/images/IMG_3218.JPG"
 
 
 export default function Home() {
+    const navigate = useNavigate();
+    
     return (
     
       <div className="min-h-screen ">
@@ -21,7 +24,9 @@ export default function Home() {
             <p className="text-gray-600 max-w-md">
               Track your baby's growth, get expert tips, and ensure their healthy development with Baby Guard.
             </p>
-            <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full flex items-center">
+            <button 
+              onClick={() => navigate('/login')}
+              className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full flex items-center">
               Get Started <span className="ml-2">→</span>
             </button>
           </div>

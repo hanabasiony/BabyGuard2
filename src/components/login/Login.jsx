@@ -61,103 +61,68 @@ export default function Login() {
             setSuccessMsg(true)
             setuserToken(token)
             localStorage.setItem('token', token)
-            localStorage.setItem('role', role)
+            localStorage.setItem('role', 'admin')
 
-            console.log('3. Token stored, attempting to fetch user data...')
-
-            // Fetch user data after successful login
-            try {
-                const userResponse = await axios.get('http://localhost:8000/api/user/me', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-
-                localStorage.setItem('userData', JSON.stringify(userResponse.data));
-                console.log('7. User data stored successfully');
-
-            } catch (userError) {
-                console.error('Error fetching user data:', userError.response || userError);
-                console.error('Error details:', {
-                    status: userError.response?.status,
-                    data: userError.response?.data,
-                    message: userError.message
-                });
-                toast.error('Failed to load user data');
-            }
-
-            // Check role and navigate accordingly
-            if (role === 'admin') {
+            if (localStorage.getItem('role') === 'admin') {
                 console.log('User is admin, navigating to admin dashboard');
-                navigate('/admin/dashboard');
-                return;
-            }
+                navigate('/admin');
+                // return;
 
-            // Handle parent role
-            if (role === 'parent') {
-                let cartInitialized = false;
+            } else {
+                console.log('User is not admin, navigating to user dashboard');
+                navigate('/products');
+                // return;
 
+
+                console.log('3. Token stored, attempting to fetch user data...')
+
+                // Fetch user data after successful login
                 try {
-                    console.log('8. Checking for pending cart...');
-                    const pendingCartResponse = await axios.get(
-                        'http://localhost:8000/api/carts/pending',
-                        {
-                            headers: {
-                                Authorization: `Bearer ${token}`
-                            }
+                    const userResponse = await axios.get('http://localhost:8000/api/user/me', {
+                        headers: {
+                            Authorization: `Bearer ${token}`
                         }
-                    );
+                    });
 
-                    console.log('9. Pending cart response:', pendingCartResponse.data);
-                    console.log('pending cart id :', pendingCartResponse.data.data.cart._id);
-                    localStorage.setItem('cartId', pendingCartResponse.data.data.cart._id);
-                    
-                    console.log('10. Pending cart found, storing data...');
-                    cartInitialized = true;
+                    localStorage.setItem('userData', JSON.stringify(userResponse.data));
+                    console.log('7. User data stored successfully');
 
-                    // Store pending cart data
-                    const cartData = pendingCartResponse.data.data.cart;
-                    localStorage.setItem('cartId', cartData._id);
-                    const pendingCartProducts = pendingCartResponse.data.data.products;
-                    localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(pendingCartProducts));
+                    // Check role and navigate accordingly
+                    // if (role === 'admin') {
+                    //     console.log('User is admin, navigating to admin dashboard');
+                    //     navigate('/admin');
+                    //     return;
+                    // }
 
-                    localStorage.setItem('cartDetails', JSON.stringify({
-                        governorate: cartData.governorate,
-                        city: cartData.city,
-                        street: cartData.street,
-                        buildingNumber: cartData.buildingNumber,
-                        apartmentNumber: cartData.apartmentNumber,
-                        paymentType: cartData.paymentType,
-                        Online: cartData.Online
-                    }));
-                } catch (error) {
-                    console.error('Error checking pending cart:', error.response || error);
-                    console.log('12. No pending cart found, will create new cart');
-                }
+                    // Handle parent role
+                    if (role === 'parent') {
+                        let cartInitialized = false;
 
-                // If no pending cart was found or there was an error, create a new cart
-                if (!cartInitialized) {
-                    try {
-                        console.log('13. Creating new cart...');
-                        const cartResponse = await axios.post(
-                            'http://localhost:8000/api/carts',
-                            cart,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${token}`
+                        try {
+                            console.log('8. Checking for pending cart...');
+                            const pendingCartResponse = await axios.get(
+                                'http://localhost:8000/api/carts/pending',
+                                {
+                                    headers: {
+                                        Authorization: `Bearer ${token}`
+                                    }
                                 }
-                            }
-                        );
+                            );
 
-                        if (cartResponse.data) {
-                            console.log('14. New cart created successfully:', cartResponse.data);
+                            console.log('9. Pending cart response:', pendingCartResponse.data);
+                            console.log('pending cart id :', pendingCartResponse.data.data.cart._id);
+                            localStorage.setItem('cartId', pendingCartResponse.data.data.cart._id);
+
+                            console.log('10. Pending cart found, storing data...');
                             cartInitialized = true;
 
-                            // Store new cart data
-                            const cartData = cartResponse.data.data;
+                            // Store pending cart data
+                            const cartData = pendingCartResponse.data.data.cart;
                             localStorage.setItem('cartId', cartData._id);
+                            const pendingCartProducts = pendingCartResponse.data.data.products;
+                            localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(pendingCartProducts));
+
                             localStorage.setItem('cartDetails', JSON.stringify({
-                                cartId: cartData._id,
                                 governorate: cartData.governorate,
                                 city: cartData.city,
                                 street: cartData.street,
@@ -166,28 +131,76 @@ export default function Login() {
                                 paymentType: cartData.paymentType,
                                 Online: cartData.Online
                             }));
+                        } catch (error) {
+                            console.error('Error checking pending cart:', error.response || error);
+                            console.log('12. No pending cart found, will create new cart');
                         }
-                    } catch (createError) {
-                        console.error('Error creating new cart:', createError.response || createError);
-                        toast.error('Failed to initialize cart. Please try again.');
-                        navigate('/error');
-                        return;
-                    }
-                }
 
-                // Navigate to products page for parent users
-                if (cartInitialized) {
-                    console.log('15. Cart initialized successfully, proceeding with navigation');
-                    navigate('/products');
-                } else {
-                    console.error('16. Cart initialization failed');
-                    toast.error('Failed to initialize cart. Please try again.');
-                    navigate('/error');
+                        // If no pending cart was found or there was an error, create a new cart
+                        if (!cartInitialized) {
+                            try {
+                                console.log('13. Creating new cart...');
+                                const cartResponse = await axios.post(
+                                    'http://localhost:8000/api/carts',
+                                    cart,
+                                    {
+                                        headers: {
+                                            Authorization: `Bearer ${token}`
+                                        }
+                                    }
+                                );
+
+                                if (cartResponse.data) {
+                                    console.log('14. New cart created successfully:', cartResponse.data);
+                                    cartInitialized = true;
+
+                                    // Store new cart data
+                                    const cartData = cartResponse.data.data;
+                                    localStorage.setItem('cartId', cartData._id);
+                                    localStorage.setItem('cartDetails', JSON.stringify({
+                                        cartId: cartData._id,
+                                        governorate: cartData.governorate,
+                                        city: cartData.city,
+                                        street: cartData.street,
+                                        buildingNumber: cartData.buildingNumber,
+                                        apartmentNumber: cartData.apartmentNumber,
+                                        paymentType: cartData.paymentType,
+                                        Online: cartData.Online
+                                    }));
+                                }
+
+                            } catch (createError) {
+                                console.error('Error creating new cart:', createError.response || createError);
+                                toast.error('Failed to initialize cart. Please try again.');
+                                navigate('/error');
+                                return;
+                            }
+                        }
+
+                        // Navigate to products page for parent users
+                        if (cartInitialized) {
+                            console.log('15. Cart initialized successfully, proceeding with navigation');
+                            navigate('/products');
+                        } else {
+                            console.error('16. Cart initialization failed');
+                            toast.error('Failed to initialize cart. Please try again.');
+                            navigate('/error');
+                        }
+                    } else {
+                        // Handle unknown role
+                        toast.error('Invalid user role');
+                        navigate('/login');
+                    }
+
+                } catch (userError) {
+                    console.error('Error fetching user data:', userError.response || userError);
+                    console.error('Error details:', {
+                        status: userError.response?.status,
+                        data: userError.response?.data,
+                        message: userError.message
+                    });
+                    toast.error('Failed to load user data');
                 }
-            } else {
-                // Handle unknown role
-                toast.error('Invalid user role');
-                navigate('/login');
             }
 
         } catch (error) {

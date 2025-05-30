@@ -1,7 +1,6 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { FallingLines } from 'react-loader-spinner'
-import LoaderScreen from '../loaderScreen/loaderScreen'
+import { Oval } from 'react-loader-spinner'
 import { Link, useNavigate } from 'react-router-dom'
 import SimpleSlider from '../homeSlider/homeSlider'
 import CategoriesSlider from '../categoriesSlider/categoriesSlider'
@@ -36,7 +35,22 @@ export default function Vacciens() {
     };
 
     if (loading) {
-        return <LoaderScreen />;
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Oval
+                    height={80}
+                    width={80}
+                    color="#ec4899"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                    visible={true}
+                    ariaLabel='oval-loading'
+                    secondaryColor="#f9a8d4"
+                    strokeWidth={2}
+                    strokeWidthSecondary={2}
+                />
+            </div>
+        );
     }
 
     return (

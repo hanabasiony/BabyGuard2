@@ -158,39 +158,83 @@ export default function ProductDetails() {
 
                 {/* Tabs */}
                 <div className="mt-10">
-                    <div className="flex space-x-6 border-b border-gray-200 mb-4">
-                        <button className="pb-2 border-b-2 border-blue-500 text-blue-600 font-medium">Description</button>
-                        <button className="pb-2 text-gray-500">Features</button>
-                        <button className="pb-2 text-gray-500">Reviews</button>
-                        <button className="pb-2 text-gray-500">Related Products</button>
-                    </div>
+                  
 
-                    <p className="text-gray-700 mb-6">
-                        {product.description}
-                    </p>
+                    {/* Description & Reviews Section */}
+                    <div className="mt-10 space-y-8">
+                        {/* Description */}
+                        <div className="bg-white rounded-xl p-6 shadow-sm">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Description</h3>
+                            <p className="text-gray-700 leading-relaxed">
+                                {product.description}
+                            </p>
+                        </div>
 
-                    {/* Features & Reviews */}
-                    <div className="grid md:grid-cols-2 gap-10">
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2">Features</h3>
-                            <ul className="list-disc list-inside text-gray-700 space-y-1">
+                        {/* Features */}
+                        <div className="bg-white rounded-xl p-6 shadow-sm">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Features</h3>
+                            <ul className="list-disc list-inside text-gray-700 space-y-2">
                                 {product.features?.map((feature, index) => (
-                                    <li key={index}>{feature}</li>
+                                    <li key={index} className="flex items-center">
+                                        <span className="w-2 h-2 bg-pink-500 rounded-full mr-2"></span>
+                                        {feature}
+                                    </li>
                                 ))}
                             </ul>
                         </div>
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2">Product Details</h3>
-                            <ul className="space-y-2 text-gray-700">
-                                <li><span className="font-medium">Required Age:</span> {product.requiredAge}</li>
-                                <li><span className="font-medium">Available Quantity:</span> {product.quantity}</li>
-                                <li><span className="font-medium">Rating:</span> {product.rating || 0}</li>
+
+                        {/* Product Details */}
+                        <div className="bg-white rounded-xl p-6 shadow-sm">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Product Details</h3>
+                            <ul className="space-y-3 text-gray-700">
+                                <li className="flex items-center">
+                                    <span className="font-medium w-32">Required Age:</span>
+                                    <span>{product.requiredAge}</span>
+                                </li>
+                                <li className="flex items-center">
+                                    <span className="font-medium w-32">Available Quantity:</span>
+                                    <span>{product.quantity}</span>
+                                </li>
+                                <li className="flex items-center">
+                                    <span className="font-medium w-32">Rating:</span>
+                                    <div className="flex items-center">
+                                        {renderStars(product.rating || 0)}
+                                        <span className="ml-2 text-gray-600">({product.rating || 0})</span>
+                                    </div>
+                                </li>
                             </ul>
+                        </div>
+
+                        {/* Reviews */}
+                        <div className="bg-white rounded-xl p-6 shadow-sm">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Customer Reviews</h3>
+                            <div className="space-y-6">
+                                {product.reviews.map((review) => (
+                                    <div key={review._id} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex">
+                                                    {renderStars(review.rating)}
+                                                </div>
+                                                <span className="font-medium text-gray-900">{review.user.name}</span>
+                                            </div>
+                                            <span className="text-sm text-gray-500">
+                                                {new Date(review.createdAt).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                })}
+                                            </span>
+                                        </div>
+                                        <p className="text-gray-700 mt-2">{review.message}</p>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
                     {/* Related Products */}
-                    <div className="mt-10">
+                    {/* <div className="mt-10">
                         <h3 className="text-lg font-semibold mb-4">Related Products</h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {products?.filter(p => p._id !== product._id).slice(0, 4).map(relatedProduct => (
@@ -200,7 +244,7 @@ export default function ProductDetails() {
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

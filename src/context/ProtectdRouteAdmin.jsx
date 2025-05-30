@@ -10,7 +10,7 @@ export default function ProtectedRouteAdmin({children}) {
     }
 
     return (
-        <>a
+        <>
             {children}
         </>
     )

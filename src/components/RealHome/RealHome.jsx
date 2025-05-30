@@ -8,7 +8,7 @@ import img8 from "../../assets/images/IMG_3222.JPG"
 import img9 from "../../assets/images/IMG_3226.JPG"
 import img10 from "../../assets/images/IMG_3219.JPG"
 import img11 from "../../assets/images/IMG_3218.JPG"
-
+import AboutUs from "../AboutUs/AboutUs"
 
 export default function Home() {
     return (
@@ -219,7 +219,8 @@ export default function Home() {
           </div>
         </section>
   
-       
+       <AboutUs/>
       </div>
+      
     )
   }

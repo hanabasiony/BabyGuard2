@@ -15,23 +15,23 @@ const Cart = () => {
     const [pendingCartProducts, setPendingCartProducts] = useState(
         JSON.parse(localStorage.getItem('productQuantitiesOfPendingCart') || '[]')
     );
+    const [userData, setUserData] = useState(null);
 
     const { handleUpdateQuantity, loadingProducts, productQuantities, handleDeleteProduct, resetCart } = useContext(CartContext);
     const [loadingPayment, setLoadingPayment] = useState(true);
 
-    let userDataParsed = null;
-    try {
-        const userData = localStorage.getItem('userData');
-        console.log('Raw userData from localStorage:', userData);
-        if (userData) {
-            userDataParsed = JSON.parse(userData);
-            console.log('Parsed userData:', userDataParsed);
-        } else {
-            console.log('No userData found in localStorage');
+    // Get user data from localStorage
+    useEffect(() => {
+        const storedUserData = localStorage.getItem('userData');
+        if (storedUserData) {
+            try {
+                const parsedUserData = JSON.parse(storedUserData);
+                setUserData(parsedUserData);
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+            }
         }
-    } catch (error) {
-        console.error('Error parsing userData:', error);
-    }
+    }, []);
 
     const updateCartStatus = async () => {
         try {
@@ -159,6 +159,9 @@ const Cart = () => {
     if (loading) {
         return <LoaderScreen />;
     }
+    // console.log(userData);
+    // console.log(userData.fName);
+    
 
     if (!cartData || !cartData.products || cartData.products.length === 0) {
         return (
@@ -268,12 +271,30 @@ const Cart = () => {
             <div className="bg-white rounded-2xl shadow p-6 mb-6">
                 <h2 className="text-xl font-semibold text-gray-700 mb-4">Delivery Address</h2>
                 <div className="mb-4">
-                    {userDataParsed ? (
-                        <p className="text-gray-600">
-                            <span className='font-semibold'>Governorate: {userDataParsed.governorate || 'Not set'}</span><br />
-                            <span className='font-semibold'>City: {userDataParsed.city || 'Not set'}</span><br />
-                            <span className='font-semibold'>Street: {userDataParsed?.street || 'Not set'}, Building: {userDataParsed.buildingNumber || 'Not set'}, Apartment: {userDataParsed.apartmentNumber || 'Not set'}</span>
-                        </p>
+                    {userData ? (
+                        <div className="space-y-2">
+                            <p className="text-gray-600">
+                                <span className="font-semibold">Name:</span> {userData.user.fName} {userData.user.lName}
+                            </p>
+                            <p className="text-gray-600">
+                                <span className="font-semibold">Phone:</span> {userData.user.phoneNumber}
+                            </p>
+                            <p className="text-gray-600">
+                                <span className="font-semibold">Governorate:</span> {userData.user.governorate}
+                            </p>
+                            <p className="text-gray-600">
+                                <span className="font-semibold">City:</span> {userData.user.city}
+                            </p>
+                            <p className="text-gray-600">
+                                <span className="font-semibold">Street:</span> {userData.user.street}
+                            </p>
+                            <p className="text-gray-600">
+                                <span className="font-semibold">Building:</span> {userData.user.buildingNumber}
+                            </p>
+                            <p className="text-gray-600">
+                                <span className="font-semibold">Apartment:</span> {userData.user.apartmentNumber}
+                            </p>
+                        </div>
                     ) : (
                         <p className="text-red-500">Please update your address in your profile</p>
                     )}

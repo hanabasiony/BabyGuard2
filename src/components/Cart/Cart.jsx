@@ -37,15 +37,31 @@ const Cart = () => {
         try {
             const token = localStorage.getItem('token');
             const cartId = localStorage.getItem('cartId');
+            const userDataString = localStorage.getItem('userData');
+            const userData = userDataString ? JSON.parse(userDataString) : null;
 
             if (!cartId) {
                 console.error('No cart ID found');
-                return;
+                return false;
+            }
+
+            if (!userData) {
+                console.error('No user data found');
+                return false;
             }
 
             const response = await axios.patch(
                 `http://localhost:8000/api/carts/status/${cartId}`,
-                { status: 'waiting for payment' },
+                { 
+                    status: 'waiting for payment',
+                    address: {
+                        governorate: userData.user.governorate,
+                        city: userData.user.city,
+                        street: userData.user.street,
+                        buildingNumber: userData.user.buildingNumber,
+                        apartmentNumber: userData.user.apartmentNumber
+                    }
+                },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -399,12 +415,12 @@ const Cart = () => {
                         />
                         <span className="text-gray-700">I confirm this is my correct delivery address</span>
                     </label>
-                    <button
+                    {/* <button
                         onClick={() => navigate('/profile')}
                         className="text-pink-500 hover:text-pink-600 font-medium"
                     >
-                        Change Address
-                    </button>
+                        Change Addr
+                    </button> */}
                 </div>
             </div>
 

@@ -81,7 +81,7 @@ const router = createBrowserRouter([
       { path: 'PassSend/VerifyResetCode', element: <VerifyResetCode /> },
       { path: 'PassSend/VerifyResetCode/PassReset', element: <PassReset /> },
       { path: 'vacciens', element: <Vacciens /> },
-      { path: 'VaccineReservation/:id', element: <VaccinationForm /> },
+      { path: '/VaccineReservation/:vaccineId', element: <VaccinationForm /> },
       { path: 'payment', element: <PaymentPage /> },
       { path: 'otp', element: <OTPInput /> },
       // { path: 'Admin', element: <AdminDashboardLayout /> },

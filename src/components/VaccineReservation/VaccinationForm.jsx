@@ -5,42 +5,30 @@ import * as Yup from "yup"
 import axios from "axios"
 import { Calendar } from "./Calendar"
 import nurseimg from "../../assets/images/a nurse.jpg"
+import { useParams } from "react-router-dom"
+import toast from 'react-hot-toast';
 
 // Form validation schema using Yup
 const VaccinationSchema = Yup.object().shape({
   babyName: Yup.string().required("Baby's name is required"),
-  dateOfBirth: Yup.date().max(new Date(), "Date of birth cannot be in the future").required("Date of birth is required"),
-  vaccinationType: Yup.string().required("Please select a vaccination type"),
-  governorate: Yup.string().required("Governorate is required"),
-  city: Yup.string().required("City is required"),
-  street: Yup.string().required("Street is required"),
-  buildingNumber: Yup.string().required("Building number is required"),
-  apartmentNumber: Yup.string().required("Apartment number is required"),
-  phoneNumber: Yup.string().matches(/^[0-9()+\-\s]+$/, "Invalid phone number format").required("Phone number is required"),
-  notes: Yup.string(),
   appointmentDate: Yup.string().required("Please select an appointment date"),
 })
 
 export default function VaccinationForm() {
-  // State to control calendar visibility
+  const { vaccineId } = useParams(); // Get vaccine ID from URL
   const [showCalendar, setShowCalendar] = useState(false)
-
-  // State to track form submission status
   const [submissionStatus, setSubmissionStatus] = useState({
     isSubmitting: false,
     success: false,
     error: null,
   })
-
-  // State to store children fetched from API
   const [children, setChildren] = useState([])
   const [loadingChildren, setLoadingChildren] = useState(true)
   const [childrenError, setChildrenError] = useState(null)
-
-  // State to store vaccines fetched from API
-  const [vaccines, setVaccines] = useState([])
-  const [loadingVaccines, setLoadingVaccines] = useState(true)
-  const [vaccinesError, setVaccinesError] = useState(null)
+  const [selectedVaccine, setSelectedVaccine] = useState(null)
+  const [userData, setUserData] = useState(null);
+  const [selectedChildBirthDate, setSelectedChildBirthDate] = useState('');
+  const [showConfirmAddressError, setShowConfirmAddressError] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -54,9 +42,8 @@ export default function VaccinationForm() {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       .then((response) => {
-        setChildren(
-          Array.isArray(response.data.data) ? response.data.data : []
-        );
+        const childrenData = Array.isArray(response.data.data) ? response.data.data : [];
+        setChildren(childrenData);
         console.log("Children API response:", response.data);
         setLoadingChildren(false);
       })
@@ -66,63 +53,63 @@ export default function VaccinationForm() {
       });
   }, []);
 
+  useEffect(() => {
+    // Fetch selected vaccine details
+    if (vaccineId) {
+      axios.get(`http://localhost:8000/api/vaccines/${vaccineId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+      })
+        .then((response) => {
+          setSelectedVaccine(response.data.data);
+        })
+        .catch((error) => {
+          console.error("Failed to load vaccine details:", error);
+        });
+    }
+  }, [vaccineId]);
 
   useEffect(() => {
-    // Fetch vaccines from API
-    axios.get("http://localhost:8000/api/vaccines", {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    })
-      .then((response) => {
-        setVaccines(Array.isArray(response.data) ? response.data : []);
-        setLoadingVaccines(false);
-      })
-      .catch((error) => {
-        setVaccinesError("Failed to load vaccines list");
-        setLoadingVaccines(false);
-      });
+    // Get user data from local storage
+    const storedUserData = localStorage.getItem('userData');
+    if (storedUserData) {
+      try {
+        const parsedUserData = JSON.parse(storedUserData);
+        setUserData(parsedUserData.user); // Assuming user data is nested under 'user' key
+      } catch (error) {
+        console.error('Error parsing user data from local storage:', error);
+        setUserData(null);
+      }
+    }
   }, []);
 
   // Initial form values
   const initialValues = {
     babyName: "",
-    dateOfBirth: "",
-    vaccinationType: "",
-    governorate: "",
-    city: "",
-    street: "",
-    buildingNumber: "",
-    apartmentNumber: "",
-    phoneNumber: "",
-    notes: "",
     appointmentDate: null,
+    confirmAddress: false,
   }
 
-  /**
-   * Handle form submission
-   * @param {Object} values - Form values
-   * @param {Object} formikBag - Formik helpers
-   */
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     setSubmissionStatus({ isSubmitting: true, success: false, error: null });
     const requestBody = {
       childId: values.babyName,
-      vaccineId: values.vaccinationType,
+      vaccineId: vaccineId, // Use the vaccine ID from URL params
       vaccinationDate: values.appointmentDate,
-      phoneNumber: values.phoneNumber,
-      governorate: values.governorate,
-      city: values.city,
-      street: values.street,
-      buildingNumber: values.buildingNumber,
-      apartmentNumber: values.apartmentNumber,
-      notes: values.notes,
+      phoneNumber: userData?.phoneNumber, // Include phone number from userData
+      governorate: userData?.governorate, // Include governorate from userData
+      city: userData?.city, // Include city from userData
+      street: userData?.street, // Include street from userData
+      buildingNumber: userData?.buildingNumber, // Include buildingNumber from userData
+      apartmentNumber: userData?.apartmentNumber, // Include apartmentNumber from userData
     };
     axios.post("http://localhost:8000/api/vaccine-requests", requestBody, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then((response) => {
         setSubmissionStatus({ isSubmitting: false, success: true, error: null });
-        alert("Appointment reserved successfully!");
+        toast.success(response.data.message || "Appointment reserved successfully!");
         resetForm();
+        console.log(response);
       })
       .catch((error) => {
         setSubmissionStatus({
@@ -130,7 +117,8 @@ export default function VaccinationForm() {
           success: false,
           error: error.response?.data?.message || error.message,
         });
-        alert(`Failed to reserve appointment: ${error.response?.data?.message || error.message}`);
+        console.log(error);
+        toast.error(`Failed to reserve appointment: ${error.response?.data?.message || error.message}`);
       })
       .finally(() => {
         setSubmitting(false);
@@ -146,6 +134,14 @@ export default function VaccinationForm() {
             <div className="mb-6 md:mb-0 md:mr-8 max-w-md">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Book a Vaccination for Your Baby</h1>
               <p className="text-lg text-gray-600">Schedule a home nurse visit or clinic appointment with ease.</p>
+              {selectedVaccine && (
+                <div className="mt-4 p-4 bg-pink-50 rounded-lg">
+                  <h3 className="font-semibold text-pink-700">Selected Vaccine:</h3>
+                  <p className="text-gray-700">{selectedVaccine.name}</p>
+                  <p className="text-gray-600">Price: {selectedVaccine.price} EGP</p>
+                  <p className="text-gray-600">Required Age: {selectedVaccine.requiredAge} months</p>
+                </div>
+              )}
             </div>
             <div className="flex-shrink-0 hidden md:block">
               <div className="relative">
@@ -161,7 +157,21 @@ export default function VaccinationForm() {
       </div>
 
       {/* Form Section */}
-      <Formik initialValues={initialValues} validationSchema={VaccinationSchema} onSubmit={handleSubmit}>
+      <Formik 
+        initialValues={initialValues} 
+        validationSchema={VaccinationSchema} 
+        onSubmit={async (values, actions) => {
+          if (!values.confirmAddress) {
+            setShowConfirmAddressError(true);
+            actions.setSubmitting(false);
+            return;
+          }
+
+          setShowConfirmAddressError(false);
+          await handleSubmit(values, actions);
+        }}
+        enableReinitialize
+      >
         {({ values, errors, touched, setFieldValue, isSubmitting }) => (
           <Form className="px-6 pb-8 md:px-10 md:pb-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -179,9 +189,19 @@ export default function VaccinationForm() {
                     as="select"
                     id="babyName"
                     name="babyName"
-                    className={`w-full px-4 py-3 border ${
-                      errors.babyName && touched.babyName ? "border-red-500" : "border-gray-300"
-                    } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white`}
+                    className={`w-full px-4 py-3 border ${errors.babyName && touched.babyName ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white`}
+                    onChange={(e) => {
+                      setFieldValue('babyName', e.target.value);
+                      const selectedChild = children.find(child => (child._id || child.id) === e.target.value);
+                      if (selectedChild && selectedChild.birthDate) {
+                        // Format the date to YYYY-MM-DD for the input type="date"
+                        const date = new Date(selectedChild.birthDate);
+                        const formattedDate = date.toISOString().split('T')[0];
+                        setSelectedChildBirthDate(formattedDate);
+                      } else {
+                        setSelectedChildBirthDate('');
+                      }
+                    }}
                   >
                     <option value="" disabled>Select your baby</option>
                     {Array.isArray(children) && children.map((child) => (
@@ -201,84 +221,11 @@ export default function VaccinationForm() {
                   type="date"
                   id="dateOfBirth"
                   name="dateOfBirth"
-                  className={`w-full px-4 py-3 border ${
-                    errors.dateOfBirth && touched.dateOfBirth ? "border-red-500" : "border-gray-300"
-                  } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500`}
+                  value={selectedChildBirthDate} // Use the state variable for value
+                  readOnly // Make the field read-only
+                  className={`w-full px-4 py-3 border ${errors.dateOfBirth && touched.dateOfBirth ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 bg-gray-100 cursor-not-allowed`}
                 />
-                <ErrorMessage name="dateOfBirth" component="div" className="text-red-500 mt-1 text-sm" />
-              </div>
-
-              {/* Vaccination Type Field */}
-              <div>
-                <label htmlFor="vaccinationType" className="block text-lg font-medium text-gray-900 mb-2">
-                  Vaccination Type
-                </label>
-                <Field
-                  as="select"
-                  id="vaccinationType"
-                  name="vaccinationType"
-                  className={`w-full px-4 py-3 border ${
-                    errors.vaccinationType && touched.vaccinationType ? "border-red-500" : "border-gray-300"
-                  } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 appearance-none bg-white`}
-                >
-                  <option value="" disabled>Select a vaccine type</option>
-                  {Array.isArray(vaccines) && vaccines.map((vaccine) => (
-                    <option key={vaccine._id || vaccine.id} value={vaccine._id || vaccine.id}>{vaccine.name || vaccine.title}</option>
-                  ))}
-                </Field>
-                <ErrorMessage name="vaccinationType" component="div" className="text-red-500 mt-1 text-sm" />
-              </div>
-
-              {/* Governorate */}
-              <div>
-                <label htmlFor="governorate" className="block text-lg font-medium text-gray-900 mb-2">Governorate</label>
-                <Field type="text" id="governorate" name="governorate" className={`w-full px-4 py-3 border ${errors.governorate && touched.governorate ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500`} />
-                <ErrorMessage name="governorate" component="div" className="text-red-500 mt-1 text-sm" />
-              </div>
-
-              {/* City */}
-              <div>
-                <label htmlFor="city" className="block text-lg font-medium text-gray-900 mb-2">City</label>
-                <Field type="text" id="city" name="city" className={`w-full px-4 py-3 border ${errors.city && touched.city ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500`} />
-                <ErrorMessage name="city" component="div" className="text-red-500 mt-1 text-sm" />
-              </div>
-
-              {/* Street */}
-              <div>
-                <label htmlFor="street" className="block text-lg font-medium text-gray-900 mb-2">Street</label>
-                <Field type="text" id="street" name="street" className={`w-full px-4 py-3 border ${errors.street && touched.street ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500`} />
-                <ErrorMessage name="street" component="div" className="text-red-500 mt-1 text-sm" />
-              </div>
-
-              {/* Building Number */}
-              <div>
-                <label htmlFor="buildingNumber" className="block text-lg font-medium text-gray-900 mb-2">Building Number</label>
-                <Field type="text" id="buildingNumber" name="buildingNumber" className={`w-full px-4 py-3 border ${errors.buildingNumber && touched.buildingNumber ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500`} />
-                <ErrorMessage name="buildingNumber" component="div" className="text-red-500 mt-1 text-sm" />
-              </div>
-
-              {/* Apartment Number */}
-              <div>
-                <label htmlFor="apartmentNumber" className="block text-lg font-medium text-gray-900 mb-2">Apartment Number</label>
-                <Field type="text" id="apartmentNumber" name="apartmentNumber" className={`w-full px-4 py-3 border ${errors.apartmentNumber && touched.apartmentNumber ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500`} />
-                <ErrorMessage name="apartmentNumber" component="div" className="text-red-500 mt-1 text-sm" />
-              </div>
-
-              {/* Phone Number Field */}
-              <div>
-                <label htmlFor="phoneNumber" className="block text-lg font-medium text-gray-900 mb-2">
-                  Phone Number
-                </label>
-                <Field
-                  type="tel"
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  placeholder="+20 10X XXX XXXX"
-                  className={`w-full px-4 py-3 border ${
-                    errors.phoneNumber && touched.phoneNumber ? "border-red-500" : "border-gray-300"
-                  } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500`}
-                />
-                <ErrorMessage name="phoneNumber" component="div" className="text-red-500 mt-1 text-sm" />
+                {/* Removed ErrorMessage for dateOfBirth as it's now read-only */}
               </div>
 
               {/* Appointment Date Field */}
@@ -314,22 +261,41 @@ export default function VaccinationForm() {
                   <div className="text-red-500 mt-1 text-sm">Please select an appointment date</div>
                 )}
               </div>
-
-              {/* Notes Field */}
-              <div>
-                <label htmlFor="notes" className="block text-lg font-medium text-gray-900 mb-2">
-                  Notes (Optional)
-                </label>
-                <Field
-                  as="textarea"
-                  id="notes"
-                  name="notes"
-                  placeholder="Any special requirements or information"
-                  rows="4"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
-                />
-              </div>
             </div>
+
+            {/* Delivery Address and Phone Number Section */}
+            {userData && (
+              <div className="mt-8 p-6 bg-white rounded-lg shadow-sm w-full">
+                <h2 className="text-xl font-bold text-gray-800 mb-4">Delivery Information</h2>
+                <div className="space-y-3 text-gray-700">
+                  <p><strong>Governorate:</strong> {userData.governorate || 'Not set'}</p>
+                  <p><strong>City:</strong> {userData.city || 'Not set'}</p>
+                  <p><strong>Street:</strong> {userData.street || 'Not set'}, <strong>Building:</strong> {userData.buildingNumber || 'Not set'}, <strong>Apartment:</strong> {userData.apartmentNumber || 'Not set'}</p>
+                  <p><strong>Phone Number:</strong> {userData.phoneNumber || 'Not set'}</p>
+                </div>
+                <div className="flex items-center mt-4">
+                  <input
+                    type="checkbox"
+                    id="confirmAddress"
+                    name="confirmAddress"
+                    checked={values.confirmAddress}
+                    onChange={(e) => {
+                      setFieldValue('confirmAddress', e.target.checked);
+                      if (e.target.checked) {
+                        setShowConfirmAddressError(false);
+                      }
+                    }}
+                    className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="confirmAddress" className="ml-2 block text-sm text-gray-900">
+                    I confirm this is my correct delivery address and phone number.
+                  </label>
+                  {showConfirmAddressError && (
+                    <span className="text-red-500 text-sm ml-2 p-1">*delivery information must be confirmed*</span>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Submit Button */}
             <div className="mt-8">
@@ -351,6 +317,7 @@ export default function VaccinationForm() {
           </Form>
         )}
       </Formik>
+
     </div>
   )
 }

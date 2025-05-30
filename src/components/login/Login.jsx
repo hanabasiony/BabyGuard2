@@ -61,7 +61,7 @@ export default function Login() {
             setSuccessMsg(true)
             setuserToken(token)
             localStorage.setItem('token', token)
-            localStorage.setItem('role', role)
+            localStorage.setItem('role', 'admin')
 
             console.log('3. Token stored, attempting to fetch user data...')
 

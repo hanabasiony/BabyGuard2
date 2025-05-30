@@ -34,7 +34,7 @@ import CartContextProvider from './context/CartContext'
 import RealHome from './components/RealHome/RealHome'
 import { Toaster } from 'react-hot-toast'
 import Cart from './components/Cart/Cart'
-import AdminPannel from './components/adminPanel/adminPannel'
+// import AdminPannel from './components/adminPanel/adminPannel'
 import ProtectedRouteAdmin from './context/ProtectdRouteAdmin'
 import Settings from './components/Settings/Settings'
 import Review from './components/Review/Review'
@@ -44,7 +44,15 @@ import MyOrders from './components/MyOrders/MyOrders'
 import { UserDataProvider } from './components/GetUserData/GetUserData'
 import VaccinationForm from './components/VaccineReservation/VaccinationForm'
 import OTPInput from './components/PaymentPage/otp'
-// import AdminDashboardLayout from './components/Admin/AdminDashboardLayout'
+import Dashboard from './components/Admin/Dashboard'
+import ManageUsers from './components/Admin/ManageUsers'
+import ManageNurses from './components/Admin/ManageNurses'
+import Vaccinations from './components/Admin/Vaccinations'
+import Appointments from './components/Admin/Appointments'
+import ProductStore from './components/Admin/ProductStore'
+import TipsArticles from './components/Admin/TipsArticles'
+import Complaints from './components/Admin/Complaints'
+import AdminDashboardLayout from './components/Admin/AdminDashboardLayout'
 
 
 
@@ -141,10 +149,9 @@ const router = createBrowserRouter([
   },
   {
     path: 'admin',
-    element: <ProtectedRouteAdmin><AdminPannel /></ProtectedRouteAdmin>,
+    element: <ProtectedRouteAdmin><AdminDashboardLayout /></ProtectedRouteAdmin>,
     children: [
-      { path: '', element: <Dashboard /> },
-      { path: 'dashboard', element: <Dashboard /> },
+      { path: '', element: <Dashboard /> },    
       { path: 'manage-users', element: <ManageUsers /> },
       { path: 'manage-nurses', element: <ManageNurses /> },
       { path: 'vaccinations', element: <Vaccinations /> },

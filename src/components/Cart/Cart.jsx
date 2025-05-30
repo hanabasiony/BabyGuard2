@@ -38,11 +38,14 @@ const Cart = () => {
             const token = localStorage.getItem('token');
             const cartId = localStorage.getItem('cartId');
 
-
+            if (!cartId) {
+                console.error('No cart ID found');
+                return;
+            }
 
             const response = await axios.patch(
                 `http://localhost:8000/api/carts/status/${cartId}`,
-                {}, // empty body object
+                { status: 'waiting for payment' },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -50,12 +53,18 @@ const Cart = () => {
                 }
             );
 
-            console.log(response.data);
-            console.log(response.data.data);
-            toast.success('Cart status updated');
+            if (response.data && response.data.data) {
+                console.log('Cart status updated successfully:', response.data.data);
+                toast.success('Cart status updated');
+                return true;
+            } else {
+                console.error('Invalid response format:', response.data);
+                return false;
+            }
         } catch (error) {
-            console.log(error);
+            console.error('Error updating cart status:', error.response?.data || error.message);
             toast.error('Failed to update cart status');
+            return false;
         }
     };
 
@@ -79,7 +88,7 @@ const Cart = () => {
             }
         } catch (error) {
             console.error('Error fetching cart:', error);
-            toast.error('Failed to fetch cart data');
+            // toast.error('Failed to fetch cart data');
             setCartData(null);
         } finally {
             setLoading(false);
@@ -153,6 +162,87 @@ const Cart = () => {
         } catch (error) {
             console.error('Error deleting product:', error);
             toast.error('Failed to remove product from cart');
+        }
+    };
+
+    const handleOrderPlacement = async () => {
+        if (!isAddressConfirmed) {
+            toast.error('Please confirm your delivery address');
+            return;
+        }
+
+        try {
+            setLoadingPayment(true);
+            // Save cart data to localStorage before navigating
+            localStorage.setItem('cartData', JSON.stringify(cartData));
+            
+            // Update cart status
+            const statusUpdated = await updateCartStatus();
+            if (!statusUpdated) {
+                throw new Error('Failed to update cart status');
+            }
+
+            // Clear old cart data
+            localStorage.removeItem('productQuantitiesOfPendingCart');
+            localStorage.removeItem('cartId');
+            localStorage.removeItem('cartDetails');
+            setPendingCartProducts([]);
+            
+            // Reset cart context
+            resetCart();
+
+            // Initialize new cart
+            const token = localStorage.getItem('token');
+            const userDataString = localStorage.getItem('userData');
+            const userData = userDataString ? JSON.parse(userDataString) : null;
+
+            if (userData) {
+                const newCartResponse = await axios.post(
+                    'http://localhost:8000/api/carts',
+                    {
+                        cart: {
+                            governorate: userData.user.governorate ,
+                            city: userData.user.city,
+                            street: userData.user.street,
+                            buildingNumber: userData.user.buildingNumber,
+                            apartmentNumber: userData.user.apartmentNumber,
+                            paymentType: "Cash"
+                        }
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                // Store new cart data
+                if (newCartResponse.data.data) {
+                    const newCartData = newCartResponse.data.data;
+                    localStorage.setItem('cartId', newCartData._id);
+                    localStorage.setItem('cartDetails', JSON.stringify({
+                        governorate: newCartData.governorate,
+                        city: newCartData.city,
+                        street: newCartData.street,
+                        buildingNumber: newCartData.buildingNumber,
+                        apartmentNumber: newCartData.apartmentNumber,
+                        paymentType: newCartData.paymentType,
+                        Online: newCartData.Online
+                    }));
+
+                    // Initialize empty product quantities
+                    localStorage.setItem('productQuantities', JSON.stringify({}));
+                    localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify([]));
+                }
+            }
+
+            // Navigate to order confirmation
+            navigate('/order-confirmation');
+        } catch (error) {
+            console.error('Error placing order:', error);
+            toast.error('Failed to place order');
+        } finally {
+            setLoadingPayment(false);
         }
     };
 
@@ -321,29 +411,9 @@ const Cart = () => {
             {/* Payment Options */}
             <div className="mt-6 text-center flex flex-col gap-4 justify-between w-[60%] mx-auto">
                 <button
-                    onClick={async () => {
-                        if (!isAddressConfirmed) {
-                            toast.error('Please confirm your delivery address');
-                            return;
-                        }
-                        try {
-                            // Save cart data to localStorage before navigating
-                            localStorage.setItem('cartData', JSON.stringify(cartData));
-                            await updateCartStatus();
-                            // Clear pending cart when order is placed
-                            localStorage.removeItem('productQuantitiesOfPendingCart');
-                            setPendingCartProducts([]);
-                            // Reset cart after successful order placement
-                            resetCart();
-                            navigate('/order-confirmation');
-                        } catch (error) {
-                            console.error('Error placing order:', error);
-                            toast.error('Failed to place order');
-                        } finally {
-                            setLoadingPayment(false);
-                        }
-                    }}
-                    className="bg-white-500 text-pink-500 px-6 py-3 rounded-full shadow hover:text-white hover:bg-pink-500 cursor-pointer text-lg font-semibold transition-colors duration-200" >
+                    onClick={handleOrderPlacement}
+                    className="bg-white-500 text-pink-500 px-6 py-3 rounded-full shadow hover:text-white hover:bg-pink-500 cursor-pointer text-lg font-semibold transition-colors duration-200"
+                >
                     Place Order (Cash)
                 </button>
 

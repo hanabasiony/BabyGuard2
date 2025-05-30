@@ -71,11 +71,11 @@ export default function CartContextProvider({ children }) {
                 'http://localhost:8000/api/carts',
                 {
                     cart: {
-                        governorate: userData.governorate || "Cairo",
-                        city: userData.city || "1st Settlement",
-                        street: userData.street || "Main Street",
-                        buildingNumber: userData.buildingNumber || 123,
-                        apartmentNumber: userData.apartmentNumber || 45,
+                        governorate: userData.user.governorate || "Cairome",
+                        city: userData.user.city || "1st Settlementme",
+                        street: userData.user.street || "Main Streetme",
+                        buildingNumber: userData.user.buildingNumber || 123123,
+                        apartmentNumber: userData.user.apartmentNumber || 4545,
                         paymentType: "Cash"
                     }
                 },

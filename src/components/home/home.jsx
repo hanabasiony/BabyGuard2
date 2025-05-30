@@ -30,37 +30,42 @@ export default function Home() {
                 const token = localStorage.getItem('token');
 
                 // Fetch pending cart data
-                const cartResponse = await axios.get('http://localhost:8000/api/carts/pending', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-
-                // If we have pending cart products, use them
-                if (cartResponse.data.data.products && cartResponse.data.data.products.length > 0) {
-                    const pendingProducts = cartResponse.data.data.products.map(product => ({
-                        id: product.productId,
-                        quantity: product.quantity
-                    }));
-                    
-                    setProductsId(pendingProducts);
-                    console.log('Set pending products:', pendingProducts);
-
-                    // Initialize cart quantities in localStorage
-                    const initialQuantities = {};
-                    pendingProducts.forEach(product => {
-                        initialQuantities[product.id] = product.quantity;
+                try {
+                    const cartResponse = await axios.get('http://localhost:8000/api/carts/pending', {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
                     });
-                    localStorage.setItem('productQuantities', JSON.stringify(initialQuantities));
-                    setLocalProductQuantities(initialQuantities);
-                } else {
-                    // Use existing quantities if no pending cart
-                    const existingQuantities = JSON.parse(localStorage.getItem('productQuantities') || '{}');
-                    setLocalProductQuantities(existingQuantities);
-                    setProductsId(Object.entries(existingQuantities).map(([id, quantity]) => ({
-                        id,
-                        quantity
-                    })));
+
+                    // If we have pending cart products, use them
+                    if (cartResponse.data.data.products && cartResponse.data.data.products.length > 0) {
+                        const pendingProducts = cartResponse.data.data.products.map(product => ({
+                            id: product.productId,
+                            quantity: product.quantity
+                        }));
+                        
+                        setProductsId(pendingProducts);
+                        console.log('Set pending products:', pendingProducts);
+
+                        // Initialize cart quantities in localStorage
+                        const initialQuantities = {};
+                        pendingProducts.forEach(product => {
+                            initialQuantities[product.id] = product.quantity;
+                        });
+                        localStorage.setItem('productQuantities', JSON.stringify(initialQuantities));
+                        setLocalProductQuantities(initialQuantities);
+                    } else {
+                        // Initialize empty quantities if no pending cart
+                        setLocalProductQuantities({});
+                        setProductsId([]);
+                        localStorage.setItem('productQuantities', JSON.stringify({}));
+                    }
+                } catch (cartError) {
+                    console.log('No pending cart found, initializing empty cart');
+                    // Initialize empty quantities if no pending cart
+                    setLocalProductQuantities({});
+                    setProductsId([]);
+                    localStorage.setItem('productQuantities', JSON.stringify({}));
                 }
 
                 // Fetch all products

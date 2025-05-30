@@ -9,6 +9,7 @@ import Appointments from './Appointments';
 import ProductStore from './ProductStore';
 import TipsArticles from './TipsArticles';
 import Complaints from './Complaints';
+import AddProductPage from './AddProductPage';
 
 const AdminDashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -50,14 +51,15 @@ const AdminDashboardLayout = () => {
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
           <div className="container mx-auto px-4 py-6">
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/manage-users" element={<ManageUsers />} />
-              <Route path="/manage-nurses" element={<ManageNurses />} />
-              <Route path="/vaccinations" element={<Vaccinations />} />
-              <Route path="/appointments" element={<Appointments />} />
-              <Route path="/product-store" element={<ProductStore />} />
-              <Route path="/tips-articles" element={<TipsArticles />} />
-              <Route path="/complaints" element={<Complaints />} />
+              <Route index element={<Dashboard />} />
+              <Route path="manage-users" element={<ManageUsers />} />
+              <Route path="manage-nurses" element={<ManageNurses />} />
+              <Route path="vaccinations" element={<Vaccinations />} />
+              <Route path="appointments" element={<Appointments />} />
+              <Route path="product-store" element={<ProductStore />} />
+              <Route path="product-store/add" element={<AddProductPage />} />
+              <Route path="tips-articles" element={<TipsArticles />} />
+              <Route path="complaints" element={<Complaints />} />
             </Routes>
           </div>
         </main>

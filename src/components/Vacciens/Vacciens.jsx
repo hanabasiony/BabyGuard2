@@ -65,7 +65,10 @@ export default function Vacciens() {
                                 <p className='mt-2'>{vaccine.description}</p>
                                 <p className='mt-2 text-gray-600'>Required Age: {vaccine.requiredAge} months</p>
                                 <div className='w-full flex justify-center'>
-                                    <button onClick={()=> navigate('/reservationPage')} class="bg-pink-400 hover:bg-pink-500 text-white font-medium py-2 px-4 rounded-full cursor-pointer w-[50%] ">
+                                    <button 
+                                        onClick={() => navigate(`/VaccinationForm/${vaccine._id}`)} 
+                                        className="bg-pink-400 hover:bg-pink-500 text-white font-medium py-2 px-4 rounded-full cursor-pointer w-[50%]"
+                                    >
                                         Book now
                                     </button>
                                 </div>

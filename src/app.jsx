@@ -127,13 +127,19 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: 'adminPannel', 
-    element: <ProtectedRouteAdmin>
-      <AdminPannel />
-    </ProtectedRouteAdmin>,
+    path: 'admin',
+    element: <ProtectedRouteAdmin><AdminPannel /></ProtectedRouteAdmin>,
     children: [
-      
-    ]
+      { path: '', element: <Dashboard /> },
+      { path: 'dashboard', element: <Dashboard /> },
+      { path: 'manage-users', element: <ManageUsers /> },
+      { path: 'manage-nurses', element: <ManageNurses /> },
+      { path: 'vaccinations', element: <Vaccinations /> },
+      { path: 'appointments', element: <Appointments /> },
+      { path: 'product-store', element: <ProductStore /> },
+      { path: 'tips-articles', element: <TipsArticles /> },
+      { path: 'complaints', element: <Complaints /> },
+    ],
   },
 ]);
 

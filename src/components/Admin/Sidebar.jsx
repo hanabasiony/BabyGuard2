@@ -1,9 +1,14 @@
 import { Link, useLocation } from "react-router-dom"
 import { useState } from "react"
 
-export function Sidebar() {
+const Sidebar = () => {
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('role')
+  }
 
   const menuItems = [
     { 
@@ -126,10 +131,11 @@ export function Sidebar() {
         }`}
       >
         {/* Sidebar fe el 3ady 5als */}
-        <div className="h-full flex flex-col">
-          <div className="p-4 flex items-center justify-between border-b lg:border-b-0">
-            <div className="flex items-center space-x-2">
+        <div className="h-full w-full flex flex-col">
+          <div className="p-4 flex w-full items-center justify-between border-b lg:border-b-0">
+            <div className="flex w-full items-center justify-between space-x-2">
               <h1 className="text-xl font-semibold text-pink-500">Baby Guard</h1>
+              <Link onClick={handleLogout} to="/login"><i className="fa-solid text-2xl text-pink-500 fa-right-from-bracket"></i></Link>
             </div>
             <button
               className="lg:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-pink-500"
@@ -166,7 +172,7 @@ export function Sidebar() {
             </ul>
           </nav>
 
-          <div className="border-t bg-white">
+          {/* <div className="border-t bg-white">
             <Link
               to="/logout"
               className="flex items-center px-4 py-3 text-gray-600 hover:bg-pink-50 hover:text-pink-500 transition-colors duration-200"
@@ -188,7 +194,7 @@ export function Sidebar() {
               </svg>
               <span className="text-sm font-medium">Logout</span>
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

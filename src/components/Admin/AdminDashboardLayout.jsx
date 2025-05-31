@@ -15,7 +15,7 @@ const AdminDashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-y-hidden">
       {/* Mobile menu button */}
       {/* <button
         className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-pink-500"
@@ -47,7 +47,7 @@ const AdminDashboardLayout = () => {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 ms-10 lg:ms-0 flex flex-col overflow-hidden">
+      <div className="flex-1 ms-6 lg:ms-0 flex flex-col overflow-hidden overflow-y-hidden">
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
           <div className="container mx-auto px-4 py-6">
             <Routes>

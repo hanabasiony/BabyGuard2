@@ -121,28 +121,16 @@ export default function Complaints() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="flex justify-center items-center h-full">
         <div className="text-gray-500">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800">Complaints & Suggestions</h2>
-        {/* <button
-          onClick={handleExport}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          Export CSV
-        </button> */}
-      </div>
-
-      <div className="mb-6">
+    <div className="h-full flex flex-col">
+      <div className="flex-none p-4 border-b">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Complaints & Suggestions</h2>
         <input
           type="text"
           placeholder="Search complaints..."
@@ -150,70 +138,58 @@ export default function Complaints() {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
+        <div className="flex gap-2 mt-4">
+          {['All', 'Complaint', 'Suggestion', 'Question'].map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === tab
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="flex gap-2 mb-6">
-        {['All', 'Complaint', 'Suggestion', 'Question'].map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              activeTab === tab
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredComplaints.map(item => (
-          <div key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <div className="flex items-start gap-4">
-              <img
-                src={item.avatar}
-                alt={item.name}
-                className="w-12 h-12 rounded-full"
-              />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900">{item.name}</h3>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${categoryColors[item.type]}`}>
-                    {item.type}
-                  </span>
-                </div>
-                <div className="mt-1 text-sm text-gray-500">
-                  <div>Email: {item.email}</div>
-                  <div>Phone: {item.phone}</div>
-                  <div>Date: {item.date}</div>
+      <div className="flex-1 p-4 overflow-auto">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 h-full">
+          {filteredComplaints.map(item => (
+            <div key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div className="flex items-start gap-3">
+                <img
+                  src={item.avatar}
+                  alt={item.name}
+                  className="w-10 h-10 rounded-full flex-none"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ml-2 flex-none ${categoryColors[item.type]}`}>
+                      {item.type}
+                    </span>
+                  </div>
+                  <div className="mt-1 text-xs text-gray-500">
+                    <div>Email: {item.email}</div>
+                    <div>Phone: {item.phone}</div>
+                    <div>Date: {item.date}</div>
+                  </div>
                 </div>
               </div>
+              <div className="mt-3 text-sm text-gray-700 line-clamp-3">{item.message}</div>
             </div>
-            <div className="mt-4 text-gray-700">{item.message}</div>
-            {/* <div className="mt-4 flex justify-end gap-2">
-              <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h7V6a1 1 0 011-1h7a1 1 0 011 1v12a1 1 0 01-1 1h-7a1 1 0 01-1-1v-4H3v-4z" />
-                </svg>
-              </button>
-              <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </button>
-            </div> */}
-          </div>
-        ))}
-      </div>
-
-      {filteredComplaints.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">No complaints found</p>
+          ))}
         </div>
-      )}
+
+        {filteredComplaints.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-gray-500">No complaints found</p>
+          </div>
+        )}
+      </div>
 
       {/* Filter Modal */}
       {showFilter && (

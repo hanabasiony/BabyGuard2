@@ -86,7 +86,7 @@ export function Sidebar() {
       <div className="lg:hidden fixed top-0 left-0 w-full bg-white shadow-sm z-50">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <h1 className="text-xl font-semibold text-pink-500">Baby Guard</h1>
+            {/* <h1 className="text-xl font-semibold text-pink-500">Baby Guard</h1> */}
           </div>
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -98,6 +98,7 @@ export function Sidebar() {
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              
             >
               <path
                 strokeLinecap="round"
@@ -124,6 +125,7 @@ export function Sidebar() {
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
+        {/* Sidebar fe el 3ady 5als */}
         <div className="h-full flex flex-col">
           <div className="p-4 flex items-center justify-between border-b lg:border-b-0">
             <div className="flex items-center space-x-2">
@@ -145,7 +147,7 @@ export function Sidebar() {
             </button>
           </div>
 
-          <nav className="flex-1 overflow-y-auto">
+          <nav className="flex-1 ">
             <ul className="py-4">
               {menuItems.map((item) => (
                 <li key={item.path}>

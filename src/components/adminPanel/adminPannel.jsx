@@ -6,8 +6,8 @@ import ManageUsers from '../ManageUsers/ManageUsers'
 export default function AdminPannel() {
     return (
         <>
-            <AdminSidebar/>
-            <ManageUsers/>
+            {/* <AdminSidebar/>
+            <ManageUsers/> */}
         </>
     )
 }

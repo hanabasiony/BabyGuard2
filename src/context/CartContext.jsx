@@ -23,22 +23,46 @@ export default function CartContextProvider({ children }) {
                 }
             });
 
-            if (response.data.data.products) {
+            console.log('Pending cart response:', response.data);
+
+            // Store cart ID if it exists and is valid
+            if (response.data?.data?.cart?._id) {
+                const cartId = response.data.data.cart._id;
+                if (cartId && typeof cartId === 'string' && cartId !== 'null') {
+                    localStorage.setItem('cartId', cartId);
+                    console.log('Cart ID stored in localStorage:', cartId);
+                } else {
+                    localStorage.removeItem('cartId');
+                    console.log('Invalid cart ID from pending cart, removed from localStorage');
+                }
+            }
+
+            if (response.data.data.cart.products) {
                 const newQuantities = {};
                 let total = 0;
-                response.data.data.products.forEach(product => {
+                response.data.data.cart.products.forEach(product => {
                     newQuantities[product.productId] = product.quantity;
                     total += product.quantity;
                 });
                 setProductQuantities(newQuantities);
                 setTotalItems(total);
                 localStorage.setItem('productQuantities', JSON.stringify(newQuantities));
+                
+                // Store the total products count
+                const productsCount = response.data.data.cart.productsCount || total;
+                localStorage.setItem('cartProductsCount', productsCount);
+                console.log('Updated cart products count:', productsCount);
             } else {
                 setProductQuantities({});
                 setTotalItems(0);
+                localStorage.setItem('productQuantities', JSON.stringify({}));
+                localStorage.setItem('cartProductsCount', '0');
             }
         } catch (error) {
             console.error('Error fetching cart data:', error);
+            localStorage.removeItem('cartId');
+            localStorage.setItem('cartProductsCount', '0');
+            console.log('Error fetching cart, reset cart count to 0');
         }
     };
 
@@ -96,9 +120,22 @@ export default function CartContextProvider({ children }) {
 
     const getOrCreateCart = async () => {
         let cartId = localStorage.getItem('cartId');
-        if (!cartId) {
-            cartId = await createCart();
+        console.log('Retrieved cartId from localStorage:', cartId);
+
+        // Validate cart ID
+        if (!cartId || cartId === 'null' || cartId === 'undefined' || typeof cartId !== 'string') {
+            console.log('Invalid cartId found, creating new cart');
+            try {
+                cartId = await createCart();
+                console.log('New cart created with ID:', cartId);
+            } catch (error) {
+                console.error('Error creating new cart:', error);
+                throw error;
+            }
+        } else {
+            console.log('Using existing cartId:', cartId);
         }
+
         return cartId;
     };
 

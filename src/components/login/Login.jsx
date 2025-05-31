@@ -43,16 +43,95 @@ export default function Login() {
             setuserToken(token)
             localStorage.setItem('token', token)
             localStorage.setItem('role', role)
+            console.log('Login API success:', response.data);
             if (role === 'admin') {
+                console.log('Navigating to /admin');
                 navigate('/admin');
             } else {
+                // Fetch user data for parent
+                try {
+                    const userResponse = await axios.get('http://localhost:8000/api/user/me', {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    localStorage.setItem('userData', JSON.stringify(userResponse.data));
+                    console.log('User data fetched:', userResponse.data);
+                } catch (err) {
+                    console.error('Failed to fetch user data after login:', err);
+                }
+                // Check for pending cart
+                try {
+                    const pendingCartRes = await axios.get('http://localhost:8000/api/carts/pending', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    console.log('Pending cart response:', pendingCartRes.data);
+                    
+                    // Store cart ID if it exists and is valid
+                    if (pendingCartRes.data?.data?.cart?._id) {
+                        console.log('Pending cart ID found:', pendingCartRes.data.data.cart._id);
+                        const cartId = pendingCartRes.data.data.cart._id;
+                        if (cartId && typeof cartId === 'string' && cartId !== 'null') {
+                            localStorage.setItem('cartId', cartId);
+                            console.log('Cart ID stored in localStorage:', cartId);
+                        } else {
+                            localStorage.removeItem('cartId');
+                            console.log('Invalid cart ID from pending cart, removed from localStorage');
+                        }
+                    } else {
+                        // No pending cart, create a new one
+                        const userDataString = localStorage.getItem('userData');
+                        const userData = userDataString ? JSON.parse(userDataString) : null;
+                        if (userData && userData.user) {
+                            try {
+                                const cartRes = await axios.post('http://localhost:8000/api/carts', {
+                                    cart: {
+                                        governorate: userData.user.governorate || "Cairome",
+                                        city: userData.user.city || "1st Settlementme",
+                                        street: userData.user.street || "Main Streetme",
+                                        buildingNumber: userData.user.buildingNumber || 123123,
+                                        apartmentNumber: userData.user.apartmentNumber || 4545,
+                                        paymentType: "Cash"
+                                    }
+                                }, {
+                                    headers: { Authorization: `Bearer ${token}` }
+                                });
+                                
+                                if (cartRes.data?.data?._id) {
+                                    const cartId = cartRes.data.data._id;
+                                    if (cartId && typeof cartId === 'string' && cartId !== 'null') {
+                                        localStorage.setItem('cartId', cartId);
+                                        console.log('New cart created and ID stored in localStorage:', cartId);
+                                    } else {
+                                        localStorage.removeItem('cartId');
+                                        console.log('Invalid cart ID from new cart, removed from localStorage');
+                                    }
+                                } else {
+                                    console.log('Cart creation response:', cartRes.data);
+                                }
+                            } catch (cartCreateErr) {
+                                console.error('Error creating new cart:', cartCreateErr);
+                                // localStorage.removeItem('cartId');
+                            }
+                        } else {
+                            console.log('No user data found for cart creation');
+                            // localStorage.removeItem('cartId');
+                        }
+                    }
+                } catch (cartErr) {
+                    console.error('Error checking/creating pending cart:', cartErr);
+                    // localStorage.removeItem('cartId');
+                }
+                console.log('Navigating to /products');
                 navigate('/products');
             }
         } catch (error) {
             setErrorMsg(error.response?.data?.message || 'Login failed')
             setTimeout(() => setErrorMsg(null), 2000)
+            console.error('Login API error:', error);
         } finally {
             setLoading(false)
+            console.log('Login process finished.');
         }
     }
 

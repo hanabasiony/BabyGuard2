@@ -53,6 +53,7 @@ import TipsArticles from './components/Admin/TipsArticles'
 import Complaints from './components/Admin/Complaints'
 import AdminDashboardLayout from './components/Admin/AdminDashboardLayout'
 import PaymentForm from './components/PaymentPage/PaymentForm'
+import ManageChildren from './components/Admin/ManageChildren'
 
 
 
@@ -166,6 +167,7 @@ const router = createBrowserRouter([
       { path: '', element: <ProtectedRouteAdmin><Dashboard /></ProtectedRouteAdmin> },    
       { path: 'manage-users', element: <ProtectedRouteAdmin><ManageUsers /></ProtectedRouteAdmin> },
       { path: 'manage-nurses', element: <ProtectedRouteAdmin><ManageNurses /></ProtectedRouteAdmin> },
+      { path: 'manage-children', element: <ProtectedRouteAdmin><ManageChildren /></ProtectedRouteAdmin> },
       { path: 'vaccinations', element: <ProtectedRouteAdmin><Vaccinations /></ProtectedRouteAdmin> },
       { path: 'appointments', element: <ProtectedRouteAdmin><Appointments /></ProtectedRouteAdmin> },
       { path: 'product-store', element: <ProtectedRouteAdmin><ProductStore /></ProtectedRouteAdmin> },

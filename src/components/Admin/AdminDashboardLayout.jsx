@@ -9,6 +9,7 @@ import Appointments from './Appointments';
 import ProductStore from './ProductStore';
 import TipsArticles from './TipsArticles';
 import Complaints from './Complaints';
+import ManageChildren from './ManageChildren';
 
 const AdminDashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -53,6 +54,8 @@ const AdminDashboardLayout = () => {
               <Route path="/" element={<Dashboard />} />
               <Route path="/manage-users" element={<ManageUsers />} />
               <Route path="/manage-nurses" element={<ManageNurses />} />
+              <Route path="/manage-children" element={<ManageChildren />} />
+
               <Route path="/vaccinations" element={<Vaccinations />} />
               <Route path="/appointments" element={<Appointments />} />
               <Route path="/product-store" element={<ProductStore />} />

@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function PaymentForm() {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ export default function PaymentForm() {
   })
 
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (field, value) => {
@@ -100,16 +102,58 @@ export default function PaymentForm() {
       return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
       e.preventDefault();
 
       if (validateForm()) {
-          console.log('Form is valid. Proceeding with payment...');
-          console.log('Payment Data:', formData);
-          // Navigate to OTP page after successful validation
-          navigate('/otp');
-          // Example: Call a payment processing API here before navigating
-          // processPayment(formData);
+          try {
+              setIsLoading(true);
+              const cartId = localStorage.getItem('cartId');
+              
+              if (!cartId) {
+                  alert('Cart ID not found. Please try again.');
+                  return;
+              }
+
+              const token = localStorage.getItem('token');
+              if (!token) {
+                  alert('Authentication token is missing. Please log in again.');
+                  return;
+              }
+
+              // Make API call to send OTP
+              const response = await axios.get(`http://localhost:8000/api/payment/send-otp/${cartId}`, {
+                  headers: {
+                      'Authorization': `Bearer ${token}`
+                  }
+              });
+
+              if (response.status === 201) {
+                  // Navigate to OTP page after successful API call
+                  navigate('/otp');
+              } else {
+                  alert('Unexpected response from server. Please try again.');
+              }
+          } catch (error) {
+              console.error('Error sending OTP:', error);
+              if (error.response) {
+                  // Handle specific error responses
+                  switch (error.response.status) {
+                      case 401:
+                          alert('Authentication failed. Please log in again.');
+                          break;
+                      case 404:
+                          alert('Cart not found. Please try again.');
+                          break;
+                      default:
+                          alert(error.response.data.message || 'Failed to process payment. Please try again.');
+                  }
+              } else {
+                  alert('Network error. Please check your connection and try again.');
+              }
+          } finally {
+              setIsLoading(false);
+          }
       } else {
           console.log('Form has errors. Please fix them.');
       }
@@ -207,13 +251,28 @@ export default function PaymentForm() {
               </div>
             </div>
 
-            {/* Pay Button (Placeholder) */}
+            {/* Pay Button */}
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                disabled={isLoading}
+                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                  isLoading 
+                    ? 'bg-pink-400 cursor-not-allowed' 
+                    : 'bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500'
+                }`}
               >
-                Pay Securely
+                {isLoading ? (
+                  <div className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </div>
+                ) : (
+                  'Pay Securely'
+                )}
               </button>
             </div>
           </div>

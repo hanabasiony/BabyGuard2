@@ -61,7 +61,7 @@ export default function Login() {
             setSuccessMsg(true)
             setuserToken(token)
             localStorage.setItem('token', token)
-            localStorage.setItem('role', 'admin')
+            localStorage.setItem('role', role)
 
             if (localStorage.getItem('role') === 'admin') {
                 console.log('User is admin, navigating to admin dashboard');

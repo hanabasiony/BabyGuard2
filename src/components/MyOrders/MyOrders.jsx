@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
-import { Star, Package, MapPin, CreditCard, Clock } from 'lucide-react';
+import { Star, Package, MapPin, CreditCard, Clock, ShoppingBag } from 'lucide-react';
 
 export default function MyOrders() {
     const [orders, setOrders] = useState([]);
@@ -20,8 +20,9 @@ export default function MyOrders() {
                     Authorization: `Bearer ${token}`
                 }
             });
-            setOrders(response.data.data);
-            console.log(response.data.data);
+            setOrders(response.data.data.carts || []);
+            console.log(response.data.data.carts);
+            
         } catch (error) {
             console.error('Error fetching orders:', error);
             toast.error('Failed to load orders');
@@ -48,6 +49,10 @@ export default function MyOrders() {
                 return 'bg-yellow-100 text-yellow-800';
             case 'waiting for payment':
                 return 'bg-blue-100 text-blue-800';
+            case 'delivered':
+                return 'bg-green-100 text-green-800';
+            case 'cancelled':
+                return 'bg-red-100 text-red-800';
             default:
                 return 'bg-gray-100 text-gray-800';
         }
@@ -68,7 +73,16 @@ export default function MyOrders() {
     return (
         <div className="min-h-screen pt-32 pb-12 px-4 bg-gray-50">
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl font-bold text-gray-800 mb-8">My Orders</h1>
+                <div className="flex items-center justify-between mb-8">
+                    <h1 className="text-3xl font-bold text-gray-800">My Orders</h1>
+                    <Link 
+                        to="/"
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700"
+                    >
+                        <ShoppingBag className="h-5 w-5 mr-2" />
+                        Continue Shopping
+                    </Link>
+                </div>
                 
                 {orders.length === 0 ? (
                     <div className="text-center py-12 bg-white rounded-lg shadow-sm">
@@ -115,15 +129,19 @@ export default function MyOrders() {
                                                             <div>
                                                                 <h5 className="font-medium text-gray-800">{product.name}</h5>
                                                                 <p className="text-sm text-gray-500">Quantity: {product.quantity}</p>
-                                                                <p className="text-sm text-gray-500">Price: ${product.price}</p>
+                                                                <p className="text-sm text-gray-500">Price: EGP {product.price}</p>
                                                             </div>
-                                                            <Link
-                                                                to={`/write-review/${order._id}/${product._id}`}
-                                                                className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700"
-                                                            >
-                                                                <Star className="h-4 w-4 mr-1" />
-                                                                Review
-                                                            </Link>
+                                                            <div className="flex flex-col items-end gap-2">
+                                                                {order.status === 'delivered' && (
+                                                                    <Link
+                                                                        to={`/review/${product._id}`}
+                                                                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700"
+                                                                    >
+                                                                        <Star className="h-4 w-4 mr-1" />
+                                                                        Write Review
+                                                                    </Link>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -157,7 +175,7 @@ export default function MyOrders() {
                                         <div className="space-y-4">
                                             <div className="flex items-start space-x-3">
                                                 <Package className="h-5 w-5 text-gray-400 mt-0.5" />
-                                                <div>
+                                                <div className="w-full">
                                                     <h4 className="text-sm font-medium text-gray-500">Order Summary</h4>
                                                     <div className="mt-2 flex justify-between">
                                                         <span className="text-sm text-gray-600">Items</span>
@@ -165,17 +183,11 @@ export default function MyOrders() {
                                                     </div>
                                                     <div className="mt-1 flex justify-between">
                                                         <span className="text-sm text-gray-600">Total</span>
-                                                        <span className="text-sm font-medium text-gray-800">${order.totalPrice.toFixed(2)}</span>
+                                                        <span className="text-sm font-medium text-gray-800">EGP {order.totalPrice.toFixed(2)}</span>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="flex items-start space-x-3">
-                                                <Clock className="h-5 w-5 text-gray-400 mt-0.5" />
-                                                <div>
-                                                    <h4 className="text-sm font-medium text-gray-500">Last Updated</h4>
-                                                    <p className="mt-1 text-sm text-gray-800">{formatDate(order.updatedAt)}</p>
-                                                </div>
-                                            </div>
+                                           
                                         </div>
                                     </div>
                                 </div>

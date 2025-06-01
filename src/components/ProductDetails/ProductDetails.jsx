@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Star, Trash } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { CartContext } from "../../context/CartContext";
 import { Oval } from "react-loader-spinner";

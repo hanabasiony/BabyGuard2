@@ -28,9 +28,31 @@ export default function Navbar() {
 
   // Update cart count whenever productQuantities changes
   useEffect(() => {
-    const count = Object.values(productQuantities).reduce((total, quantity) => total + quantity, 0);
-    setCartCount(count);
-  }, [productQuantities]);
+    const fetchCartCount = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await axios.get('http://localhost:8000/api/carts/pending', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (response.data.data.products) {
+          const totalCount = response.data.data.products.reduce((total, product) => total + product.quantity, 0);
+          setCartCount(totalCount);
+        } else {
+          setCartCount(0);
+        }
+      } catch (error) {
+        console.error('Error fetching cart count:', error);
+        setCartCount(0);
+      }
+    };
+
+    fetchCartCount();
+  }, [productQuantities]); // Re-fetch when productQuantities changes
 
   async function handleLogout() {
     try {

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Star, Trash } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -11,6 +11,33 @@ import Categories from './../categories/categories';
 export default function ProductDetails() {
     const { id } = useParams();
     const { productQuantities, handleAddToCart, handleUpdateQuantity, loadingProducts, handleDeleteProduct } = useContext(CartContext);
+    const [localProductQuantities, setLocalProductQuantities] = useState({});
+
+    // Fetch pending cart data on component mount
+    useEffect(() => {
+        const fetchPendingCart = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get('http://localhost:8000/api/carts/pending', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (response.data.data.products && response.data.data.products.length > 0) {
+                    const pendingProducts = {};
+                    response.data.data.products.forEach(product => {
+                        pendingProducts[product.productId] = product.quantity;
+                    });
+                    setLocalProductQuantities(pendingProducts);
+                }
+            } catch (error) {
+                console.error('Error fetching pending cart:', error);
+            }
+        };
+
+        fetchPendingCart();
+    }, []);
 
     const { data: products, isLoading, error } = useQuery({
         queryKey: ['products'],
@@ -27,6 +54,88 @@ export default function ProductDetails() {
 
     // Find the specific product from the fetched products
     const product = products?.find(p => p._id === id);
+
+    const handleQuantityUpdate = async (e, productId, change) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('token');
+            const cartId = localStorage.getItem('cartId');
+            const currentQuantity = localProductQuantities[productId] || 0;
+            const newQuantity = currentQuantity + change;
+
+            if (newQuantity <= 0) {
+                // Use the same deletion logic as handleDeleteProductWithUpdate
+                await handleDeleteProduct(e, productId);
+                
+                // Update local quantities by removing the deleted product
+                setLocalProductQuantities(prev => {
+                    const newQuantities = { ...prev };
+                    delete newQuantities[productId];
+                    return newQuantities;
+                });
+
+                return;
+            }
+
+            await axios.patch(
+                `http://localhost:8000/api/carts/${cartId}/products/${productId}`,
+                { quantity: newQuantity },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            setLocalProductQuantities(prev => ({
+                ...prev,
+                [productId]: newQuantity
+            }));
+
+            // Add toast message for quantity change
+            if (change > 0) {
+                toast.success(`Quantity increased to ${newQuantity}`);
+            } else {
+                toast.success(`Quantity decreased to ${newQuantity}`);
+            }
+        } catch (error) {
+            console.error('Error updating quantity:', error);
+            toast.error('Failed to update quantity');
+        }
+    };
+
+    const handleDeleteProductWithUpdate = async (e, productId) => {
+        e.preventDefault();
+        try {
+            await handleDeleteProduct(e, productId);
+            
+            // Update local quantities by removing the deleted product
+            setLocalProductQuantities(prev => {
+                const newQuantities = { ...prev };
+                delete newQuantities[productId];
+                return newQuantities;
+            });
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            toast.error('Failed to remove product from cart');
+        }
+    };
+
+    const handleAddToCartWithUpdate = async (e, productId) => {
+        e.preventDefault();
+        try {
+            await handleAddToCart(e, productId);
+            
+            // Update local quantities by adding the new product
+            setLocalProductQuantities(prev => ({
+                ...prev,
+                [productId]: 1
+            }));
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
+            toast.error('Failed to add product to cart');
+        }
+    };
 
     if (isLoading) {
         return (
@@ -70,6 +179,8 @@ export default function ProductDetails() {
         }
         return stars;
     };
+
+    const currentQuantity = localProductQuantities[product._id] || 0;
 
     return (
         <div className="bg-whitea py-50">
@@ -118,25 +229,25 @@ export default function ProductDetails() {
                                         strokeWidthSecondary={4}
                                     />
                                 </div>
-                            ) : productQuantities[product._id] > 0 ? (
+                            ) : currentQuantity > 0 ? (
                                 <div className="flex items-center justify-center gap-2">
                                     <button 
-                                        onClick={(e) => handleUpdateQuantity(e, product._id, -1)}
+                                        onClick={(e) => handleQuantityUpdate(e, product._id, -1)}
                                         className="bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
                                     >
                                         -
                                     </button>
                                     <span className="bg-pink-400 text-white font-medium px-3 py-1 rounded-full">
-                                        {productQuantities[product._id]}
+                                        {currentQuantity}
                                     </span>
                                     <button 
-                                        onClick={(e) => handleUpdateQuantity(e, product._id, 1)}
+                                        onClick={(e) => handleQuantityUpdate(e, product._id, 1)}
                                         className="bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
                                     >
                                         +
                                     </button>
                                     <button 
-                                        onClick={(e) => handleDeleteProduct(e, product._id)}
+                                        onClick={(e) => handleDeleteProductWithUpdate(e, product._id)}
                                         className="bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
                                     >
                                         <Trash size={16} />
@@ -144,7 +255,7 @@ export default function ProductDetails() {
                                 </div>
                             ) : (
                                 <button 
-                                    onClick={(e) => handleAddToCart(e, product._id)}
+                                    onClick={(e) => handleAddToCartWithUpdate(e, product._id)}
                                     className="bg-pink-400 hover:bg-pink-500 text-white font-medium py-2 px-4 rounded-full cursor-pointer"
                                 >
                                     Add to Cart

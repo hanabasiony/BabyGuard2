@@ -137,7 +137,7 @@ export default function Login() {
 
     return (
         <div className="min-h-screen bg-white-50 pt-35 pb-1">
-            <form className="max-w-md mx-auto px-4 sm:px-8" onSubmit={formik.handleSubmit}>
+            <form className="max-w-md mx-auto px-4 sm:px-8" onSubmit={formik.handleSubmit}autoComplete="on">
                 {successMsg && (
                     <div className="fixed top-24 left-1/2 transform -translate-x-1/2 p-4 mb-4 text-green-800 rounded-lg text-center bg-green-50 z-50">
                         Welcome back
@@ -162,6 +162,7 @@ export default function Login() {
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             placeholder=" "
                             required
+                            autoComplete="email"
                         />
                         <label htmlFor="email" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                             Email address
@@ -184,6 +185,8 @@ export default function Login() {
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             placeholder=" "
                             required
+                            autoComplete="current-password"
+                            // autocomplete="on"
                         />
                         <label htmlFor="password" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                             Password

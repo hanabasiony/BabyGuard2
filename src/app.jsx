@@ -72,9 +72,9 @@ const router = createBrowserRouter([
       {
         path: 'products',
         element: (
-      
+          <ProtectedRoute>
             <Home />
-         
+          </ProtectedRoute>
         ),
       },
       { path: 'categories', element: <Categories /> },

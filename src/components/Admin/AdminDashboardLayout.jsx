@@ -10,14 +10,15 @@ import ProductStore from './ProductStore';
 import TipsArticles from './TipsArticles';
 import Complaints from './Complaints';
 import ManageChildren from './ManageChildren';
+import AddProductPage from './AddProductPage';
 
 const AdminDashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-y-hidden">
       {/* Mobile menu button */}
-      <button
+      {/* <button
         className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-pink-500"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
       >
@@ -35,7 +36,7 @@ const AdminDashboardLayout = () => {
             d={isSidebarOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
           />
         </svg>
-      </button>
+      </button> */}
 
       {/* Sidebar */}
       <div
@@ -47,20 +48,21 @@ const AdminDashboardLayout = () => {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 ms-6 lg:ms-0 flex flex-col overflow-hidden overflow-y-hidden">
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
           <div className="container mx-auto px-4 py-6">
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/manage-users" element={<ManageUsers />} />
-              <Route path="/manage-nurses" element={<ManageNurses />} />
+              <Route index element={<Dashboard />} />
+              <Route path="manage-users" element={<ManageUsers />} />
+              <Route path="manage-nurses" element={<ManageNurses />} />
               <Route path="/manage-children" element={<ManageChildren />} />
 
-              <Route path="/vaccinations" element={<Vaccinations />} />
-              <Route path="/appointments" element={<Appointments />} />
-              <Route path="/product-store" element={<ProductStore />} />
-              <Route path="/tips-articles" element={<TipsArticles />} />
-              <Route path="/complaints" element={<Complaints />} />
+              <Route path="vaccinations" element={<Vaccinations />} />
+              <Route path="appointments" element={<Appointments />} />
+              <Route path="product-store" element={<ProductStore />} />
+              <Route path="product-store/add" element={<AddProductPage />} />
+              <Route path="tips-articles" element={<TipsArticles />} />
+              <Route path="complaints" element={<Complaints />} />
             </Routes>
           </div>
         </main>

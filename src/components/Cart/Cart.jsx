@@ -151,7 +151,16 @@ const Cart = () => {
             setPendingCartProducts(updatedPendingProducts);
             localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
 
-            toast.success(`Quantity updated to ${newQuantity}`);
+            // Update cart count in localStorage
+            const totalCount = updatedPendingProducts.reduce((total, p) => total + p.quantity, 0);
+            localStorage.setItem('cartCount', totalCount.toString());
+
+            // Add toast message for quantity change
+            if (change > 0) {
+                toast.success(`Quantity increased to ${newQuantity}`);
+            } else {
+                toast.success(`Quantity decreased to ${newQuantity}`);
+            }
         } catch (error) {
             console.error('Error updating quantity:', error);
             if (error.response?.data?.message) {
@@ -174,7 +183,9 @@ const Cart = () => {
             setPendingCartProducts(updatedPendingProducts);
             localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
 
-            toast.success('Product removed from cart');
+            // Update cart count in localStorage
+            const totalCount = updatedPendingProducts.reduce((total, p) => total + p.quantity, 0);
+            localStorage.setItem('cartCount', totalCount.toString());
         } catch (error) {
             console.error('Error deleting product:', error);
             toast.error('Failed to remove product from cart');

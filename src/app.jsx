@@ -54,6 +54,7 @@ import Complaints from './components/Admin/Complaints'
 import AdminDashboardLayout from './components/Admin/AdminDashboardLayout'
 import PaymentForm from './components/PaymentPage/PaymentForm'
 import ManageChildren from './components/Admin/ManageChildren'
+import AddProductPage from './components/Admin/AddProductPage'
 
 
 
@@ -161,18 +162,19 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: 'admin/*',
+    path: 'admin',
     element: <ProtectedRouteAdmin><AdminDashboardLayout /></ProtectedRouteAdmin>,
     children: [
-      { path: '', element: <ProtectedRouteAdmin><Dashboard /></ProtectedRouteAdmin> },    
-      { path: 'manage-users', element: <ProtectedRouteAdmin><ManageUsers /></ProtectedRouteAdmin> },
-      { path: 'manage-nurses', element: <ProtectedRouteAdmin><ManageNurses /></ProtectedRouteAdmin> },
+      { path: '', element: <Dashboard /> },    
+      { path: 'manage-users', element: <ManageUsers /> },
+      { path: 'manage-nurses', element: <ManageNurses /> },
       { path: 'manage-children', element: <ProtectedRouteAdmin><ManageChildren /></ProtectedRouteAdmin> },
-      { path: 'vaccinations', element: <ProtectedRouteAdmin><Vaccinations /></ProtectedRouteAdmin> },
-      { path: 'appointments', element: <ProtectedRouteAdmin><Appointments /></ProtectedRouteAdmin> },
-      { path: 'product-store', element: <ProtectedRouteAdmin><ProductStore /></ProtectedRouteAdmin> },
-      { path: 'tips-articles', element: <ProtectedRouteAdmin><TipsArticles /></ProtectedRouteAdmin> },
-      { path: 'complaints', element: <ProtectedRouteAdmin><Complaints /></ProtectedRouteAdmin> },
+      { path: 'vaccinations', element: <Vaccinations /> },
+      { path: 'appointments', element: <Appointments /> },
+      { path: 'product-store', element: <ProductStore /> },
+      { path: 'product-store/add', element: <AddProductPage /> },
+      { path: 'tips-articles', element: <TipsArticles /> },
+      { path: 'complaints', element: <Complaints /> },
     ],
   },
 ]);

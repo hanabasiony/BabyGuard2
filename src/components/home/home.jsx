@@ -127,8 +127,6 @@ export default function Home() {
             );
             setPendingCartProducts(updatedPendingProducts);
             localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
-
-            toast.success(`Quantity updated to ${newQuantity}`);
         } catch (error) {
             console.error('Error updating quantity:', error);
             toast.error('Failed to update quantity');
@@ -176,8 +174,6 @@ export default function Home() {
             );
             setPendingCartProducts(updatedPendingProducts);
             localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
-
-            toast.success('Product removed from cart');
         } catch (error) {
             console.error('Error deleting product:', error);
             toast.error('Failed to remove product from cart');

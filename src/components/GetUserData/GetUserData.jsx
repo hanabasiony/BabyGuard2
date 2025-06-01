@@ -40,7 +40,9 @@ export const UserDataProvider = ({ children }) => {
         } catch (err) {
             console.error('Error fetching user data:', err);
             setError(err.response?.data?.message || 'Failed to fetch user data');
-            toast.error('Failed to load user data');
+            if(localStorage.getItem('role') !== 'admin'){
+                toast.error('Failed to load user data');
+            }
         } finally {
             setLoading(false);
         }
@@ -96,5 +98,5 @@ export default function GetUserData() {
         );
     }
 
-    return null; // This component doesn't render anything by default
+    return null; // This component doesn't render anything by defaults
 }

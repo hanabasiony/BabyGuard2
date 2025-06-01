@@ -1,9 +1,14 @@
 import { Link, useLocation } from "react-router-dom"
 import { useState } from "react"
 
-export function Sidebar() {
+const Sidebar = () => {
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('role')
+  }
 
   const menuItems = [
     { 
@@ -95,7 +100,7 @@ export function Sidebar() {
       <div className="lg:hidden fixed top-0 left-0 w-full bg-white shadow-sm z-50">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <h1 className="text-xl font-semibold text-pink-500">Baby Guard</h1>
+            {/* <h1 className="text-xl font-semibold text-pink-500">Baby Guard</h1> */}
           </div>
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -107,6 +112,7 @@ export function Sidebar() {
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              
             >
               <path
                 strokeLinecap="round"
@@ -133,10 +139,12 @@ export function Sidebar() {
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="h-full flex flex-col">
-          <div className="p-4 flex items-center justify-between border-b lg:border-b-0">
-            <div className="flex items-center space-x-2">
+        {/* Sidebar fe el 3ady 5als */}
+        <div className="h-full w-full flex flex-col">
+          <div className="p-4 flex w-full items-center justify-between border-b lg:border-b-0">
+            <div className="flex w-full items-center justify-between space-x-2">
               <h1 className="text-xl font-semibold text-pink-500">Baby Guard</h1>
+              <Link onClick={handleLogout} to="/login"><i className="fa-solid text-2xl text-pink-500 fa-right-from-bracket"></i></Link>
             </div>
             <button
               className="lg:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-pink-500"
@@ -154,7 +162,7 @@ export function Sidebar() {
             </button>
           </div>
 
-          <nav className="flex-1 overflow-y-auto">
+          <nav className="flex-1 ">
             <ul className="py-4">
               {menuItems.map((item) => (
                 <li key={item.path}>
@@ -173,7 +181,7 @@ export function Sidebar() {
             </ul>
           </nav>
 
-          <div className="border-t bg-white">
+          {/* <div className="border-t bg-white">
             <Link
               to="/logout"
               className="flex items-center px-4 py-3 text-gray-600 hover:bg-pink-50 hover:text-pink-500 transition-colors duration-200"
@@ -195,7 +203,7 @@ export function Sidebar() {
               </svg>
               <span className="text-sm font-medium">Logout</span>
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

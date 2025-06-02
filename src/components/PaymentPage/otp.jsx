@@ -3,18 +3,54 @@
 import { useState, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import axios from "axios";
 
 export default function OTPInput() {
   const navigate = useNavigate();
   const [otp, setOtp] = useState(["", "", "", "", "", ""])
   const [activeIndex, setActiveIndex] = useState(0)
+  const [timer, setTimer] = useState(30)
+  const [isResendDisabled, setIsResendDisabled] = useState(true)
   const inputRefs = useRef([])
+  const timerRef = useRef(null)
 
   useEffect(() => {
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus()
     }
   }, [])
+
+  useEffect(() => {
+    // Start timer when component mounts
+    startTimer();
+
+    // Cleanup timer on component unmount
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
+
+  const startTimer = () => {
+    setIsResendDisabled(true);
+    setTimer(30);
+    
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    timerRef.current = setInterval(() => {
+      setTimer((prevTimer) => {
+        if (prevTimer <= 1) {
+          clearInterval(timerRef.current);
+          setIsResendDisabled(false);
+          return 0;
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+  };
 
   const handleChange = (index, value) => {
     if (value.length > 1) return
@@ -54,36 +90,139 @@ export default function OTPInput() {
     setActiveIndex(index)
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const otpValue = otp.join("")
     if (otpValue.length === 6) {
-      console.log(`OTP Submitted: ${otpValue}`)
-      toast.success("OTP submitted successfully!");
-      // Handle OTP verification here
-      // If verification is successful, navigate
-      // navigate('/success'); // Example navigation
+      try {
+        const token = localStorage.getItem('token');
+        const cartId = localStorage.getItem('cartId'); // Get cartId from localStorage
+
+        if (!cartId) {
+          toast.error("Cart ID not found. Please try again.");
+          return;
+        }
+
+        const response = await axios.post("http://localhost:8000/api/payment/verify-otp", 
+          {
+            cartId: cartId,
+            code: otpValue
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+
+        if (response.status === 200) {
+          toast.success("OTP verified successfully!");
+          // You can add navigation here if needed
+          // navigate('/success');
+        }
+      } catch (error) {
+        console.error("Error verifying OTP:", error);
+        if (error.response?.status === 401) {
+          toast.error("Unauthorized. Please login again.");
+          // Optionally redirect to login page
+          // navigate('/login');
+        } else {
+          toast.error(error.response?.data?.message || "Failed to verify OTP");
+        }
+      }
     } else {
       toast.error("Please enter all 6 digits");
     }
   }
 
-  const handleResendOTP = () => {
-    // Handle resend OTP logic here (e.g., make an API call)
-    console.log("Resending OTP...");
-    toast.success("OTP resent!");
-    // Clear OTP inputs
-    setOtp(["", "", "", "", "", ""]);
-    setActiveIndex(0);
-    inputRefs.current[0]?.focus();
-    // You would typically make an API call here to request a new OTP
+  const handleResendOTP = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const cartId = localStorage.getItem('cartId');
+
+      if (!cartId) {
+        toast.error("Cart ID not found. Please try again.");
+        return;
+      }
+
+      const response = await axios.patch(
+        `http://localhost:8000/api/payment/resend-otp/${cartId}`,
+        {},
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("OTP resent successfully!");
+        // Clear OTP inputs
+        setOtp(["", "", "", "", "", ""]);
+        setActiveIndex(0);
+        inputRefs.current[0]?.focus();
+        // Start the timer again after successful resend
+        startTimer();
+      }
+    } catch (error) {
+      console.error("Error resending OTP:", error);
+      
+      if (error.response?.status === 401) {
+        toast.error("Unauthorized. Please login again.");
+        // Optionally redirect to login page
+        // navigate('/login');
+      } else if (error.response?.status === 429) {
+        toast.error("Too many requests. Please wait before trying again.");
+      } else if (error.response?.status === 400) {
+        toast.error("Please wait at least 30 seconds before requesting a new OTP.");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to resend OTP");
+      }
+    }
   };
 
-  const handleDeleteOTP = () => {
-    // Handle delete/cancel OTP process here
-    console.log("Deleting OTP process...");
-    toast("OTP process cancelled.");
-    // Example: Navigate back to a previous page or home
-    navigate('/'); // Example navigation
+  const handleDeleteOTP = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const cartId = localStorage.getItem('cartId');
+
+      if (!cartId) {
+        toast.error("Cart ID not found. Please try again.");
+        return;
+      }
+
+      const response = await axios.delete(
+        `http://localhost:8000/api/payment/cancel/${cartId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("Payment cancelled successfully!");
+        // Clear cartId from localStorage
+        localStorage.removeItem('cartId');
+        // Navigate back to home or previous page
+        navigate('/');
+      }
+    } catch (error) {
+      console.error("Error cancelling payment:", error);
+      
+      if (error.response?.status === 401) {
+        toast.error("Unauthorized. Please login again.");
+        // Optionally redirect to login page
+        // navigate('/login');
+      } else if (error.response?.status === 429) {
+        toast.error("Too many requests. Please wait before trying again.");
+      } else if (error.response?.status === 400) {
+        toast.error("Cannot cancel payment. Cart status is not 'Pending'.");
+      } else if (error.response?.status === 404) {
+        toast.error("Cart not found.");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to cancel payment");
+      }
+    }
   };
 
   return (
@@ -130,9 +269,14 @@ export default function OTPInput() {
         <div className="flex justify-between items-center text-sm text-gray-600">
             <button 
                 onClick={handleResendOTP} 
-                className={`font-medium text-blue-600 hover:underline`}
+                disabled={isResendDisabled}
+                className={`font-medium ${
+                  isResendDisabled 
+                    ? 'text-gray-400 cursor-not-allowed' 
+                    : 'text-blue-600 hover:underline'
+                }`}
             >
-                Resend OTP
+                {isResendDisabled ? `Resend OTP (${timer}s)` : 'Resend OTP'}
             </button>
             <button 
                 onClick={handleDeleteOTP} 

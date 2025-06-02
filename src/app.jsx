@@ -55,6 +55,7 @@ import AdminDashboardLayout from './components/Admin/AdminDashboardLayout'
 import PaymentForm from './components/PaymentPage/PaymentForm'
 import ManageChildren from './components/Admin/ManageChildren'
 import AddProductPage from './components/Admin/AddProductPage'
+import AddProvider from './components/Admin/AddProvider'
 
 
 
@@ -175,6 +176,7 @@ const router = createBrowserRouter([
       { path: 'product-store/add', element: <AddProductPage /> },
       { path: 'tips-articles', element: <TipsArticles /> },
       { path: 'complaints', element: <Complaints /> },
+      { path: 'providers', element: <AddProvider/> },
     ],
   },
 ]);

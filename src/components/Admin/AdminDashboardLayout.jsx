@@ -11,6 +11,7 @@ import TipsArticles from './TipsArticles';
 import Complaints from './Complaints';
 import ManageChildren from './ManageChildren';
 import AddProductPage from './AddProductPage';
+import AddProvider from './AddProvider';
 
 const AdminDashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -63,6 +64,7 @@ const AdminDashboardLayout = () => {
               <Route path="product-store/add" element={<AddProductPage />} />
               <Route path="tips-articles" element={<TipsArticles />} />
               <Route path="complaints" element={<Complaints />} />
+              <Route path="providers" element={<AddProvider />} />
             </Routes>
           </div>
         </main>

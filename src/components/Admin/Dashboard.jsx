@@ -1,3 +1,5 @@
+import axios from "axios";
+import { useEffect, useState } from "preact/hooks";
 import { Link } from "react-router-dom"
 
 function Dashboard() {
@@ -7,6 +9,7 @@ function Dashboard() {
     newAppointments: { count: 182, change: "+8.2%" },
     activeComplaints: { count: 48, change: "-2.4%" },
   }
+  const [appointmentsNumber, setAppointmentsNumber] = useState([]);
 
   // This would be replaced with API data
   const recentActivity = [
@@ -20,6 +23,43 @@ function Dashboard() {
     { id: 2, name: "Dr. Mike", action: "added new vaccine schedule", time: "4 hours ago", avatar: "/placeholder.svg" },
     { id: 3, name: "Emma", action: "submitted a new complaint", time: "6 hours ago", avatar: "/placeholder.svg" },
   ]
+
+  const fetchAppointments = async () => {
+    // setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token'); // Assuming token is needed for admin API
+      if (!token) {
+          console.error('Authentication token not found for admin API');
+          // setIsLoading(false);
+          // Optionally navigate to login or show an error message
+          return;
+      }
+      
+      const response = await axios.get('http://localhost:8000/api/vaccine-requests/admin', {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      });
+      
+      if (response.data && response.data.data) {
+        setAppointmentsNumber(response.data.data.length);
+        console.log(response.data.data.length);
+      } else {
+        console.error('API returned unexpected data structure:', response.data);
+        
+      }
+      
+    } catch (error) {
+      console.error('Error fetching appointments:', error.response?.data || error.message);
+      // setRawAppointments([]); // Set empty array on error
+    } finally {
+      // setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
 
   return (
     <div className="p-4 sm:p-6">
@@ -92,9 +132,9 @@ function Dashboard() {
                 />
               </svg>
             </div>
-            <span className="text-green-500 font-medium">{stats.newAppointments.change}</span>
+            <span className="text-green-500 font-medium"></span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{stats.newAppointments.count}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{appointmentsNumber}</h2>
           <p className="text-gray-500">New Appointments</p>
         </div>
 

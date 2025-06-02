@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 function Vaccinations() {
   // State for vaccines data
@@ -15,54 +16,23 @@ function Vaccinations() {
     fetchVaccines();
   }, []);
 
-  const fetchVaccines = () => {
+  const fetchVaccines = async () => {
     setIsLoading(true);
-    
-    // REPLACE THIS WITH YOUR API ENDPOINT
-    // axios.get('YOUR_API_URL/vaccines')
-    //   .then(response => {
-    //     setVaccines(response.data);
-    //     setFilteredVaccines(response.data);
-    //     setIsLoading(false);
-    //   })
-    //   .catch(error => {
-    //     console.error('Error fetching vaccines:', error);
-    //     setIsLoading(false);
-    //   });
-    
-    // Mock data for preview
-    setTimeout(() => {
-      const mockVaccines = [
-        {
-          id: 1,
-          name: 'DTaP',
-          targetAge: '2 months',
-          description: 'Protects against diphtheria, tetanus, pertussis',
-          status: 'Active',
-          dateAdded: 'Jan 15, 2025'
-        },
-        {
-          id: 2,
-          name: 'MMR',
-          targetAge: '12 months',
-          description: 'Protects against measles, mumps, rubella',
-          status: 'Active',
-          dateAdded: 'Jan 20, 2025'
-        },
-        {
-          id: 3,
-          name: 'Hepatitis B',
-          targetAge: 'Birth',
-          description: 'Protects against hepatitis B virus infection',
-          status: 'Inactive',
-          dateAdded: 'Dec 10, 2024'
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:8000/api/vaccines', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      ];
-      
-      setVaccines(mockVaccines);
-      setFilteredVaccines(mockVaccines);
+      });
+      setVaccines(response.data.data);
+      setFilteredVaccines(response.data.data);
       setIsLoading(false);
-    }, 500);
+    } catch (error) {
+      console.error('Error fetching vaccines:', error);
+      toast.error('Failed to fetch vaccines');
+      setIsLoading(false);
+    }
   };
 
   // Handle search
@@ -79,73 +49,23 @@ function Vaccinations() {
   }, [searchTerm, vaccines]);
 
   // Handle add vaccine
-  const handleAddVaccine = (vaccineData) => {
-    // REPLACE WITH YOUR API CALL
-    // axios.post('YOUR_API_URL/vaccines', vaccineData)
-    //   .then(response => {
-    //     fetchVaccines();
-    //     setShowAddModal(false);
-    //   })
-    //   .catch(error => {
-    //     console.error('Error adding vaccine:', error);
-    //   });
-    
-    // For demo purposes
-    const newVaccine = {
-      id: vaccines.length + 1,
-      ...vaccineData,
-      dateAdded: new Date().toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-      })
-    };
-    
-    setVaccines([...vaccines, newVaccine]);
-    setFilteredVaccines([...vaccines, newVaccine]);
-    setShowAddModal(false);
-  };
-
-  // Handle edit vaccine
-  const handleEditVaccine = (vaccineData) => {
-    // REPLACE WITH YOUR API CALL
-    // axios.put(`YOUR_API_URL/vaccines/${vaccineData.id}`, vaccineData)
-    //   .then(response => {
-    //     fetchVaccines();
-    //     setEditingVaccine(null);
-    //   })
-    //   .catch(error => {
-    //     console.error('Error updating vaccine:', error);
-    //   });
-    
-    // For demo purposes
-    const updatedVaccines = vaccines.map(vaccine => 
-      vaccine.id === vaccineData.id ? { ...vaccine, ...vaccineData } : vaccine
-    );
-    
-    setVaccines(updatedVaccines);
-    setFilteredVaccines(updatedVaccines);
-    setEditingVaccine(null);
-  };
-
-  // Handle delete vaccine
-  const handleDeleteVaccine = (vaccineId) => {
-    if (window.confirm('Are you sure you want to delete this vaccine?')) {
-      // REPLACE WITH YOUR API CALL
-      // axios.delete(`YOUR_API_URL/vaccines/${vaccineId}`)
-      //   .then(response => {
-      //     fetchVaccines();
-      //   })
-      //   .catch(error => {
-      //     console.error('Error deleting vaccine:', error);
-      //   });
-      
-      // For demo purposes
-      const updatedVaccines = vaccines.filter(vaccine => vaccine.id !== vaccineId);
-      setVaccines(updatedVaccines);
-      setFilteredVaccines(updatedVaccines);
+  const handleAddVaccine = async (vaccineData) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:8000/api/vaccines/admin', vaccineData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      toast.success('Vaccine added successfully');
+      fetchVaccines();
+      setShowAddModal(false);
+    } catch (error) {
+      console.error('Error adding vaccine:', error);
+      toast.error('Failed to add vaccine');
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
@@ -187,26 +107,6 @@ function Vaccinations() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="flex flex-wrap gap-2">
-            <button 
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-full sm:w-auto"
-              onClick={() => {/* Filter functionality */}}
-            >
-              <svg className="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
-              Filters
-            </button>
-            <button 
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-full sm:w-auto"
-              onClick={() => {/* Export functionality */}}
-            >
-              <svg className="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              Export
-            </button>
-          </div>
         </div>
 
         {/* Vaccines Table */}
@@ -219,16 +119,13 @@ function Vaccinations() {
                     Vaccine Name
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Target Age
+                    Required Age
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Description
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date Added
+                    Price
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -238,39 +135,30 @@ function Vaccinations() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {isLoading ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
+                    <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
                       Loading vaccines...
                     </td>
                   </tr>
                 ) : filteredVaccines.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
+                    <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
                       No vaccines found
                     </td>
                   </tr>
                 ) : (
                   filteredVaccines.map((vaccine) => (
-                    <tr key={vaccine.id} className="hover:bg-gray-50">
+                    <tr key={vaccine._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {vaccine.name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {vaccine.targetAge}
+                        {vaccine.requiredAge}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500 max-w-md truncate">
                         {vaccine.description}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          vaccine.status === 'Active' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {vaccine.status}
-                        </span>
-                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {vaccine.dateAdded}
+                        ${vaccine.price}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2 justify-end">
@@ -283,7 +171,7 @@ function Vaccinations() {
                             </svg>
                           </button>
                           <button 
-                            onClick={() => handleDeleteVaccine(vaccine.id)}
+                            onClick={() => handleDeleteVaccine(vaccine._id)}
                             className="text-red-600 hover:text-red-900"
                           >
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -303,7 +191,7 @@ function Vaccinations() {
 
       {/* Add Vaccine Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-gray-600/20 bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-800">Add New Vaccine</h2>
@@ -319,9 +207,10 @@ function Vaccinations() {
               const formData = new FormData(e.target);
               const vaccineData = {
                 name: formData.get('name'),
-                targetAge: formData.get('targetAge'),
+                requiredAge: formData.get('requiredAge'),
                 description: formData.get('description'),
-                status: formData.get('status')
+                price: parseFloat(formData.get('price')),
+                provider: formData.get('provider'),
               };
               handleAddVaccine(vaccineData);
             }}>
@@ -339,13 +228,13 @@ function Vaccinations() {
               </div>
               
               <div className="mb-4">
-                <label htmlFor="targetAge" className="block text-sm font-medium text-gray-700 mb-1">
-                  Target Age
+                <label htmlFor="requiredAge" className="block text-sm font-medium text-gray-700 mb-1">
+                  Required Age
                 </label>
                 <input
                   type="text"
-                  id="targetAge"
-                  name="targetAge"
+                  id="requiredAge"
+                  name="requiredAge"
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
                 />
@@ -363,20 +252,33 @@ function Vaccinations() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
                 ></textarea>
               </div>
-              
+
               <div className="mb-4">
-                <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
+                <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
+                  Price
                 </label>
-                <select
-                  id="status"
-                  name="status"
+                <input
+                  type="number"
+                  id="price"
+                  name="price"
+                  step="0.01"
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
+                />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="provider" className="block text-sm font-medium text-gray-700 mb-1">
+                  Provider ID
+                </label>
+                <input
+                  type="text"
+                  id="provider"
+                  name="provider"
+                  required
+                  defaultValue="60d21b4667d0d8992e610c85"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                />
               </div>
               
               <div className="mt-6 flex justify-end">
@@ -416,12 +318,12 @@ function Vaccinations() {
               e.preventDefault();
               const formData = new FormData(e.target);
               const vaccineData = {
-                id: editingVaccine.id,
+                _id: editingVaccine._id,
                 name: formData.get('name'),
-                targetAge: formData.get('targetAge'),
+                requiredAge: formData.get('requiredAge'),
                 description: formData.get('description'),
-                status: formData.get('status'),
-                dateAdded: editingVaccine.dateAdded
+                price: parseFloat(formData.get('price')),
+                provider: formData.get('provider'),
               };
               handleEditVaccine(vaccineData);
             }}>
@@ -440,14 +342,14 @@ function Vaccinations() {
               </div>
               
               <div className="mb-4">
-                <label htmlFor="edit-targetAge" className="block text-sm font-medium text-gray-700 mb-1">
-                  Target Age
+                <label htmlFor="edit-requiredAge" className="block text-sm font-medium text-gray-700 mb-1">
+                  Required Age
                 </label>
                 <input
                   type="text"
-                  id="edit-targetAge"
-                  name="targetAge"
-                  defaultValue={editingVaccine.targetAge}
+                  id="edit-requiredAge"
+                  name="requiredAge"
+                  defaultValue={editingVaccine.requiredAge}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
                 />
@@ -466,21 +368,20 @@ function Vaccinations() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
                 ></textarea>
               </div>
-              
+
               <div className="mb-4">
-                <label htmlFor="edit-status" className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
+                <label htmlFor="edit-price" className="block text-sm font-medium text-gray-700 mb-1">
+                  Price
                 </label>
-                <select
-                  id="edit-status"
-                  name="status"
-                  defaultValue={editingVaccine.status}
+                <input
+                  type="number"
+                  id="edit-price"
+                  name="price"
+                  step="0.01"
+                  defaultValue={editingVaccine.price}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
+                />
               </div>
               
               <div className="mt-6 flex justify-end">

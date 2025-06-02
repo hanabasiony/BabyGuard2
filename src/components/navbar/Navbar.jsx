@@ -25,6 +25,14 @@ export default function Navbar() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [cartCount, setCartCount] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    if (role == 'admin') {
+      setIsAdmin(true);
+    }
+  }, []);
 
   // Update cart count whenever productQuantities changes
   useEffect(() => {
@@ -158,6 +166,12 @@ export default function Navbar() {
                 Child profile
               </NavLink>
             </li>
+            {isAdmin && 
+            <li>
+            <NavLink to="/admin" className=" hover:text-pink-600     text-pink-400 font-semibold">
+              Admin dashboard
+            </NavLink>
+          </li>}
             {/* <li>
               <NavLink to="/contactUs" className=" hover:text-pink-600     text-pink-400 font-semibold">
                 Contact us

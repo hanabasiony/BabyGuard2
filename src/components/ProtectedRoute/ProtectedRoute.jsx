@@ -5,7 +5,7 @@ export default function ProtectedRoute({ children }) {
 
   const navigate = useNavigate();
 
-  if (localStorage.getItem('token') == null || localStorage.getItem('role') !== 'parent') {
+  if (localStorage.getItem('token') == null ) {
     return <Navigate to='/login' />
   }
 

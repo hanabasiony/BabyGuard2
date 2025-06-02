@@ -13,6 +13,7 @@ export default function ChildDashboard() {
     const [error, setError] = useState(null);
     const [selectedChild, setSelectedChild] = useState(null);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
+    const [vaccineRequests, setVaccineRequests] = useState([]);
 
     const calculateAge = (birthDate) => {
         const birth = new Date(birthDate);
@@ -64,6 +65,26 @@ export default function ChildDashboard() {
         };
 
         fetchChildData();
+    }, []);
+
+    useEffect(() => {
+        const fetchVaccineRequests = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get('http://localhost:8000/api/vaccine-requests/', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setVaccineRequests(response.data.data);
+                console.log(response.data.data);
+            } catch (err) {
+                console.error('Error fetching vaccine requests:', err);
+                toast.error("Failed to fetch vaccine requests");
+            }
+        };
+
+        fetchVaccineRequests();
     }, []);
 
     const handleRemoveChild = async () => {
@@ -233,20 +254,63 @@ export default function ChildDashboard() {
                             </div>
 
                             <div className="bg-white p-4 rounded-2xl shadow space-y-4">
-                                <h3 className="font-semibold text-lg">Vaccine Requests</h3>
-                                <div className="flex items-center justify-between p-3 bg-gray-100 rounded-lg">
-                                    <div>
-                                        <p className="text-sm font-medium">Hepatitis B Vaccine</p>
-                                        <p className="text-xs text-gray-500">April 25, 2025 • City Hospital</p>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <span className="bg-yellow-100 text-yellow-800 px-2 py-1 text-xs rounded">Pending</span>
-                                        <button className="text-red-500 hover:text-red-700">✕</button>
-                                    </div>
+                                <div className="flex justify-between items-center">
+                                    <h3 className="font-semibold text-lg">Vaccine Requests</h3>
+                                    <button 
+                                        onClick={() => navigate('/request-vaccine')}
+                                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700"
+                                    >
+                                        <Plus className="w-4 h-4 mr-1" />
+                                        New Request
+                                    </button>
                                 </div>
+                                {vaccineRequests.length === 0 ? (
+                                    <div className="text-center py-4">
+                                        <p className="text-gray-500 text-sm">No vaccine requests found</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {vaccineRequests.map((request) => (
+                                            <div key={request._id} className="flex items-center justify-between p-3 bg-gray-100 rounded-lg">
+                                                <div>
+                                                    <p className="text-sm font-medium">{request.vaccine.name}</p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {new Date(request.vaccinationDate).toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
+                                                        })}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {request.street}, {request.city}, {request.governorate}
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center space-x-2">
+                                                    <span className={`px-2 py-1 text-xs rounded ${
+                                                        request.status === 'Pending' 
+                                                            ? 'bg-yellow-100 text-yellow-800'
+                                                            : request.status === 'Approved'
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : 'bg-red-100 text-red-800'
+                                                    }`}>
+                                                        {request.status}
+                                                    </span>
+                                                    {request.status === 'Pending' && (
+                                                        <button 
+                                                            onClick={() => handleCancelRequest(request._id)}
+                                                            className="text-red-500 hover:text-red-700"
+                                                        >
+                                                            <X className="w-4 h-4" />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-
-                            
                         </div>
                     </div>
                 )}

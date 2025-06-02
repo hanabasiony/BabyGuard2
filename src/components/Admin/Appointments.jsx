@@ -98,6 +98,7 @@ function Appointments() {
       if (response.data && response.data.data) {
         // Store raw data and let the next useEffect process and filter it
         setRawAppointments(response.data.data);
+        console.log(response.data.data);
       } else {
         console.error('API returned unexpected data structure:', response.data);
         setRawAppointments([]);

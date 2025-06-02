@@ -22,6 +22,7 @@ export default function Home() {
     const [pendingCartProducts, setPendingCartProducts] = useState(
         JSON.parse(localStorage.getItem('productQuantitiesOfPendingCart') || '[]')
     );
+    // const [authorized, setAuthorized] = useState(false);
 
     useEffect(() => {
         const fetchProducts = async () => {

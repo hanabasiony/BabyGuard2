@@ -13,39 +13,18 @@ export default function Settings() {
     const [userData, setUserData] = useState(null)
 
     useEffect(() => {
+        if (!userToken) return; // Don't load data if not logged in
+
         const storedCartDetails = localStorage.getItem('cartDetails');
         if (storedCartDetails) {
             setCartDetails(JSON.parse(storedCartDetails));
         }
-    }, []);
+    }, [userToken]);
 
     async function handleLogout() {
         try {
             const cartId = localStorage.getItem('cartId');
             const token = localStorage.getItem('token');
-
-            // Delete cart from server if it exists
-            // if (cartId && token) {
-            //     try {
-            //         const response = await axios.delete(
-            //             `http://localhost:8000/api/carts/${cartId}`,
-            //             {
-            //                 headers: {
-            //                     Authorization: `Bearer ${token}`
-            //                 }
-            //             }
-            //         );
-                    
-            //         if (response.status !== 200) {
-            //             toast.error('Failed to delete cart. Please try again.');
-            //             return; // Prevent logout if cart deletion fails
-            //         }
-            //     } catch (error) {
-            //         console.error('Error deleting cart:', error);
-            //         toast.error('Failed to delete cart. Please try again.');
-            //         return; // Prevent logout if cart deletion fails
-            //     }
-            // }
 
             // Reset cart state and clear localStorage
             resetCart();
@@ -70,43 +49,52 @@ export default function Settings() {
             toast.error('An error occurred during logout');
         }
     }
-    const token = localStorage.getItem('token')
 
-    // const getUserData = ()=>{
-    //     const res = axios.get('http:localhost:8000/api/user/me',{
-    //         headers: `bearer ${ token }`
-    //     })
-    // }
-    useEffect(
-        ()=>{
-            const res = axios.get('http://localhost:8000/api/user/me',{
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            .then((res)=>{
-                console.log(res);
-                console.log(res.data.user);
-                setUserData(res.data.user)
-                
-            })
-            .catch((err)=>{
-                console.log(err);
-                
-            })
+    useEffect(() => {
+        if (!userToken) return; // Don't fetch user data if not logged in
 
-        }
-    ,[])
+        const token = localStorage.getItem('token');
+        axios.get('http://localhost:8000/api/user/me', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        .then((res) => {
+            setUserData(res.data.user);
+        })
+        .catch((err) => {
+            console.error('Error fetching user data:', err);
+            toast.error('Failed to load user data');
+        });
+    }, [userToken]);
 
-
-    
-    
+    if (!userToken) {
+        return (
+            <div className="min-h-screen pt-32 pb-30 px-4 max-w-[1300px] mx-auto">
+                <div className="bg-white rounded-lg shadow-md p-8 max-w-6xl mx-auto">
+                    <h2 className="text-2xl font-semibold text-pink-600 mb-8">Welcome to Baby Guard</h2>
+                    <div className="space-y-4">
+                        <NavLink 
+                            to="/login" 
+                            className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
+                        >
+                            Login
+                        </NavLink>
+                        <NavLink 
+                            to="/Reg" 
+                            className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
+                        >
+                            Register
+                        </NavLink>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen pt-32 pb-30 px-4 max-w-[1300px] mx-auto">
             <div className="bg-white rounded-lg shadow-md p-8 max-w-6xl mx-auto">
-                {/* <h2 className="text-2xl font-semibold text-pink-600 mb-8">Settings</h2> */}
-                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* User Details Section */}
                     <div className="space-y-6">
@@ -234,37 +222,18 @@ export default function Settings() {
                     <div className="space-y-6">
                         <h3 className="text-xl font-medium text-pink-600">Account Settings</h3>
                         <div className="space-y-4">
-                            {userToken ? (
-                                <>
-                                    <NavLink 
-                                        to="/UpdatePass" 
-                                        className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
-                                    >
-                                        Change Password
-                                    </NavLink>
-                                    <button 
-                                        onClick={handleLogout}
-                                        className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
-                                    >
-                                        Logout
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    <NavLink 
-                                        to="/login" 
-                                        className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
-                                    >
-                                        Login
-                                    </NavLink>
-                                    <NavLink 
-                                        to="/Reg" 
-                                        className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
-                                    >
-                                        Register
-                                    </NavLink>
-                                </>
-                            )}
+                            <NavLink 
+                                to="/UpdatePass" 
+                                className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
+                            >
+                                Change Password
+                            </NavLink>
+                            <button 
+                                onClick={handleLogout}
+                                className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
+                            >
+                                Logout
+                            </button>
                         </div>
                     </div>
 
@@ -276,7 +245,7 @@ export default function Settings() {
                                 to="/myOrders" 
                                 className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
                             >
-                                <div className="flex items-center space-x-3" onClick={()=> navigate('/myOrders')}>
+                                <div className="flex items-center space-x-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                     </svg>
@@ -288,5 +257,5 @@ export default function Settings() {
                 </div>
             </div>
         </div>
-    )
+    );
 }

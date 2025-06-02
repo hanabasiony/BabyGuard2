@@ -45,8 +45,10 @@ const Review = () => {
                 // navigate('/my-orders');
             }
         } catch (error) {
-            console.error('Error submitting review:', error);
-            toast.error(error.response?.data?.message || 'Failed to submit review');
+            console.error('Error submitting review:hena', error);
+            console.log();
+            
+            toast.error(error.response?.data?.errors[""].msg|| 'Failed to submit review');
         } finally {
             setLoading(false);
         }

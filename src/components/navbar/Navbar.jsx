@@ -134,7 +134,7 @@ export default function Navbar() {
     <>
      
 
-      <nav className="bg-pink-50 shadow pe-7 shadow-pink-300 px-2 fixed  py-2 w-full ">
+      <nav className="bg-white shadow pe-7  shadow-pink-300 px-2 fixed  py-2 w-full">
         <div className="container mx-auto flex items-center justify-between max-w-[1200px]">
           {/* Left Side: Logo & Links */}
           <div className="flex items-center">
@@ -146,6 +146,11 @@ export default function Navbar() {
 
           {/* Desktop Nav Links */}
           <ul className="hidden md:flex items-center space-x-6">
+             <li>
+              <NavLink to="/childProfile" className=" hover:text-pink-600     text-pink-400 font-semibold">
+                Child profile
+              </NavLink>
+            </li>
             <li>
               <NavLink to="/products" className=" hover:text-pink-600    text-pink-400 font-semibold ">
                 Products
@@ -161,11 +166,7 @@ export default function Navbar() {
                 Pregnancy tips
               </NavLink>
             </li>
-            <li>
-              <NavLink to="/childProfile" className=" hover:text-pink-600     text-pink-400 font-semibold">
-                Child profile
-              </NavLink>
-            </li>
+           
             {isAdmin && 
             <li>
             <NavLink to="/admin" className=" hover:text-pink-600     text-pink-400 font-semibold">
@@ -211,6 +212,7 @@ export default function Navbar() {
                     <Settings className="w-6 h-6" />
                   </NavLink>
                 </li>
+                
               )}
             </ul>
           </div>
@@ -223,7 +225,7 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden bg-pink-100 py-4">
+          <div className="md:hidden bg-white py-4">
             <ul className="flex flex-col items-center space-y-4">
               <li><NavLink to="/products" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Products</NavLink></li>
               <li><NavLink to="/categories" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Categories</NavLink></li>

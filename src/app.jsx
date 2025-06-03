@@ -56,8 +56,8 @@ import PaymentForm from './components/PaymentPage/PaymentForm'
 import ManageChildren from './components/Admin/ManageChildren'
 import AddProductPage from './components/Admin/AddProductPage'
 import AddProvider from './components/Admin/AddProvider'
-
-
+import ManageCartStatus from './components/Admin/ManageCartStatus'
+import WriteReview from './components/Admin/WriteReview'
 
 const router = createBrowserRouter([
   {
@@ -73,9 +73,9 @@ const router = createBrowserRouter([
       {
         path: 'products',
         element: (
-          <ProtectedRoute>
+         
             <Home />
-          </ProtectedRoute>
+         
         ),
       },
       { path: 'categories', element: <Categories /> },
@@ -177,6 +177,7 @@ const router = createBrowserRouter([
       { path: 'tips-articles', element: <TipsArticles /> },
       { path: 'complaints', element: <Complaints /> },
       { path: 'providers', element: <AddProvider/> },
+      { path: 'cart-status', element: <ManageCartStatus/> },
     ],
   },
 ]);

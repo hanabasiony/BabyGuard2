@@ -22,6 +22,7 @@ export default function MyOrders() {
             });
             setOrders(response.data.data.carts || []);
             console.log(response.data.data.carts);
+            console.log(response.data.data);
             
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -43,16 +44,14 @@ export default function MyOrders() {
 
     const getStatusColor = (status) => {
         switch (status.toLowerCase()) {
-            case 'confirmed':
+            case 'Delivered':
                 return 'bg-green-100 text-green-800';
-            case 'waiting for cash payment':
+            case 'Pending':
                 return 'bg-yellow-100 text-yellow-800';
-            case 'waiting for payment':
+            case 'Waiting for cash payment':
                 return 'bg-blue-100 text-blue-800';
-            case 'delivered':
+            case ' online paid':
                 return 'bg-green-100 text-green-800';
-            case 'cancelled':
-                return 'bg-red-100 text-red-800';
             default:
                 return 'bg-gray-100 text-gray-800';
         }
@@ -98,12 +97,12 @@ export default function MyOrders() {
                     </div>
                 ) : (
                     <div className="grid gap-6">
-                        {orders.map((order) => (
-                            <div key={order._id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        {orders.map((order,index ) => (
+                            <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                                 <div className="p-6">
                                     <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                                         <div>
-                                            <h3 className="text-lg font-semibold text-gray-800">Order #{order._id.slice(-6)}</h3>
+                                            <h3 className="text-lg font-semibold text-gray-800">Order #{order._id}</h3>
                                             <p className="text-sm text-gray-500">Placed on {formatDate(order.createdAt)}</p>
                                         </div>
                                         <div className="mt-2 md:mt-0">
@@ -117,27 +116,27 @@ export default function MyOrders() {
                                     <div className="mb-6">
                                         <h4 className="text-lg font-semibold text-gray-800 mb-4">Products</h4>
                                         <div className="space-y-4">
-                                            {order.products && order.products.map((product) => (
-                                                <div key={product._id} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+                                            {order.products && order.products.map((product, index) => (
+                                                <div key={product.productId || index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
                                                     <img 
                                                         src={product.image} 
                                                         alt={product.name}
                                                         className="w-20 h-20 object-cover rounded-lg"
                                                     />
                                                     <div className="flex-1">
-                                                        <div className="flex justify-between">
+                                                        <div className="flex justify-between items-center">
                                                             <div>
                                                                 <h5 className="font-medium text-gray-800">{product.name}</h5>
                                                                 <p className="text-sm text-gray-500">Quantity: {product.quantity}</p>
                                                                 <p className="text-sm text-gray-500">Price: EGP {product.price}</p>
                                                             </div>
-                                                            <div className="flex flex-col items-end gap-2">
-                                                                {order.status === 'delivered' && (
+                                                            <div className="flex items-center">
+                                                                {(order.status === 'Delivered'|| order.status === 'Online paid') && product.productId && (
                                                                     <Link
-                                                                        to={`/review/${product._id}`}
-                                                                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700"
+                                                                        to={`/review/${product.productId}`}
+                                                                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-600 transition-colors duration-200 shadow-sm hover:shadow-md"
                                                                     >
-                                                                        <Star className="h-4 w-4 mr-1" />
+                                                                        <Star className="h-4 w-4 mr-2" />
                                                                         Write Review
                                                                     </Link>
                                                                 )}

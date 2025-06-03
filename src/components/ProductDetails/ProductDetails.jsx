@@ -12,6 +12,13 @@ export default function ProductDetails() {
     const { id } = useParams();
     const { productQuantities, handleAddToCart, handleUpdateQuantity, loadingProducts, handleDeleteProduct } = useContext(CartContext);
     const [localProductQuantities, setLocalProductQuantities] = useState({});
+    const [ isAdmin , setIsAdmin ] = useState( false )
+    
+
+    const role = localStorage.getItem('role')
+    if(role === 'admin'){
+        setIsAdmin(true)
+    }
 
     // Fetch pending cart data on component mount
     useEffect(() => {
@@ -48,7 +55,10 @@ export default function ProductDetails() {
                     Authorization: `Bearer ${token}`
                 }
             });
+            console.log(response.data.data);
             return response.data.data;
+            
+            
         }
     });
 
@@ -183,7 +193,7 @@ export default function ProductDetails() {
     const currentQuantity = localProductQuantities[product._id] || 0;
 
     return (
-        <div className="bg-whitea py-50">
+        <div className="bg-whitea py-20">
             <div className="p-6 max-w-5xl mx-auto font-sans">
                 <div className="grid md:grid-cols-2 gap-8">
                     {/* Product Images */}
@@ -191,7 +201,7 @@ export default function ProductDetails() {
                         <img
                             src={product.image}
                             alt={product.name}
-                            className="rounded-xl w-[50%]"
+                            className="rounded-xl w-[100%]"
                         />
                         <div className="flex gap-2">
                             {/* Additional images can be added here */}
@@ -329,13 +339,43 @@ export default function ProductDetails() {
                                                 </div>
                                                 <span className="font-medium text-gray-900">{review.user.name}</span>
                                             </div>
-                                            <span className="text-sm text-gray-500">
-                                                {new Date(review.createdAt).toLocaleDateString('en-US', {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric'
-                                                })}
-                                            </span>
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-sm text-gray-500">
+                                                    {new Date(review.createdAt).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    })}
+                                                </span>
+                                                {isAdmin && (
+                                                    <button
+                                                        onClick={async () => {
+                                                            if (window.confirm('Are you sure you want to delete this review?')) {
+                                                                try {
+                                                                    const token = localStorage.getItem('token');
+                                                                    await axios.delete(
+                                                                        `http://localhost:8000/api/products-reviews/${review._id}`,
+                                                                        {
+                                                                            headers: {
+                                                                                Authorization: `Bearer ${token}`
+                                                                            }
+                                                                        }
+                                                                    );
+                                                                    toast.success('Review deleted successfully!');
+                                                                    // Refresh the page to update reviews
+                                                                    window.location.reload();
+                                                                } catch (error) {
+                                                                    console.error('Error deleting review:', error);
+                                                                    toast.error('Failed to delete review');
+                                                                }
+                                                            }
+                                                        }}
+                                                        className="text-red-500 hover:text-red-600 transition-colors duration-200"
+                                                    >
+                                                        <Trash size={16} />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                         <p className="text-gray-700 mt-2">{review.message}</p>
                                     </div>

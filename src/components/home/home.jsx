@@ -238,8 +238,11 @@ export default function Home() {
         <>
             {/* <SimpleSlider /> */}
             {/* <CategoriesSlider /> */}
-            <div className="wrapper py-40 px-10 mx-auto max-w-[1200px]">
+           
+            <div className="wrapper py-30 px-10 mx-auto max-w-[1200px]">
+                   <h2 className='text-4xl mb-16 text-gray-700'>Our Featured Products:</h2>
                 <div className='container mx-auto'>
+                  
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4  md:gap-6 mx-auto justify-items-center">
                         {products.map((product) => {
                             const currentQuantity = localProductQuantities[product._id] || 0;
@@ -253,7 +256,7 @@ export default function Home() {
                                     <img
                                         src={product.image}
                                         alt={product.name}
-                                        className='w-24 h-24 mb-4 object-cover'
+                                        className='w-24 h-24 mb-4 object-cover w-[] h-[]'
                                     />
                                     <h3 className='text-lg font-semibold text-black-600 mb-1'>{product.name}</h3>
                                     <h2 className='text-black-600 text-sm mb-2'>{product.description}</h2>

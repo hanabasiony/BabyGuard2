@@ -500,7 +500,7 @@ function ManageNurses() {
 
       {/* Add Nurse Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+        <div className="fixed inset-0 bg-gray-600/30 bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-full overflow-hidden flex flex-col">
             <div className="flex justify-between items-center mb-4 p-6 pb-4 border-b border-gray-200">
               <h2 className="text-xl font-semibold text-gray-800">Add New Nurse</h2>

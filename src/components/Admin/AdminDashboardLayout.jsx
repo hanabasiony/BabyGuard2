@@ -13,6 +13,7 @@ import ManageChildren from './ManageChildren';
 import AddProductPage from './AddProductPage';
 import AddProvider from './AddProvider';
 import AddVaccine from './AddVaccine';
+import ManageCartStatus from './ManageCartStatus';
 
 const AdminDashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -66,6 +67,7 @@ const AdminDashboardLayout = () => {
               <Route path="tips-articles" element={<TipsArticles />} />
               <Route path="complaints" element={<Complaints />} />
               <Route path="providers" element={<AddProvider />} />
+              <Route path="cart-status" element={<ManageCartStatus />} />
             </Routes>
           </div>
         </main>

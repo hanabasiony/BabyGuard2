@@ -126,11 +126,43 @@ export default function Login() {
                 navigate('/products');
             }
         } catch (error) {
-            setErrorMsg(error.response?.data?.message || 'Login failed')
-            setTimeout(() => setErrorMsg(null), 2000)
             console.error('Login API error:', error);
+
+            if (error.response) {
+                if (error.response.data && error.response.data.errors) {
+                    // Handle validation errors with 'errors' object
+                    const errors = error.response.data.errors;
+                    for (const field in errors) {
+                        if (Array.isArray(errors[field])) {
+                            errors[field].forEach(err => {
+                                if (err.msg) {
+                                    toast.error(`${field}: ${err.msg}`);
+                                }
+                            });
+                        } else if (errors[field] && typeof errors[field].msg === 'string') {
+                             // Handle cases where error[field] is a single object, not an array
+                             toast.error(`${field}: ${errors[field].msg}`);
+                        } else {
+                             // Fallback for unexpected structure within 'errors'
+                              toast.error(`Error in ${field}`);
+                         }
+                    }
+                } else if (error.response.status === 401 && typeof error.response.data === 'string' && error.response.data.toLowerCase().includes('invalid email or password')) {
+                    // Handle specific 401 invalid credentials string
+                    toast.error('Invalid email or password');
+                } else {
+                    // Handle other API errors with response data (e.g., simple message string)
+                    toast.error(error.response.data.message || `Login failed: ${error.response.status}`);
+                }
+            } else {
+                // Handle network errors or other issues without response
+                toast.error('Login failed. Please check your connection.');
+            }
+
+            // Clear any form-specific error message display if you're using toast instead
+            setErrorMsg(null);
         } finally {
-            setLoading(false)
+            setLoading(false);
             console.log('Login process finished.');
         }
     }

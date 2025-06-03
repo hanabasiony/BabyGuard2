@@ -11,7 +11,8 @@ export default function ManageCartStatus() {
         'Pending',
         'Delivered',
         'Online paid',
-        'Waiting for cash payment'
+        'Waiting for cash payment',
+        'Cancelled'
     ];
 
     const handleSubmit = async (e) => {

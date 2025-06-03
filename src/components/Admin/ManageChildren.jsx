@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from "react-hot-toast";
+import { PlusCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 
 function ManageChildren() {
@@ -14,13 +16,16 @@ function ManageChildren() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1); // Placeholder, depends on API
   const [totalEntries, setTotalEntries] = useState(0); // Placeholder, depends on API
-  const [startIndex, setStartIndex] = useState(1); // Placeholder, depends on API
-  const [endIndex, setEndIndex] = useState(0); // Placeholder, depends on API
+  const [startIndex, setStartIndex] = useState(1);
+  const [endIndex, setEndIndex] = useState(0);
   const [error, setError] = useState(null);
-  const [nextPageToken, setNextPageToken] = useState(null); // For cursor-based pagination
-  const [limit, setLimit] = useState(10); // Default limit for pagination
+  const [nextPageToken, setNextPageToken] = useState(null);
+  const [limit, setLimit] = useState(10);
   const [prevPageToken, setPrevPageToken] = useState(null);
   const [pageHistory, setPageHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   // Fetch children data from API
   useEffect(() => {
@@ -207,7 +212,7 @@ function ManageChildren() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div className="min-h-screen bg-gray-50/35 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -216,6 +221,14 @@ function ManageChildren() {
               <h2 className="text-2xl font-medium text-gray-800">Manage Children</h2>
               <p className="mt-1 text-sm text-gray-500">View and manage registered children</p>
             </div>
+             {/* Button to open Add Child modal */}
+            <button
+              onClick={() => navigate('/admin/add-child')}
+              className="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+            >
+              <PlusCircle className="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
+              Add New Child
+            </button>
           </div>
         </div>
 
@@ -423,152 +436,6 @@ function ManageChildren() {
           </div>
         )}
       </div>
-
-      {/* Add Child Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-full overflow-hidden flex flex-col">
-            <div className="flex justify-between items-center mb-4 p-6 pb-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Add New Child</h2>
-              <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-500">
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="p-6 pt-0 overflow-y-auto">
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const childData = {
-                  name: formData.get('name'),
-                  gender: formData.get('gender'),
-                  bloodType: formData.get('bloodType'),
-                  ssn: formData.get('ssn'),
-                  birthCertificate: formData.get('birthCertificate') || null, // Optional image
-                };
-                // Get the date value from the input (YYYY-MM-DD string) and assign to birthDate
-                const birthDateValue = formData.get('dateOfBirth');
-                childData.birthDate = birthDateValue; // API expects 'birthDate' key
-
-                handleAddChild(childData);
-              }}>
-                <div className="mb-4">
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    Child Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    id="dateOfBirth"
-                    name="dateOfBirth"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                  />
-                </div>
-
-                 {/* Add fields for Gender, Blood Type, SSN, User ID */}
-                  <div className="mb-4">
-                   <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
-                    Gender
-                  </label>
-                  <select
-                    id="gender"
-                    name="gender"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div className="mb-4">
-                   <label htmlFor="bloodType" className="block text-sm font-medium text-gray-700 mb-1">
-                    Blood Type
-                  </label>
-                  <select
-                    id="bloodType"
-                    name="bloodType"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                  >
-                    <option value="">Select Blood Type</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                  </select>
-                </div>
-
-                 <div className="mb-4">
-                   <label htmlFor="ssn" className="block text-sm font-medium text-gray-700 mb-1">
-                    SSN
-                  </label>
-                  <input
-                    type="text"
-                    id="ssn"
-                    name="ssn"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                  />
-                </div>
-
-                 {/* Removed User ID field as it's not required by the API for adding */}
-
-                {/* Optional Image Upload */}
-                 <div className="mb-4">
-                  <label htmlFor="birthCertificate" className="block text-sm font-medium text-gray-700 mb-1">
-                    Birth Certificate (Optional File)
-                  </label>
-                  <input
-                    type="file"
-                    id="birthCertificate"
-                    name="birthCertificate"
-                    accept="image/*,application/pdf"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100"
-                  />
-                </div>
-
-               <div className="mt-6 flex justify-end">
-                 <button
-                   type="button"
-                   onClick={() => setShowAddModal(false)}
-                   className="mr-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                 >
-                   Cancel
-                 </button>
-                 <button
-                   type="submit"
-                   className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                 >
-                   Add Child
-                 </button>
-               </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

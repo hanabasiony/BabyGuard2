@@ -227,7 +227,7 @@ export default function ChildDashboard() {
                                 <div>
                                     <h2 className="text-xl font-semibold">{selectedChild?.name}</h2>
                                     <p className="text-sm text-gray-500">
-                                        Age: {selectedChild?.birthDate ? calculateAge(selectedChild.birthDate) : "N/A"} &bull; Gender: {selectedChild?.gender} &bull; Blood type: {selectedChild?.bloodType}
+                                        Age: {selectedChild?.birthDate ? calculateAge(selectedChild.birthDate) : "N/A"} &bull; Gender: {selectedChild?.gender} 
                                     </p>
                                 </div>
                             </div>

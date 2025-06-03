@@ -60,7 +60,7 @@ const AdminDashboardLayout = () => {
               <Route path="manage-nurses" element={<ManageNurses />} />
               <Route path="/manage-children" element={<ManageChildren />} />
               <Route path="vaccinations" element={<Vaccinations />} />
-              <Route path="vaccines/add" element={<AddVaccine />} />
+              <Route path="vaccinations/add" element={<AddVaccine />} />
               <Route path="appointments" element={<Appointments />} />
               <Route path="product-store" element={<ProductStore />} />
               <Route path="product-store/add" element={<AddProductPage />} />

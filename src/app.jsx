@@ -59,6 +59,7 @@ import AddProvider from './components/Admin/AddProvider'
 import ManageCartStatus from './components/Admin/ManageCartStatus'
 import WriteReview from './components/Admin/WriteReview'
 import UserPage from './components/UserPage/UserPage'
+import AddVaccine from './components/Admin/AddVaccine'
 
 const router = createBrowserRouter([
   {
@@ -133,6 +134,10 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path:'change-password',
+        element:<UpdateLoggedUserPassword/>
+      },
+      {
         path: 'myOrders',
         element: (
           <ProtectedRoute>
@@ -180,6 +185,7 @@ const router = createBrowserRouter([
       { path: 'complaints', element: <Complaints /> },
       { path: 'providers', element: <AddProvider/> },
       { path: 'cart-status', element: <ManageCartStatus/> },
+      { path: 'vaccinations/add', element: <AddVaccine/> }
     ],
   },
 ]);

@@ -13,7 +13,7 @@ const AddChild = () => {
         name: '',
         birthDate: '',
         gender: '',
-        bloodType: '',
+        bloodType: 'A+',
         ssn: '',
         birthCertificate: null
     };
@@ -32,7 +32,7 @@ const AddChild = () => {
             .oneOf(["male", "female"], "Gender must be either 'male' or 'female'"),
         bloodType: yup.string()
             .required("Blood type is required")
-            .oneOf(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], "Please select a valid blood type"),
+            .oneOf(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-","i dont know"], "Please select a valid blood type"),
         ssn: yup.string()
             .required("Social security number is required")
             .matches(/^\d{14}$/, "Social security number must be exactly 14 digits"),
@@ -196,6 +196,8 @@ const AddChild = () => {
                     </div>
 
                     {/* Blood Type */}
+                    {/* Removed blood type input as it's now hardcoded */}
+                    {/*
                     <div className="relative z-0 w-full mb-5 group">
                         <select
                             name="bloodType"
@@ -214,6 +216,7 @@ const AddChild = () => {
                             <option value="AB-">AB-</option>
                             <option value="O+">O+</option>
                             <option value="O-">O-</option>
+                            <option value="i dont know"> i dont know</option>
                         </select>
                         <label htmlFor="bloodType" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                             Blood Type
@@ -224,6 +227,8 @@ const AddChild = () => {
                             </div>
                         )}
                     </div>
+                     */}
+
 
                     {/* Social Security Number */}
                     <div className="relative z-0 w-full mb-5 group">

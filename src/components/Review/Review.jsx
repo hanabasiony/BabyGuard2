@@ -21,6 +21,7 @@ const Review = () => {
             setError('Review must be at least 10 characters long');
             return;
         }
+        console.log('hajfk');
         
         setLoading(true);
         setError('');

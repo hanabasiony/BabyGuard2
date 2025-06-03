@@ -9,9 +9,29 @@ export default function ContactUs() {
     const [selected, setSelected] = useState('Suggestion');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [messageError, setMessageError] = useState(null);
+
+    const handleMessageChange = (e) => {
+        const newMessage = e.target.value;
+        setMessage(newMessage);
+
+        if (newMessage.trim().length > 0 && newMessage.trim().length < 10) {
+            setMessageError('Message must be at least 10 characters long');
+        } else {
+            setMessageError(null);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (message.trim().length < 10) {
+            setMessageError('Message must be at least 10 characters long');
+            toast.error('Message must be at least 10 characters long');
+            return;
+        }
+
+        setMessageError(null);
         setLoading(true);
 
         try {
@@ -36,6 +56,8 @@ export default function ContactUs() {
             toast.success('Message sent successfully!');
             setMessage('');
             setSelected('Suggestion');
+            console.log(response);
+            
         } catch (error) {
             console.error('Error sending message:', error);
             toast.error(error.response?.data?.message || 'Failed to send message');
@@ -44,7 +66,7 @@ export default function ContactUs() {
         }
     };
 
-    const options = ['Suggestion', 'Complaint'];
+    const options = ['Suggestion', 'Complaint','Question'];
     return (
         <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 py-35">
             <div className="max-w-5xl w-full grid md:grid-cols-2 gap-10 items-center">
@@ -61,8 +83,11 @@ export default function ContactUs() {
                         <div>
                             <label className="block text-sm text-gray-700">Message</label>
                             <textarea
-                                rows="4" value={message} onChange={(e) => setMessage(e.target.value)} className="w-full mt-1 px-4 py-2 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                rows="4" value={message} onChange={handleMessageChange} className={`w-full mt-1 px-4 py-2 border rounded-md ${messageError ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-pink-500`}
                             />
+                            {messageError && (
+                                <p className="text-red-500 text-xs mt-1">{messageError}</p>
+                            )}
                         </div>
 
                         <div className=" mx-auto mt-6">
@@ -78,6 +103,7 @@ export default function ContactUs() {
                                 <option value="" disabled>Select one</option>
                                 <option value="Suggestion">Suggestion</option>
                                 <option value="Complaint">Complaint</option>
+                                <option value="Question">Question</option>
                             </select>
                         </div>
 

@@ -35,6 +35,7 @@ export default function Vacciens() {
             setLoading(false);
         }
     };
+// console.log('here');/
 
     // Add this function to filter vaccines
     const filteredVaccines = vaccines.filter(vaccine => 

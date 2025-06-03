@@ -12,6 +12,7 @@ export default function WriteReview() {
         message: '',
         rating: 5
     });
+    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -40,6 +41,8 @@ export default function WriteReview() {
             if (response.status === 201) {
                 toast.success('Review submitted successfully');
                 navigate('/my-orders');
+                console.log('reva',response);
+                
             }
         } catch (error) {
             console.error('Error submitting review:', error);

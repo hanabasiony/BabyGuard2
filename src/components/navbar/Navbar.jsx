@@ -192,11 +192,11 @@ export default function Navbar() {
           </ul>
 
           {/* Right Side: Socials & Buttons */}
-          <div className="hidden md:flex items-center space-x-5">
-            <ul className="flex items-center space-x-3">
+          <div className="hidden md:flex items-end space-x-5">
+            <ul className="flex items-center space-x-5">
               {userToken ? (
                 <>
-                <h2 className='text-pink-500 text-lg'> Hello {userData.user.fName}! </h2>
+                <h2 className='text-pink-500 text-lg '> Hello {userData?.user?.fName || (isAdmin ? 'Admin' : 'user') }! </h2>
                   <li>
                     <NavLink to="/settings" className="text-gray-700 hover:text-gray-700">
                       <Settings className="w-6 h-6" />
@@ -257,6 +257,7 @@ export default function Navbar() {
               {/* <li><NavLink to="/" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Contant us</NavLink></li> */}
               {/* <li><NavLink to="/aboutUs" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>About us</NavLink></li> */}
               
+
               {userToken && <ul>
                 <li>
                 <NavLink to="/cart" className="text-gray-600 hover:text-pink-400 relative" onClick={() => setIsOpen(false)}>

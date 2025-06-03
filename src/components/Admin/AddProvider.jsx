@@ -2,55 +2,108 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import * as yup from 'yup';
+import { useFormik } from 'formik';
+
+const yourValidationSchema = yup.object().shape({
+    name: yup.string()
+        .required("Provider name required")
+        .min(2, "Provider name must be at least 2 characters")
+        .max(100, "Provider name must be at most 100 characters"),
+
+    phone: yup.string()
+        .required("Phone number required")
+        // Note: yup doesn't have built-in country-specific validation like express-validator.
+        // This regex is a basic example; more robust phone validation might require a library
+        // or relying heavily on backend validation.
+        .matches(/^\+?[0-9]{10,}$/, "Invalid phone number format"), // Basic check for digits and length
+
+    city: yup.string()
+        .required("city must have a value"), // Changed from notEmpty to required
+
+    governorate: yup.string()
+        .required("gov must have a value"), // Changed from notEmpty to required
+
+    district: yup.string()
+        .required("district must have a value"), // Changed from notEmpty to required
+
+    workHours: yup.string()
+        .required("work hours must have a value")
+        .min(2, "work hours must be at least 2 characters")
+        .max(20, "work hours must be at most 20 characters"), // Using 20 based on your text description
+});
 
 export default function AddProvider() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        name: '',
-        phone: '',
-        city: '',
-        governorate: '',
-        district: '',
-        workHours: ''
-    });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+    // Initialize formik
+    const formik = useFormik({
+        initialValues: {
+            name: '',
+            phone: '',
+            city: '',
+            governorate: '',
+            district: '',
+            workHours: ''
+        },
+        validationSchema: yourValidationSchema,
+        onSubmit: async (values) => {
+            setLoading(true);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.post(
-                'http://localhost:8000/api/provider/admin/add',
-                formData,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    toast.error('Authentication token is missing. Please log in.');
+                    setLoading(false);
+                    return;
                 }
-            );
 
-            if (response.status === 201) {
-                toast.success('Provider added successfully');
-                navigate('/admin/providers');
-                console.log(response.data);
+                const response = await axios.post(
+                    'http://localhost:8000/api/provider/admin/add',
+                    values,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                if (response.status === 201) {
+                    toast.success('Provider added successfully');
+                    navigate('/admin/providers');
+                    console.log(response.data);
+                }
+            } catch (error) {
+                console.error('Error adding provider:', error);
+                if (error.response && error.response.data && error.response.data.errors) {
+                    const apiErrors = error.response.data.errors;
+                    const formikErrors = {};
+                    for (const field in apiErrors) {
+                        if (Array.isArray(apiErrors[field])) {
+                            if (apiErrors[field].length > 0) {
+                                formikErrors[field] = apiErrors[field][0].msg || apiErrors[field][0];
+                            }
+                        } else if (apiErrors[field] && typeof apiErrors[field].msg === 'string'){
+                            formikErrors[field] = apiErrors[field].msg;
+                        } else if (typeof apiErrors[field] === 'string') {
+                            formikErrors[field] = apiErrors[field];
+                        }
+                    }
+                    formik.setErrors(formikErrors);
+                    toast.error('Validation errors occurred.');
+                } else if (error.response && error.response.data && typeof error.response.data.message === 'string') {
+                    toast.error(error.response.data.message);
+                } else if (error.response && typeof error.response.data === 'string') {
+                    toast.error(error.response.data);
+                } else {
+                    toast.error(`Failed to add provider: ${error.response?.status || 'Unknown Error'}`);
+                }
+            } finally {
+                setLoading(false);
             }
-        } catch (error) {
-            console.error('Error adding provider:', error);
-            toast.error(error.response?.data?.message || 'Failed to add provider');
-        } finally {
-            setLoading(false);
         }
-    };
+    });
 
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -63,7 +116,7 @@ export default function AddProvider() {
                         </p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={formik.handleSubmit} className="space-y-6">
                         {/* Provider Name */}
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -73,12 +126,13 @@ export default function AddProvider() {
                                 type="text"
                                 id="name"
                                 name="name"
-                                required
-                                value={formData.name}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                                {...formik.getFieldProps('name')}
+                                className={`w-full px-3 py-2 border rounded-md ${formik.touched.name && formik.errors.name ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500`}
                                 placeholder="e.g., Health Ministry"
                             />
+                            {formik.touched.name && formik.errors.name && (
+                                <div className="text-red-500 text-xs mt-1">{formik.errors.name}</div>
+                            )}
                         </div>
 
                         {/* Phone Number */}
@@ -90,12 +144,13 @@ export default function AddProvider() {
                                 type="tel"
                                 id="phone"
                                 name="phone"
-                                required
-                                value={formData.phone}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                                {...formik.getFieldProps('phone')}
+                                className={`w-full px-3 py-2 border rounded-md ${formik.touched.phone && formik.errors.phone ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500`}
                                 placeholder="e.g., +201012345678"
                             />
+                            {formik.touched.phone && formik.errors.phone && (
+                                <div className="text-red-500 text-xs mt-1">{formik.errors.phone}</div>
+                            )}
                         </div>
 
                         {/* Location Information */}
@@ -108,12 +163,13 @@ export default function AddProvider() {
                                     type="text"
                                     id="governorate"
                                     name="governorate"
-                                    required
-                                    value={formData.governorate}
-                                    onChange={handleChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                                    {...formik.getFieldProps('governorate')}
+                                    className={`w-full px-3 py-2 border rounded-md ${formik.touched.governorate && formik.errors.governorate ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500`}
                                     placeholder="e.g., Cairo"
                                 />
+                                {formik.touched.governorate && formik.errors.governorate && (
+                                    <div className="text-red-500 text-xs mt-1">{formik.errors.governorate}</div>
+                                )}
                             </div>
                             <div>
                                 <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
@@ -123,12 +179,13 @@ export default function AddProvider() {
                                     type="text"
                                     id="city"
                                     name="city"
-                                    required
-                                    value={formData.city}
-                                    onChange={handleChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                                    {...formik.getFieldProps('city')}
+                                    className={`w-full px-3 py-2 border rounded-md ${formik.touched.city && formik.errors.city ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500`}
                                     placeholder="e.g., Cairo"
                                 />
+                                {formik.touched.city && formik.errors.city && (
+                                    <div className="text-red-500 text-xs mt-1">{formik.errors.city}</div>
+                                )}
                             </div>
                             <div>
                                 <label htmlFor="district" className="block text-sm font-medium text-gray-700 mb-1">
@@ -138,12 +195,13 @@ export default function AddProvider() {
                                     type="text"
                                     id="district"
                                     name="district"
-                                    required
-                                    value={formData.district}
-                                    onChange={handleChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                                    {...formik.getFieldProps('district')}
+                                    className={`w-full px-3 py-2 border rounded-md ${formik.touched.district && formik.errors.district ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500`}
                                     placeholder="e.g., Nasr City"
                                 />
+                                {formik.touched.district && formik.errors.district && (
+                                    <div className="text-red-500 text-xs mt-1">{formik.errors.district}</div>
+                                )}
                             </div>
                         </div>
 
@@ -156,12 +214,13 @@ export default function AddProvider() {
                                 type="text"
                                 id="workHours"
                                 name="workHours"
-                                required
-                                value={formData.workHours}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                                {...formik.getFieldProps('workHours')}
+                                className={`w-full px-3 py-2 border rounded-md ${formik.touched.workHours && formik.errors.workHours ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500`}
                                 placeholder="e.g., 9 AM to 5 PM"
                             />
+                            {formik.touched.workHours && formik.errors.workHours && (
+                                <div className="text-red-500 text-xs mt-1">{formik.errors.workHours}</div>
+                            )}
                         </div>
 
                         {/* Submit Button */}
@@ -175,10 +234,10 @@ export default function AddProvider() {
                             </button>
                             <button
                                 type="submit"
-                                disabled={loading}
+                                disabled={formik.isSubmitting}
                                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
                             >
-                                {loading ? 'Adding...' : 'Add Provider'}
+                                {formik.isSubmitting ? 'Adding...' : 'Add Provider'}
                             </button>
                         </div>
                     </form>

@@ -12,6 +12,7 @@ import Complaints from './Complaints';
 import ManageChildren from './ManageChildren';
 import AddProductPage from './AddProductPage';
 import AddProvider from './AddProvider';
+import AddVaccine from './AddVaccine';
 
 const AdminDashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -57,8 +58,8 @@ const AdminDashboardLayout = () => {
               <Route path="manage-users" element={<ManageUsers />} />
               <Route path="manage-nurses" element={<ManageNurses />} />
               <Route path="/manage-children" element={<ManageChildren />} />
-
               <Route path="vaccinations" element={<Vaccinations />} />
+              <Route path="vaccines/add" element={<AddVaccine />} />
               <Route path="appointments" element={<Appointments />} />
               <Route path="product-store" element={<ProductStore />} />
               <Route path="product-store/add" element={<AddProductPage />} />

@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Slider from "react-slick"
+import axios from 'axios'
 import img4 from '../../assets/images/IMG_3224.JPG'
 import img5 from "../../assets/images/IMG_3225.JPG"
 import img6 from "../../assets/images/IMG_3223.JPG"
@@ -13,7 +14,24 @@ import AboutUs from "../AboutUs/AboutUs"
 
 export default function Home() {
   const navigate = useNavigate();
- 
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/products');
+        // Take only the first 4 products
+        setFeaturedProducts(response.data.data.slice(0, 4));
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching featured products:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedProducts();
+  }, []);
 
   return (
 
@@ -138,37 +156,23 @@ export default function Home() {
       <section className="mx-auto px-16 py-12">
         <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12">Featured Products</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-pink-50 border-none rounded-lg shadow-sm p-6">
-            <div className="flex flex-col items-center">
-              <div className="mb-4 text-2xl">🚼</div>
-              <h3 className="font-medium text-center mb-2">Baby Stroller</h3>
-              <p className="text-pink-500 font-semibold">$299</p>
-            </div>
-          </div>
-
-          <div className="bg-blue-50 border-none rounded-lg shadow-sm p-6">
-            <div className="flex flex-col items-center">
-              <div className="mb-4 text-2xl">🍼</div>
-              <h3 className="font-medium text-center mb-2">Feeding Bottle</h3>
-              <p className="text-blue-500 font-semibold">$15</p>
-            </div>
-          </div>
-
-          <div className="bg-pink-50 border-none rounded-lg shadow-sm p-6">
-            <div className="flex flex-col items-center">
-              <div className="mb-4 text-2xl">🧸</div>
-              <h3 className="font-medium text-center mb-2">Educational Toys</h3>
-              <p className="text-pink-500 font-semibold">$49</p>
-            </div>
-          </div>
-
-          <div className="bg-blue-50 border-none rounded-lg shadow-sm p-6">
-            <div className="flex flex-col items-center">
-              <div className="mb-4 text-2xl">🛏</div>
-              <h3 className="font-medium text-center mb-2">Baby Crib</h3>
-              <p className="text-blue-500 font-semibold">$399</p>
-            </div>
-          </div>
+          {loading ? (
+            <div className="col-span-4 text-center">Loading products...</div>
+          ) : (
+            featuredProducts.map((product) => (
+              <div key={product._id} className="bg-pink-50 border-none rounded-lg shadow-sm p-6">
+                <div className="flex flex-col items-center">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-16 h-16 object-cover mb-4 rounded-full"
+                  />
+                  <h3 className="font-medium text-center mb-2">{product.name}</h3>
+                  <p className="text-pink-500 font-semibold">EGP {product.price}</p>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </section>
 
@@ -176,50 +180,37 @@ export default function Home() {
       <section className="mx-auto px-14 py-12 bg-gradient-to-r from-pink-50 to-blue-50">
         <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12">What Parents Say</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-          <div className=" rounded-lg shadow-lg bg-white">
+          <div className="rounded-lg shadow-lg bg-white">
             <div className="p-6 flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-full overflow-hidden mb-4">
-                <img
-                  src={img7}
-                  alt="Sarah Johnson"
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-16 h-16 rounded-full bg-pink-200 flex items-center justify-center mb-4">
+                <span className="text-pink-500 text-xl font-semibold">AM</span>
               </div>
               <p className="text-gray-600 mb-4">
                 "Baby Guard has been a lifesaver! The vaccination reminders are so helpful."
               </p>
-              <p className="font-semibold">Sarah Johnson</p>
+              <p className="font-semibold">Aya Mohamed</p>
             </div>
           </div>
 
-          <div className=" bg-white rounded-lg shadow-lg">
+          <div className="bg-white rounded-lg shadow-lg">
             <div className="p-6 flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-full overflow-hidden mb-4">
-                <img
-                  src={img8}
-                  alt="Mike Peterson"
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-16 h-16 rounded-full bg-blue-200 flex items-center justify-center mb-4">
+                <span className="text-blue-400 text-xl font-semibold">AN</span>
               </div>
               <p className="text-gray-600 mb-4">
                 "The pregnancy tips are incredibly detailed and helpful. Highly recommend!"
               </p>
-              <p className="font-semibold">Mike Peterson</p>
+              <p className="font-semibold">Ahmed Nagy</p>
             </div>
           </div>
 
-          <div className=" bg-white rounded-lg shadow-lg">
+          <div className="bg-white rounded-lg shadow-lg">
             <div className="p-6 flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-full overflow-hidden mb-4">
-                <img
-                  src={img9}
-                  alt="Emma Roberts"
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-16 h-16 rounded-full bg-pink-200 flex items-center justify-center mb-4">
+                <span className="text-pink-500 text-xl font-semibold">ME</span>
               </div>
               <p className="text-gray-600 mb-4">"I love the product recommendations and the easy-to-use interface!"</p>
-              <p className="font-semibold">Emma Roberts</p>
+              <p className="font-semibold">Mona El-Sayed</p>
             </div>
           </div>
         </div>

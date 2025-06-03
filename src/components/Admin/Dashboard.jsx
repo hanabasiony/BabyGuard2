@@ -185,11 +185,12 @@ function Dashboard() {
                 d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
               />
             </svg>
-            Add & Remove Nurse
+            Add Nurse
           </Link>
 
           <Link
-            to="/vaccinations"
+            to="/admin/vaccinations"
+            state={{ showAddModal: true }}
             className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-md flex items-center justify-center hover:from-blue-600 hover:to-blue-700 transition duration-200"
           >
             <svg
@@ -206,11 +207,12 @@ function Dashboard() {
                 d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            Add & Remove Vaccine
+            Add Vaccine
           </Link>
 
           <Link
-            to="/product-store"
+            to="product-store/add"
+            state={{ showAddModal: true }}
             className="bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 px-4 rounded-md flex items-center justify-center hover:from-purple-600 hover:to-purple-700 transition duration-200"
           >
             <svg
@@ -227,28 +229,8 @@ function Dashboard() {
                 d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            Add & Remove Product
+            Add Product
           </Link>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div>
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Recent Activity</h2>
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          {recentActivity.map((activity) => (
-            <div key={activity.id} className="p-4 border-b last:border-b-0 flex items-center">
-              <div className="w-10 h-10 rounded-full bg-gray-200 mr-4 flex-shrink-0">
-                <img src={activity.avatar} alt="" className="w-full h-full rounded-full object-cover" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-gray-800 truncate">
-                  <span className="font-medium">{activity.name}</span> {activity.action}
-                </p>
-                <p className="text-gray-500 text-sm">{activity.time}</p>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>

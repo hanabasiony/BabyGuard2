@@ -38,7 +38,9 @@ const AddProductPage = () => {
             .integer("Quantity must be a whole number")
             .min(0, "Quantity must be positive"),
         requiredAge: yup.string()
-            .required("Required age is required"),
+            .required("Required age is required")
+            .min(5, "Required age must be at least 5 characters")
+            .max(30, "Required age must not exceed 30 characters"),
         image: yup.mixed()
             .required("Product image is required")
             .test("fileSize", "File size is too large", (value) => {

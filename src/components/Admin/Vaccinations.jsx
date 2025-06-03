@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { useLocation } from 'react-router-dom';
 
 function Vaccinations() {
   // State for vaccines data
@@ -10,11 +11,16 @@ function Vaccinations() {
   const [isLoading, setIsLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingVaccine, setEditingVaccine] = useState(null);
+  const location = useLocation();
 
-  // Fetch vaccines data from API
+  // Fetch vaccines data from API and check for modal state
   useEffect(() => {
     fetchVaccines();
-  }, []);
+    // Check if we should show the add modal
+    if (location.state?.showAddModal) {
+      setShowAddModal(true);
+    }
+  }, [location.state]);
 
   const fetchVaccines = async () => {
     setIsLoading(true);

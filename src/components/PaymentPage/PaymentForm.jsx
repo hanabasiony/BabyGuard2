@@ -109,13 +109,13 @@ export default function PaymentForm() {
           try {
               setIsLoading(true);
               const cartId = localStorage.getItem('cartId');
+              const token = localStorage.getItem('token');
               
               if (!cartId) {
                   alert('Cart ID not found. Please try again.');
                   return;
               }
 
-              const token = localStorage.getItem('token');
               if (!token) {
                   alert('Authentication token is missing. Please log in again.');
                   return;
@@ -135,7 +135,7 @@ export default function PaymentForm() {
                   alert('Unexpected response from server. Please try again.');
               }
           } catch (error) {
-              console.error('Error sending OTP:', error);
+              console.error('Error processing payment:', error);
               if (error.response) {
                   // Handle specific error responses
                   switch (error.response.status) {

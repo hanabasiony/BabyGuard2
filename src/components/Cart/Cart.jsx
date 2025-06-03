@@ -441,20 +441,50 @@ const Cart = () => {
                     onClick={handleOrderPlacement}
                     className="bg-white-500 text-pink-500 px-6 py-3 rounded-full shadow hover:text-white hover:bg-pink-500 cursor-pointer text-lg font-semibold transition-colors duration-200"
                 >
-                    Place Order (Cash)
+                    Place Order ( Cash )
                 </button>
 
                 <button
-                    onClick={() => {
+                    onClick={async () => {
                         if (!isAddressConfirmed) {
                             toast.error('Please confirm your delivery address');
                             return;
                         }
-                        navigate('/payment');
+                        try {
+                            const cartId = localStorage.getItem('cartId');
+                            const token = localStorage.getItem('token');
+                            
+                            if (!cartId) {
+                                toast.error('Cart ID not found. Please try again.');
+                                return;
+                            }
+
+                            if (!token) {
+                                toast.error('Please login first');
+                                navigate('/login');
+                                return;
+                            }
+
+                            // Update payment type to Online
+                            await axios.patch(
+                                `http://localhost:8000/api/carts/payment-type/${cartId}`,
+                                { paymentType: "Online" },
+                                {
+                                    headers: {
+                                        Authorization: `Bearer ${token}`
+                                    }
+                                }
+                            );
+                            console.log('Successfully updated payment type from Cash to Online');
+                            navigate('/payment');
+                        } catch (error) {
+                            console.error('Error updating payment type:', error);
+                            toast.error('Failed to update payment type. Please try again.');
+                        }
                     }}
                     className="bg-pink-500 text-white px-6 py-3 rounded-full shadow hover:bg-pink-600 cursor-pointer text-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 w-full"
                 >
-                    <span>Proceed to Payment</span>
+                    <span>Proceed to Payment ( Visa )</span>
                     <svg
                         className="w-5 h-5"
                         fill="none"

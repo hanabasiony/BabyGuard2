@@ -5,7 +5,7 @@ import * as Yup from "yup"
 import axios from "axios"
 import { Calendar } from "./Calendar"
 import nurseimg from "../../assets/images/a nurse.jpg"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import toast from 'react-hot-toast';
 
 // Form validation schema using Yup
@@ -15,6 +15,8 @@ const VaccinationSchema = Yup.object().shape({
 })
 
 export default function VaccinationForm() {
+    const navigate = useNavigate()
+
   const { vaccineId } = useParams(); // Get vaccine ID from URL
   const [showCalendar, setShowCalendar] = useState(false)
   const [submissionStatus, setSubmissionStatus] = useState({
@@ -110,6 +112,8 @@ export default function VaccinationForm() {
         toast.success(response.data.message || "Appointment reserved successfully!");
         resetForm();
         console.log(response);
+        navigate('/childProfile')
+        
       })
       .catch((error) => {
         setSubmissionStatus({

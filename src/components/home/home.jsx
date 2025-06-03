@@ -22,6 +22,7 @@ export default function Home() {
     const [pendingCartProducts, setPendingCartProducts] = useState(
         JSON.parse(localStorage.getItem('productQuantitiesOfPendingCart') || '[]')
     );
+    const [searchQuery, setSearchQuery] = useState('');
     // const [authorized, setAuthorized] = useState(false);
 
     useEffect(() => {
@@ -211,6 +212,12 @@ export default function Home() {
         return stars;
     };
 
+    // Add this function to filter products
+    const filteredProducts = products.filter(product => 
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -236,15 +243,22 @@ export default function Home() {
 
     return (
         <>
-            {/* <SimpleSlider /> */}
-            {/* <CategoriesSlider /> */}
-           
-            <div className="wrapper py-30 px-10 mx-auto max-w-[1200px]">
-                   <h2 className='text-4xl mb-16 text-gray-700'>Our Featured Products:</h2>
+            <div className="wrapper py-20   px-10 mx-auto max-w-[1200px]">
+                <div className="mb-8 lg:mt-5  mt-20">
+                    <h2 className='text-4xl mb-4 text-gray-700'>Our Featured Products:</h2>
+                    <div className="mx-auto">
+                        <input
+                            type="text"
+                            placeholder="Search products..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                        />
+                    </div>
+                </div>
                 <div className='container mx-auto'>
-                  
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4  md:gap-6 mx-auto justify-items-center">
-                        {products.map((product) => {
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mx-auto justify-items-center">
+                        {filteredProducts.map((product) => {
                             const currentQuantity = localProductQuantities[product._id] || 0;
 
                             return (
@@ -256,7 +270,7 @@ export default function Home() {
                                     <img
                                         src={product.image}
                                         alt={product.name}
-                                        className='w-24 h-24 mb-4 object-cover w-[] h-[]'
+                                        className='w-full h-full mb-4 object-cover w-[] h-[]'
                                     />
                                     <h3 className='text-lg font-semibold text-black-600 mb-1'>{product.name}</h3>
                                     <h2 className='text-black-600 text-sm mb-2'>{product.description}</h2>

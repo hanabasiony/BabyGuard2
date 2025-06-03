@@ -6,6 +6,7 @@ import LoaderScreen from '../loaderScreen/loaderScreen';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { Oval } from 'react-loader-spinner';
+// import { FallingLines, Oval } from 'react-loader-spinner'
 
 const Cart = () => {
     const navigate = useNavigate();
@@ -274,7 +275,20 @@ const Cart = () => {
     };
 
     if (loading) {
-        return <LoaderScreen />;
+        return  <div className="min-h-screen flex items-center justify-center">
+        <Oval
+            height={80}
+            width={80}
+            color="#ec4899"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+            ariaLabel='oval-loading'
+            secondaryColor="#f9a8d4"
+            strokeWidth={2}
+            strokeWidthSecondary={2}
+        />
+    </div>;
     }
     // console.log(userData);
     // console.log(userData.fName);

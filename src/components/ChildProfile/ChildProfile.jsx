@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoaderScreen from "../loaderScreen/loaderScreen";
+import { Oval } from 'react-loader-spinner';
 
 export default function ChildDashboard() {
     const navigate = useNavigate();
@@ -80,7 +81,7 @@ export default function ChildDashboard() {
                 console.log(response.data.data);
             } catch (err) {
                 console.error('Error fetching vaccine requests:', err);
-                toast.error("Failed to fetch vaccine requests");
+                // toast.error("Failed to fetch vaccine requests");
             }
         };
 
@@ -118,7 +119,24 @@ export default function ChildDashboard() {
     };
 
     if (loading) {
-        return <LoaderScreen/>
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-start bg-white pt-10">
+                <div className="mt-40 shadow-lg rounded-full bg-white p-8">
+                    <Oval
+                        height={80}
+                        width={80}
+                        color="#ec4899"
+                        wrapperStyle={{}}
+                        wrapperClass=""
+                        visible={true}
+                        ariaLabel='oval-loading'
+                        secondaryColor="#f9a8d4"
+                        strokeWidth={2}
+                        strokeWidthSecondary={2}
+                    />
+                </div>
+            </div>
+        );
     }
 
     if (error) {
@@ -229,35 +247,14 @@ export default function ChildDashboard() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            <div className="col-span-1 md:col-span-2 bg-white p-4 rounded-2xl shadow space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="font-semibold text-lg">Vaccination Summary</h3>
-                                    <div className="space-x-2">
-                                        <button className="px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded hover:bg-gray-200">All</button>
-                                        <button className="px-3 py-1 text-xs bg-gray-100 rounded hover:bg-gray-200">Upcoming</button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-green-600">Latest Taken</p>
-                                    <p className="text-sm">MMR Vaccine</p>
-                                    <p className="text-xs text-gray-500">Taken on April 10, 2025</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-yellow-600">Upcoming</p>
-                                    <p className="text-sm">DPT Booster</p>
-                                    <p className="text-xs text-gray-500">Scheduled for May 15, 2025</p>
-                                </div>
-                                <button className="w-full px-4 py-2 bg-blue-50 text-blue-700 rounded hover:bg-blue-100">
-                                    View Full Vaccination History
-                                </button>
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-1 gap-6">
+                            
 
                             <div className="bg-white p-4 rounded-2xl shadow space-y-4">
                                 <div className="flex justify-between items-center">
                                     <h3 className="font-semibold text-lg">Vaccine Requests</h3>
                                     <button 
-                                        onClick={() => navigate('/request-vaccine')}
+                                        onClick={() => navigate('/vacciens')}
                                         className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700"
                                     >
                                         <Plus className="w-4 h-4 mr-1" />

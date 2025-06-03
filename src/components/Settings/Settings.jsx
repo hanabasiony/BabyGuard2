@@ -218,42 +218,6 @@ export default function Settings() {
                         )}
                     </div>
 
-                    {/* Settings Section */}
-                    <div className="space-y-6">
-                        <h3 className="text-xl font-medium text-pink-600">Account Settings</h3>
-                        <div className="space-y-4">
-                            <NavLink 
-                                to="/UpdatePass" 
-                                className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
-                            >
-                                Change Password
-                            </NavLink>
-                            <button 
-                                onClick={handleLogout}
-                                className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
-                            >
-                                Logout
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Orders Section */}
-                    <div className="space-y-6">
-                        <h3 className="text-xl font-medium text-pink-600">Orders</h3>
-                        <div className="space-y-4">
-                            <NavLink 
-                                to="/myOrders" 
-                                className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
-                            >
-                                <div className="flex items-center space-x-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                    </svg>
-                                    <span>View My Orders</span>
-                                </div>
-                            </NavLink>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

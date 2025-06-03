@@ -58,6 +58,7 @@ import AddProductPage from './components/Admin/AddProductPage'
 import AddProvider from './components/Admin/AddProvider'
 import ManageCartStatus from './components/Admin/ManageCartStatus'
 import WriteReview from './components/Admin/WriteReview'
+import UserPage from './components/UserPage/UserPage'
 
 const router = createBrowserRouter([
   {
@@ -121,6 +122,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {path:'user-page', element: <UserPage/> },
       
       {
         path: 'childProfile',

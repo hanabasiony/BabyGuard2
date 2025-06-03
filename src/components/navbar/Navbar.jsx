@@ -26,6 +26,12 @@ export default function Navbar() {
   const [errorMessage, setErrorMessage] = useState('');
   const [cartCount, setCartCount] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userData , setUserData] = useState(null)
+
+  useEffect(()=>{
+    const userData = JSON.parse(localStorage.getItem('userData'))
+    setUserData(userData)
+  },[])
 
   useEffect(() => {
     const role = localStorage.getItem('role');
@@ -64,75 +70,75 @@ export default function Navbar() {
 
   async function handleLogout() {
     try {
-        // First try to delete the cart
-        const cartId = localStorage.getItem('cartId');
-        
-        if (cartId) {
-            setLoading(true);
-            try {
-                const response = await axios.delete(
-                    `http://localhost:8000/api/carts/${cartId}`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${userToken}`
-                        }
-                    }
-                );
+      // First try to delete the cart
+      const cartId = localStorage.getItem('cartId');
 
-                if (response.status === 200) {
-                    // Only proceed with logout if cart is successfully deleted
-                    localStorage.removeItem('cartId');
-                    localStorage.removeItem('cartDetails');
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('role');
-                    setuserToken(null);
-                    navigate('/login');
-                    console.log('cart deleted',response);
-                } else {
-                    throw new Error('Failed to delete cart');
-                }
-            } catch (cartError) {
-                console.error('Cart deletion error:', cartError);
-                
-                // Handle specific error cases
-                if (cartError.response) {
-                    const errorMessage = cartError.response.data?.message || 'Failed to delete cart';
-                    
-                    if (cartError.response.status === 404) {
-                        setErrorMessage('Cart not found. Please try again.');
-                    } else if (cartError.response.status === 400) {
-                        setErrorMessage(errorMessage);
-                    } else if (cartError.response.status === 401) {
-                        setErrorMessage('Session expired. Please login again.');
-                    } else {
-                        setErrorMessage('Cannot logout: ' + errorMessage);
-                    }
-                } else {
-                    setErrorMessage('Network error. Please check your connection.');
-                }
-                
-                setTimeout(() => setErrorMessage(''), 3000);
-                return; // Prevent logout on any cart deletion error
+      if (cartId) {
+        setLoading(true);
+        try {
+          const response = await axios.delete(
+            `http://localhost:8000/api/carts/${cartId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${userToken}`
+              }
             }
-        } else {
-            // If no cart exists, allow logout
+          );
+
+          if (response.status === 200) {
+            // Only proceed with logout if cart is successfully deleted
+            localStorage.removeItem('cartId');
+            localStorage.removeItem('cartDetails');
             localStorage.removeItem('token');
             localStorage.removeItem('role');
             setuserToken(null);
             navigate('/login');
+            console.log('cart deleted', response);
+          } else {
+            throw new Error('Failed to delete cart');
+          }
+        } catch (cartError) {
+          console.error('Cart deletion error:', cartError);
+
+          // Handle specific error cases
+          if (cartError.response) {
+            const errorMessage = cartError.response.data?.message || 'Failed to delete cart';
+
+            if (cartError.response.status === 404) {
+              setErrorMessage('Cart not found. Please try again.');
+            } else if (cartError.response.status === 400) {
+              setErrorMessage(errorMessage);
+            } else if (cartError.response.status === 401) {
+              setErrorMessage('Session expired. Please login again.');
+            } else {
+              setErrorMessage('Cannot logout: ' + errorMessage);
+            }
+          } else {
+            setErrorMessage('Network error. Please check your connection.');
+          }
+
+          setTimeout(() => setErrorMessage(''), 3000);
+          return; // Prevent logout on any cart deletion error
         }
+      } else {
+        // If no cart exists, allow logout
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        setuserToken(null);
+        navigate('/login');
+      }
     } catch (error) {
-        console.error('Logout error:', error);
-        setErrorMessage('An unexpected error occurred. Please try again.');
-        setTimeout(() => setErrorMessage(''), 3000);
+      console.error('Logout error:', error);
+      setErrorMessage('An unexpected error occurred. Please try again.');
+      setTimeout(() => setErrorMessage(''), 3000);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   }
-
+  console.log(userData)
   return (
     <>
-     
+
 
       <nav className="bg-white shadow pe-7  shadow-pink-300 px-2 fixed  py-2 w-full">
         <div className="container mx-auto flex items-center justify-between max-w-[1200px]">
@@ -146,7 +152,7 @@ export default function Navbar() {
 
           {/* Desktop Nav Links */}
           <ul className="hidden md:flex items-center space-x-6">
-             <li>
+            <li>
               <NavLink to="/childProfile" className=" hover:text-pink-600     text-pink-400 font-semibold">
                 Child profile
               </NavLink>
@@ -166,13 +172,13 @@ export default function Navbar() {
                 Pregnancy tips
               </NavLink>
             </li>
-           
-            {isAdmin && 
-            <li>
-            <NavLink to="/admin" className=" hover:text-pink-600     text-pink-400 font-semibold">
-              Admin dashboard
-            </NavLink>
-          </li>}
+
+            {isAdmin &&
+              <li>
+                <NavLink to="/admin" className=" hover:text-pink-600     text-pink-400 font-semibold">
+                  Admin dashboard
+                </NavLink>
+              </li>}
             {/* <li>
               <NavLink to="/contactUs" className=" hover:text-pink-600     text-pink-400 font-semibold">
                 Contact us
@@ -190,29 +196,47 @@ export default function Navbar() {
             <ul className="flex items-center space-x-3">
               {userToken ? (
                 <>
+                <h2 className='text-pink-500 text-lg'> Hello {userData.user.fName}! </h2>
                   <li>
-                    <NavLink to="/settings" className="text-pink-300 hover:text-pink-400">
+                    <NavLink to="/settings" className="text-gray-700 hover:text-gray-700">
                       <Settings className="w-6 h-6" />
                     </NavLink>
                   </li>
                   <li>
                     <NavLink to="/cart" className="relative">
-                      <ShoppingCart className="w-6 h-6 text-pink-700" />
+                      <ShoppingCart className="w-6 h-6 text-gray-700" />
                       {cartCount > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                        <span className="absolute -top-2 -right-2 bg-gray-700 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                           {cartCount}
                         </span>
                       )}
                     </NavLink>
+
                   </li>
+                  <li>
+                    <NavLink to="/myOrders" className="relative">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                      </svg>
+                    </NavLink>
+
+                  </li>
+                  <li>
+                    <NavLink to="/user-page" className="relative">
+                      <i class="fa-solid fa-user text-gray-700"></i>
+                    </NavLink>
+
+                  </li>
+
                 </>
               ) : (
                 <li>
-                  <NavLink to="/settings" className="text-pink-300 hover:text-pink-400">
-                    <Settings className="w-6 h-6" />
+                  <NavLink to="/settings" className="text-gray-700 hover:text-gray-700">
+                    <i class="fa-solid fa-user"></i>
                   </NavLink>
                 </li>
-                
+
+
               )}
             </ul>
           </div>
@@ -232,7 +256,9 @@ export default function Navbar() {
               <li><NavLink to="/" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Pergnancy tips</NavLink></li>
               {/* <li><NavLink to="/" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Contant us</NavLink></li> */}
               {/* <li><NavLink to="/aboutUs" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>About us</NavLink></li> */}
-              <li>
+              
+              {userToken && <ul>
+                <li>
                 <NavLink to="/cart" className="text-gray-600 hover:text-pink-400 relative" onClick={() => setIsOpen(false)}>
                   <ShoppingCart className="w-6 h-6 text-pink-700" />
                   {cartCount > 0 && (
@@ -245,6 +271,18 @@ export default function Navbar() {
               <li><NavLink to="/settings" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>
                 <Settings className="w-6 h-6" />
               </NavLink></li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-pink-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </li>
+                </ul>}
+
+              <li>
+                  <NavLink to="/settings" className="text-gray-700 hover:text-gray-700">
+                    <i class="fa-solid fa-user"></i>
+                  </NavLink>
+                </li>
             </ul>
           </div>
         )}

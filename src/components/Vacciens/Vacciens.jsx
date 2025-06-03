@@ -12,6 +12,7 @@ export default function Vacciens() {
     const [vaccines, setVaccines] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate()
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         fetchVaccines();
@@ -34,6 +35,12 @@ export default function Vacciens() {
             setLoading(false);
         }
     };
+
+    // Add this function to filter vaccines
+    const filteredVaccines = vaccines.filter(vaccine => 
+        vaccine.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        vaccine.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     if (loading) {
         return (
@@ -60,9 +67,21 @@ export default function Vacciens() {
 
             <CategoriesSlider /> */}
             <div className="wrapper py-40 px-25 mx-auto">
+            
                 <div className='container mx-auto'>
+                <h2 className='text-4xl mb-4 text-gray-700'>Our Featured Vaccines:</h2>
+                    {/* Search Bar */}
+                    <div className="mb-8  mx-auto">
+                        <input
+                            type="text"
+                            placeholder="Search vaccines..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                        />
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mx-auto justify-items-center">
-                        {vaccines.map((vaccine) => (
+                        {filteredVaccines.map((vaccine) => (
                             <div key={vaccine._id} className="bg-white rounded-2xl shadow-md p-4 flex flex-col w-full py-15">
                                 <img 
                                     src={img} 

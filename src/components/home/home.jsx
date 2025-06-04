@@ -7,6 +7,7 @@ import SimpleSlider from '../homeSlider/homeSlider'
 import CategoriesSlider from '../categoriesSlider/categoriesSlider'
 import { useQuery } from '@tanstack/react-query'
 import { CartContext } from '../../context/CartContext'
+import { authContext } from '../../context/AuthContext'
 import { useContext } from 'react'
 import toast from 'react-hot-toast'
 import { Trash2, Star, StarHalf } from 'lucide-react'
@@ -19,6 +20,7 @@ export default function Home() {
     const [productsId, setProductsId] = useState([]);
     const [localProductQuantities, setLocalProductQuantities] = useState({});
     const { productQuantities, handleAddToCart, handleUpdateQuantity, loadingProducts, handleDeleteProduct } = useContext(CartContext);
+    const { userToken } = useContext(authContext);
     const [pendingCartProducts, setPendingCartProducts] = useState(
         JSON.parse(localStorage.getItem('productQuantitiesOfPendingCart') || '[]')
     );
@@ -92,6 +94,10 @@ export default function Home() {
 
     const handleQuantityUpdate = async (e, productId, change) => {
         e.preventDefault();
+        if (!userToken) {
+            toast.error('Please login first to manage your cart');
+            return;
+        }
         try {
             const token = localStorage.getItem('token');
             const cartId = localStorage.getItem('cartId');
@@ -137,6 +143,10 @@ export default function Home() {
 
     const handleAddToCartWithCheck = async (e, productId) => {
         e.preventDefault();
+        if (!userToken) {
+            toast.error('Please login first to add items to your cart');
+            return;
+        }
         try {
             // Check if product is already in cart
             if (localProductQuantities[productId]) {
@@ -158,6 +168,10 @@ export default function Home() {
 
     const handleDeleteProductWithUpdate = async (e, productId) => {
         e.preventDefault();
+        if (!userToken) {
+            toast.error('Please login first to manage your cart');
+            return;
+        }
         try {
             await handleDeleteProduct(e, productId);
 

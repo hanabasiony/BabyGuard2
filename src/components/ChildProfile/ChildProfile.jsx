@@ -14,6 +14,8 @@ export default function ChildDashboard() {
     const [error, setError] = useState(null);
     const [selectedChild, setSelectedChild] = useState(null);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
+    const [showDeleteRequestModal, setShowDeleteRequestModal] = useState(false);
+    const [selectedRequestId, setSelectedRequestId] = useState(null);
     const [vaccineRequests, setVaccineRequests] = useState([]);
 
     const calculateAge = (birthDate) => {
@@ -118,6 +120,36 @@ export default function ChildDashboard() {
         }
     };
 
+    const handleDeleteRequest = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await axios.delete(`http://localhost:8000/api/vaccine-requests/${selectedRequestId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            
+            // Update the vaccine requests list
+            setVaccineRequests(prevRequests => 
+                prevRequests.filter(request => request._id !== selectedRequestId)
+            );
+            
+            toast.success("Vaccine request deleted successfully");
+            setShowDeleteRequestModal(false);
+            console.log(res.data);
+            
+            setSelectedRequestId(null);
+        } catch (err) {
+            toast.error("Failed to delete vaccine request");
+            console.error(err);
+        }
+    };
+
+    const openDeleteRequestModal = (requestId) => {
+        setSelectedRequestId(requestId);
+        setShowDeleteRequestModal(true);
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-start bg-white pt-10">
@@ -180,6 +212,46 @@ export default function ChildDashboard() {
                                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                             >
                                 Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Vaccine Request Modal */}
+            {showDeleteRequestModal && (
+                <div 
+                    className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+                    onClick={() => setShowDeleteRequestModal(false)}
+                >
+                    <div 
+                        className="bg-white/95 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-semibold">Delete Vaccine Request</h3>
+                            <button 
+                                onClick={() => setShowDeleteRequestModal(false)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+                        <p className="text-gray-600 mb-6">
+                            Are you sure you want to delete this vaccine request? This action cannot be undone.
+                        </p>
+                        <div className="flex justify-end gap-4">
+                            <button
+                                onClick={() => setShowDeleteRequestModal(false)}
+                                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDeleteRequest}
+                                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                            >
+                                Delete
                             </button>
                         </div>
                     </div>
@@ -296,7 +368,7 @@ export default function ChildDashboard() {
                                                     </span>
                                                     {request.status === 'Pending' && (
                                                         <button 
-                                                            onClick={() => handleCancelRequest(request._id)}
+                                                            onClick={() => openDeleteRequestModal(request._id)}
                                                             className="text-red-500 hover:text-red-700"
                                                         >
                                                             <X className="w-4 h-4" />

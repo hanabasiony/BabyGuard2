@@ -60,6 +60,8 @@ import ManageCartStatus from './components/Admin/ManageCartStatus'
 import WriteReview from './components/Admin/WriteReview'
 import UserPage from './components/UserPage/UserPage'
 import AddVaccine from './components/Admin/AddVaccine'
+import ManageCarts from './components/ManageCarts/ManageCarts'
+import CartDetails from './components/ManageCarts/CartDetails'
 
 const router = createBrowserRouter([
   {
@@ -185,7 +187,9 @@ const router = createBrowserRouter([
       { path: 'complaints', element: <Complaints /> },
       { path: 'providers', element: <AddProvider/> },
       { path: 'cart-status', element: <ManageCartStatus/> },
-      { path: 'vaccinations/add', element: <AddVaccine/> }
+      { path: 'vaccinations/add', element: <AddVaccine/> },
+      { path: 'manage-carts' , element: <ManageCarts/> },
+      { path: 'cart-details/:userId' , element: <CartDetails/> }
     ],
   },
 ]);

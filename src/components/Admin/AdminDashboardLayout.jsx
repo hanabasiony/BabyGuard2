@@ -16,6 +16,7 @@ import AddVaccine from './AddVaccine';
 import ManageCartStatus from './ManageCartStatus';
 import ManageCarts from '../ManageCarts/ManageCarts';
 import CartDetails from '../ManageCarts/CartDetails';
+import EditUsersById from './EditUserById/EditUserById';
 
 const AdminDashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -72,6 +73,7 @@ const AdminDashboardLayout = () => {
               <Route path="cart-status" element={<ManageCartStatus />} />
               <Route path='manage-carts' element={<ManageCarts/> }/>
               <Route path='cart-details/:userId' element={<CartDetails/> }/>
+              <Route path='manage-users/edit-user/:userId' element={<EditUsersById/> }/>
             </Routes>
           </div>
         </main>

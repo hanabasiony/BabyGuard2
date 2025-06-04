@@ -80,7 +80,7 @@ export default function ChildDashboard() {
                     }
                 });
                 setVaccineRequests(response.data.data);
-                console.log(response.data.data);
+                console.log('vacc req',response.data.data);
             } catch (err) {
                 console.error('Error fetching vaccine requests:', err);
                 // toast.error("Failed to fetch vaccine requests");

@@ -200,11 +200,11 @@ export default function Navbar() {
                  <span className="text-gray-700 font-medium">
                     Hello, {userData?.user?.fName || (isAdmin ? 'Admin' : 'User')}!
                   </span>
-                  <li>
+                  { isAdmin ? '' : <li>
                     <NavLink to="/settings" className="text-gray-700 hover:text-gray-700">
                       <Settings className="w-6 h-6" />
                     </NavLink>
-                  </li>
+                  </li> }
                   <li>
                     <NavLink to="/cart" className="relative">
                       <ShoppingCart className="w-6 h-6 text-gray-700" />

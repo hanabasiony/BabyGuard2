@@ -20,6 +20,8 @@ const Cart = () => {
 
     const { handleUpdateQuantity, loadingProducts, productQuantities, handleDeleteProduct, resetCart } = useContext(CartContext);
     const [loadingPayment, setLoadingPayment] = useState(true);
+    const [ isAdmin , setIsAdmin ] =useState(false)
+    setIsAdmin( localStorage.getItem('role') )
 
     // Get user data from localStorage
     useEffect(() => {
@@ -274,6 +276,8 @@ const Cart = () => {
         }
     };
 
+    
+
     if (loading) {
         return  <div className="min-h-screen flex items-center justify-center">
         <Oval
@@ -398,6 +402,7 @@ const Cart = () => {
                 </div>
             ))}
 
+           { isAdmin ? '' : <>
             {/* Address Section */}
             <div className="bg-white rounded-2xl shadow p-6 mb-6">
                 <h2 className="text-xl font-semibold text-gray-700 mb-4">Delivery Address</h2>
@@ -514,6 +519,7 @@ const Cart = () => {
                     </svg>
                 </button>
             </div>
+           </> }
         </div>
     );
 };

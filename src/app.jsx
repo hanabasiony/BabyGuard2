@@ -63,6 +63,8 @@ import AddVaccine from './components/Admin/AddVaccine'
 import ManageCarts from './components/ManageCarts/ManageCarts'
 import CartDetails from './components/ManageCarts/CartDetails'
 import ScrollToTop from './components/ScrollToTop'
+import EditUsersById from './components/Admin/EditUserById/EditUserById'
+import EditUser from './components/EditUser/EditUser'
 
 const router = createBrowserRouter([
   {
@@ -79,6 +81,7 @@ const router = createBrowserRouter([
       { path: 'UpdatePass', element: <UpdateLoggedUserPassword /> },
       { path: 'Reg', element: <Reg /> },
       { path: 'settings', element: <Settings /> },
+      { path: 'edit-user', element: <EditUser /> },
       { path: '*', element: <Notfound /> },
       {
         path: 'products',
@@ -198,7 +201,8 @@ const router = createBrowserRouter([
       { path: 'cart-status', element: <ManageCartStatus/> },
       { path: 'vaccinations/add', element: <AddVaccine/> },
       { path: 'manage-carts' , element: <ManageCarts/> },
-      { path: 'cart-details/:userId' , element: <CartDetails/> }
+      { path: 'cart-details/:userId' , element: <CartDetails/> },
+      { path: 'manage-users/edit-user/:userId' , element: <EditUsersById/> },
     ],
   },
 ]);

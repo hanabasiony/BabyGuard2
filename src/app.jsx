@@ -62,11 +62,17 @@ import UserPage from './components/UserPage/UserPage'
 import AddVaccine from './components/Admin/AddVaccine'
 import ManageCarts from './components/ManageCarts/ManageCarts'
 import CartDetails from './components/ManageCarts/CartDetails'
+import ScrollToTop from './components/ScrollToTop'
 
 const router = createBrowserRouter([
   {
     path: '',
-    element: <Layout />,
+    element: (
+      <>
+        <ScrollToTop />
+        <Layout />
+      </>
+    ),
     children: [
       { path: '', element: <RealHome /> },
       { path: 'login', element: <Login /> },
@@ -76,11 +82,7 @@ const router = createBrowserRouter([
       { path: '*', element: <Notfound /> },
       {
         path: 'products',
-        element: (
-         
-            <Home />
-         
-        ),
+        element: <Home />,
       },
       { path: 'categories', element: <Categories /> },
       { path: 'brands', element: <Brands /> },
@@ -173,7 +175,14 @@ const router = createBrowserRouter([
   },
   {
     path: 'admin',
-    element: <ProtectedRouteAdmin><AdminDashboardLayout /></ProtectedRouteAdmin>,
+    element: (
+      <>
+        <ScrollToTop />
+        <ProtectedRouteAdmin>
+          <AdminDashboardLayout />
+        </ProtectedRouteAdmin>
+      </>
+    ),
     children: [
       { path: '', element: <Dashboard /> },    
       { path: 'manage-users', element: <ManageUsers /> },
@@ -200,10 +209,7 @@ const client = new QueryClient({
   }
 })
 
-
-
-export  function App() {
-
+export function App() {
   return (
     <UserDataProvider>
       <AuthcontextProvider>

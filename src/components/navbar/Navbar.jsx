@@ -197,7 +197,9 @@ export default function Navbar() {
             <ul className="flex items-center space-x-5">
               {userToken ? (
                 <>
-                <h2 className='text-pink-500 text-lg '> Hello {userData?.user?.fName || (isAdmin ? 'Admin' : 'user') }! </h2>
+                 <span className="text-gray-700 font-medium">
+                    Hello, {userData?.user?.fName || (isAdmin ? 'Admin' : 'User')}!
+                  </span>
                   <li>
                     <NavLink to="/settings" className="text-gray-700 hover:text-gray-700">
                       <Settings className="w-6 h-6" />

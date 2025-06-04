@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from "react-hot-toast";
-import { PlusCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
 
 function ManageChildren() {
   // State for children data
@@ -104,13 +102,6 @@ function ManageChildren() {
       setFilteredChildren(filtered);
     }
   }, [searchTerm, children]);
-
-  // Handle edit child (Placeholder)
-  // const handleEditChild = async (childId, updatedData) => {
-  //   console.log('Editing child:', childId, updatedData);
-  //   // Implement API call to edit child
-  //   toast.error('Edit functionality not yet implemented');
-  // };
 
   // Handle delete child
   const handleDeleteChild = async (childId) => {
@@ -221,14 +212,6 @@ function ManageChildren() {
               <h2 className="text-2xl font-medium text-gray-800">Manage Children</h2>
               <p className="mt-1 text-sm text-gray-500">View and manage registered children</p>
             </div>
-             {/* Button to open Add Child modal */}
-            <button
-              onClick={() => navigate('/admin/add-child')}
-              className="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-            >
-              <PlusCircle className="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
-              Add New Child
-            </button>
           </div>
         </div>
 
@@ -258,7 +241,7 @@ function ManageChildren() {
         </div>
 
         {/* Children Table */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
+        <div className="bg-white shadow overflow-hidden sm:rounded-md mb-4">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -380,61 +363,30 @@ function ManageChildren() {
         </div>
 
         {/* Pagination */}
-        {!showAddModal && (
-          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={handleNextPage}
-                disabled={!nextPageToken}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Next
-              </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                   Showing <span className="font-medium">{startIndex}</span> to <span className="font-medium">{endIndex}</span> of{' '}
-                  <span className="font-medium">{totalEntries}</span> entries
-                </p>
-              </div>
-              <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                   {/* Previous Button */}
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  >
-                    <span className="sr-only">Previous</span>
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                   {/* Page numbers can be added here if API supports total pages or different pagination */}
-                    {/* Next Button */}
-                  <button
-                    onClick={handleNextPage}
-                    disabled={!nextPageToken}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  >
-                    <span className="sr-only">Next</span>
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </nav>
-              </div>
-            </div>
-          </div>
-        )}
+        <div className="flex justify-end space-x-2 pr-4">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded-md text-sm font-medium ${
+              currentPage === 1
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+            }`}
+          >
+            Previous
+          </button>
+          <button
+            onClick={handleNextPage}
+            disabled={!nextPageToken}
+            className={`px-4 py-2 rounded-md text-sm font-medium ${
+              !nextPageToken
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+            }`}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

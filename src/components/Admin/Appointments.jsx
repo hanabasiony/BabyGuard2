@@ -194,19 +194,12 @@ function Appointments() {
               </div>
               <input
                 type="text"
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="block w-2xl pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="Search requests..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            {/* Filter button - keeping as is, logic handled by useEffect */}
-             <button className="ml-3 p-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 flex items-center">
-              <svg className="h-5 w-5 mr-1 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8H4a2 2 0 01-2-2v-4a2 2 0 012-2h16a2 2 0 012 2v4a2 2 0 01-2 2h-2m-4 0h-4m-4 0h-4m0-8V9m0 3h.01M12 21v-7m0 0v-4.003M9 12h.01M7 12h-.01" />
-              </svg>
-              Filter
-            </button>
           </div>
         </div>
 
@@ -272,36 +265,6 @@ function Appointments() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                       </svg>
                     </button>
-                  </div>
-                  
-                  {/* Parent Info */}
-                  <div className="flex items-center mb-4">
-                    {/* Using placeholder as avatar is not in API */}
-                    <img 
-                      src={"/placeholder.svg"} 
-                      alt={appointment.parentName} 
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
-                    <div className="ml-3">
-                      <h3 className="text-lg font-medium text-gray-800">{appointment.parentName}</h3>
-                      <p className="text-sm text-gray-500">Parent ID</p>{/* Label updated to reflect displaying ID */}
-                    </div>
-                  </div>
-                  
-                  {/* Child Info */}
-                  <div className="mb-2 flex items-center">
-                    <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    <span className="text-sm text-gray-700">{appointment.childName} ({appointment.childAge})</span>{/* Displaying Child ID for now */}
-                  </div>
-                  
-                  {/* Vaccine Info */}
-                  <div className="mb-2 flex items-center">
-                    <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                    <span className="text-sm text-gray-700">{appointment.vaccine}</span>{/* Displaying Vaccine ID for now */}
                   </div>
                   
                   {/* Location Info */}

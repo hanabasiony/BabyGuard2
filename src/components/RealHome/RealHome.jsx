@@ -12,6 +12,8 @@ import img10 from "../../assets/images/IMG_3219.JPG"
 import img11 from "../../assets/images/IMG_3218.JPG"
 import AboutUs from "../AboutUs/AboutUs"
 
+
+
 export default function Home() {
   const navigate = useNavigate();
   const [featuredProducts, setFeaturedProducts] = useState([]);

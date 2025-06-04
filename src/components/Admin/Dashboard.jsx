@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "preact/hooks";
 import { Link } from "react-router-dom"
+import AddVaccine from './AddVaccine';
 
 function Dashboard() {
   // This would be replaced with API data
@@ -10,6 +11,7 @@ function Dashboard() {
     activeComplaints: { count: 48, change: "-2.4%" },
   }
   const [appointmentsNumber, setAppointmentsNumber] = useState([]);
+  const [showAddVaccineModal, setShowAddVaccineModal] = useState(false);
 
   // This would be replaced with API data
   const recentActivity = [
@@ -188,9 +190,8 @@ function Dashboard() {
             Add Nurse
           </Link>
 
-          <Link
-            to="/admin/vaccinations"
-            state={{ showAddModal: true }}
+          <button
+            onClick={() => setShowAddVaccineModal(true)}
             className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-md flex items-center justify-center hover:from-blue-600 hover:to-blue-700 transition duration-200"
           >
             <svg
@@ -208,7 +209,7 @@ function Dashboard() {
               />
             </svg>
             Add Vaccine
-          </Link>
+          </button>
 
           <Link
             to="product-store/add"
@@ -233,6 +234,29 @@ function Dashboard() {
           </Link>
         </div>
       </div>
+
+      {/* Add Vaccine Modal */}
+      {showAddVaccineModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Add New Vaccine</h2>
+              <button 
+                onClick={() => setShowAddVaccineModal(false)} 
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <AddVaccine onSuccess={() => {
+              setShowAddVaccineModal(false);
+              // Optionally refresh any relevant data here
+            }} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

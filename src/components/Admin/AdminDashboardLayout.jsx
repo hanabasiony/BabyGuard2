@@ -19,6 +19,7 @@ import CartDetails from '../ManageCarts/CartDetails';
 import EditUsersById from './EditUserById/EditUserById';
 import ManageProviders from './ManageProviders';
 import EditProviderById from './EditProviderById/EditProviderById';
+import ChooseFromFour from './ChooseFromFour';
 
 const AdminDashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -78,6 +79,7 @@ const AdminDashboardLayout = () => {
               <Route path='manage-carts' element={<ManageCarts/> }/>
               <Route path='cart-details/:userId' element={<CartDetails/> }/>
               <Route path='manage-users/edit-user/:userId' element={<EditUsersById/> }/>
+              <Route path='tips-articles/choose-from-for' element={<ChooseFromFour/> }/>
             </Routes>
           </div>
         </main>

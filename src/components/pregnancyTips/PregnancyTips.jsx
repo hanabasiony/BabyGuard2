@@ -1,97 +1,142 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
 import { Info, Heart, Leaf, Smile } from "lucide-react";
+import axios from "axios";
 
 export default function PregnancyTips() {
-    return (
-        <div className="py-30">
-            <div className="p-4  max-w-5xl mx-auto space-y-6 ">
-                {/* Header */}
-                <div className="bg-white p-6 rounded-2xl shadow flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold">Pregnancy Tips</h2>
-          <p className="text-sm text-gray-500">Helpful advice for a healthy and happy pregnancy</p>
-        </div>
-        <div className="text-pink-500">
-          <Info className="w-6 h-6" />
-        </div>
-      </div>
 
-      {/* Tips Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow space-y-2">
-          <h3 className="text-lg font-semibold">Stay Hydrated</h3>
-          <p className="text-sm text-gray-600">Drinking enough water helps with digestion and reduces swelling.</p>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow space-y-2">
-          <h3 className="text-lg font-semibold">Regular Checkups</h3>
-          <p className="text-sm text-gray-600">Keep up with prenatal visits to monitor your and your baby’s health.</p>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow space-y-2">
-          <h3 className="text-lg font-semibold">Nutritious Diet</h3>
-          <p className="text-sm text-gray-600">Include a variety of fruits, vegetables, and lean proteins.</p>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow space-y-2">
-          <h3 className="text-lg font-semibold">Get Rest</h3>
-          <p className="text-sm text-gray-600">Adequate rest is essential to support your body and baby.</p>
-        </div>
-      </div>
+   const [data , setData] = useState(null)
 
-      {/* Trimester Checklist */}
-      <div className="bg-white p-6 rounded-2xl shadow space-y-4">
-        <h3 className="text-xl font-semibold">Trimester Checklist</h3>
-        <div className="space-y-2">
+   const [milestones , setMilestones] = useState([])
+   const [pregnancyTips , setPregnancyTips] = useState([])
+   const [recommendedFoods , setRecommendedFoods] = useState([])
+   const [trimesters , settrimesters] = useState([])
+
+
+
+  useEffect(() => {
+    const fetchTips = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/api/tips');
+        setData(response.data.data);
+        console.log(response.data.data);
+
+        setMilestones('milestones',response.data.data.milestones);
+        setPregnancyTips('PregnancyTips',response.data.data.PregnancyTips);
+        setRecommendedFoods('recommendedFoods',response.data.data.recommendedFoods);
+        settrimesters('trimesters',response.data.data.trimesters);
+
+        
+
+      } catch (err) {
+        setError('Failed to fetch pregnancy tips');
+        console.error('Error fetching tips:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTips();
+  }, []);
+  return (
+    <div className="py-30">
+      <div className="p-4 max-w-5xl mx-auto space-y-6">
+        
+
+        {/* Header */}
+        <div className="bg-white p-6 rounded-2xl shadow flex items-center justify-between">
           <div>
-            <p className="font-medium text-pink-600">First Trimester</p>
-            <ul className="list-disc list-inside text-sm text-gray-700">
-              <li>Schedule your first prenatal visit</li>
-              <li>Start taking prenatal vitamins with folic acid</li>
-              <li>Avoid harmful substances like alcohol and smoking</li>
-            </ul>
+            <h2 className="text-2xl font-semibold">Pregnancy Tips</h2>
+            <p className="text-sm text-gray-500">Helpful advice for a healthy and happy pregnancy</p>
           </div>
-          <div>
-            <p className="font-medium text-yellow-600">Second Trimester</p>
-            <ul className="list-disc list-inside text-sm text-gray-700">
-              <li>Attend anatomy scan ultrasound</li>
-              <li>Maintain a healthy diet and stay active</li>
-              <li>Start researching birth plans</li>
-            </ul>
-          </div>
-          <div>
-            <p className="font-medium text-green-600">Third Trimester</p>
-            <ul className="list-disc list-inside text-sm text-gray-700">
-              <li>Pack your hospital bag</li>
-              <li>Take childbirth and breastfeeding classes</li>
-              <li>Discuss delivery options with your doctor</li>
-            </ul>
+          <div className="text-pink-500">
+            <Info className="w-6 h-6" />
           </div>
         </div>
-      </div>
 
-      {/* Recommended Foods */}
-      <div className="bg-white p-6 rounded-2xl shadow space-y-4">
-        <h3 className="text-xl font-semibold">Recommended Foods</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          {[{ name: "Leafy Greens", emoji: "🦬" }, { name: "Whole Grains", emoji: "🍞" }, { name: "Lean Proteins", emoji: "🍗" }, { name: "Fruits", emoji: "🍓" }, { name: "Dairy", emoji: "🥛" }, { name: "Nuts & Seeds", emoji: "🥜" }, { name: "Legumes", emoji: "🦘" }, { name: "Water", emoji: "💧" }].map((food) => (
-            <div key={food.name} className="bg-gray-50 p-3 rounded-lg shadow-sm text-sm">
-              <div className="text-2xl">{food.emoji}</div>
-              <p className="mt-1">{food.name}</p>
+        {/* Tips Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {data?.pregnancyTips.map((tip) => (
+            <div key={tip._id} className="bg-white p-4 rounded-xl shadow hover:shadow-md transition-shadow duration-300">
+              <div className="flex items-start space-x-3">
+                <div className="bg-pink-100 p-2 rounded-full">
+                  <Info className="w-4 h-4 text-pink-500" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-base font-medium text-gray-800 mb-1">{tip.title}</h3>
+                  <p className="text-xs text-gray-600 leading-relaxed">{tip.content}</p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Weekly Milestones */}
-      <div className="bg-white p-6 rounded-2xl shadow space-y-4">
-        <h3 className="text-xl font-semibold">Weekly Milestones</h3>
-        <div className="space-y-2 text-sm text-gray-700">
-          <p><span className="font-medium text-purple-600">Week 8:</span> Baby’s heartbeat can be heard via ultrasound.</p>
-          <p><span className="font-medium text-purple-600">Week 12:</span> Risk of miscarriage decreases significantly.</p>
-          <p><span className="font-medium text-purple-600">Week 20:</span> Halfway mark — baby bump becomes more visible.</p>
-          <p><span className="font-medium text-purple-600">Week 28:</span> Baby starts opening their eyes.</p>
-          <p><span className="font-medium text-purple-600">Week 36:</span> Baby is almost full-term and begins moving into position.</p>
+        {/* Trimester Checklist */}
+        <div className="bg-white p-6 rounded-2xl shadow space-y-4">
+          <h3 className="text-xl font-semibold">Trimester Checklist</h3>
+          <div className="space-y-4">
+            {Object.entries(data?.trimesters || {}).map(([trimester, items]) => (
+              <div key={trimester} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
+                <p className={`font-medium mb-2 ${
+                  trimester === '1' ? 'text-pink-600' :
+                  trimester === '2' ? 'text-yellow-600' :
+                  'text-green-600'
+                }`}>
+                  {trimester === '1' ? 'First' :
+                   trimester === '2' ? 'Second' :
+                   'Third'} Trimester
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {items.map((item) => (
+                    <div key={item._id} className="bg-gray-50 p-3 rounded-lg">
+                      <p className="text-sm text-gray-700">{item.content}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recommended Foods */}
+        <div className="bg-white p-6 rounded-2xl shadow space-y-4">
+          <h3 className="text-xl font-semibold">Recommended Foods</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {data?.recommendedFoods.map((food) => (
+              <div key={food._id} className="bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+                <div className="aspect-w-1 aspect-h-1">
+                  <img 
+                    src={food.imgUrl} 
+                    alt={food.name}
+                    className="w-full h-32 object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'https://via.placeholder.com/150?text=Food+Image';
+                    }}
+                  />
+                </div>
+                <div className="p-3 text-center">
+                  <p className="text-sm font-medium text-gray-800">{food.name}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Weekly Milestones */}
+        <div className="bg-white p-6 rounded-2xl shadow space-y-4">
+          <h3 className="text-xl font-semibold">Weekly Milestones</h3>
+          <div className="space-y-2 text-sm text-gray-700">
+            {data?.milestones
+              .sort((a, b) => a.week - b.week)
+              .map((milestone) => (
+                <p key={milestone._id}>
+                  <span className="font-medium text-purple-600">Week {milestone.week}:</span> {milestone.content}
+                </p>
+              ))}
+          </div>
         </div>
       </div>
-            </div>
-        </div>
-    );
+    </div>
+  );
 }

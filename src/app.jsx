@@ -68,6 +68,7 @@ import EditUser from './components/EditUser/EditUser'
 import ManageProviders from './components/Admin/ManageProviders'
 import NetworkStatus from './components/NetworkStatus'
 import EditProviderById from './components/Admin/EditProviderById/EditProviderById'
+import ChooseFromFour from './components/Admin/ChooseFromFour'
 
 const router = createBrowserRouter([
   {
@@ -208,6 +209,7 @@ const router = createBrowserRouter([
       { path: 'manage-carts' , element: <ManageCarts/> },
       { path: 'cart-details/:userId' , element: <CartDetails/> },
       { path: 'manage-users/edit-user/:userId' , element: <EditUsersById/> },
+      { path: 'tips-articles/choose-from-four' , element: <ChooseFromFour/> },
     ],
   },
 ]);

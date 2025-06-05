@@ -75,7 +75,7 @@ export default function Reg() {
 
                 setTimeout(() => {
                     navigate('/login')
-                }, 5000)
+                }, 2000)
 
                 setIsClicked(false)
 
@@ -86,7 +86,7 @@ export default function Reg() {
 
                 setTimeout(() => {
                     setErorrMsg(null)
-                }, 5000)
+                }, 3000)
                 setLoading(false)
                 setIsClicked(false)
                 // setErorrMsg(err.response.data.errors.phoneNumber)

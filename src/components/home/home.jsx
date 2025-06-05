@@ -105,7 +105,6 @@ export default function Home() {
             const newQuantity = currentQuantity + change;
 
             if (newQuantity <= 0) {
-                // If quantity would be 0 or negative, delete the product
                 await handleDeleteProductWithUpdate(e, productId);
                 return;
             }
@@ -137,7 +136,11 @@ export default function Home() {
             localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
         } catch (error) {
             console.error('Error updating quantity:', error);
-            toast.error('Failed to update quantity');
+            if (error.response?.data?.errors?.productId?.msg === 'Product is out of stock') {
+                toast.error('Sorry, this product is out of stock');
+            } else {
+                toast.error('Failed to update quantity');
+            }
         }
     };
 
@@ -162,7 +165,11 @@ export default function Home() {
             }
         } catch (error) {
             console.error('Error handling cart operation:', error);
-            toast.error('Failed to update cart');
+            if (error.response?.data?.errors?.productId?.msg === 'Product is out of stock') {
+                toast.error('Sorry, this product is out of stock');
+            } else {
+                toast.error('Failed to update cart');
+            }
         }
     };
 

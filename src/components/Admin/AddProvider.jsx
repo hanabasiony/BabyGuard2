@@ -71,7 +71,7 @@ export default function AddProvider() {
 
                 if (response.status === 201) {
                     toast.success('Provider added successfully');
-                    navigate('/admin/providers');
+                    navigate('/admin/manage-providers');
                     console.log(response.data);
                 }
             } catch (error) {

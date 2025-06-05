@@ -65,6 +65,9 @@ import CartDetails from './components/ManageCarts/CartDetails'
 import ScrollToTop from './components/ScrollToTop'
 import EditUsersById from './components/Admin/EditUserById/EditUserById'
 import EditUser from './components/EditUser/EditUser'
+import ManageProviders from './components/Admin/ManageProviders'
+import NetworkStatus from './components/NetworkStatus'
+import EditProviderById from './components/Admin/EditProviderById/EditProviderById'
 
 const router = createBrowserRouter([
   {
@@ -190,14 +193,16 @@ const router = createBrowserRouter([
       { path: '', element: <Dashboard /> },    
       { path: 'manage-users', element: <ManageUsers /> },
       { path: 'manage-nurses', element: <ManageNurses /> },
-      { path: 'manage-children', element: <ProtectedRouteAdmin><ManageChildren /></ProtectedRouteAdmin> },
+      { path: 'manage-children', element:<ManageChildren /> },
       { path: 'vaccinations', element: <Vaccinations /> },
       { path: 'appointments', element: <Appointments /> },
       { path: 'product-store', element: <ProductStore /> },
       { path: 'product-store/add', element: <AddProductPage /> },
       { path: 'tips-articles', element: <TipsArticles /> },
       { path: 'complaints', element: <Complaints /> },
-      { path: 'providers', element: <AddProvider/> },
+      { path: 'manage-providers', element: <ManageProviders/> },
+      { path: 'manage-providers/add-providers', element: <AddProvider/> },
+      { path: 'manage-providers/edit-provider/:providerId', element: <EditProviderById/> },
       { path: 'cart-status', element: <ManageCartStatus/> },
       { path: 'vaccinations/add', element: <AddVaccine/> },
       { path: 'manage-carts' , element: <ManageCarts/> },
@@ -233,6 +238,7 @@ export function App() {
             }}
             
             />
+            <NetworkStatus/>
           </QueryClientProvider>
         </CartContextProvider>
       </AuthcontextProvider>

@@ -164,7 +164,11 @@ export default function CartContextProvider({ children }) {
             toast.success('Product added to cart successfully!');
         } catch (error) {
             console.error('Error adding product to cart:', error);
-            toast.error('Failed to add product to cart');
+            if (error.response?.data?.errors?.productId?.msg === 'Product is out of stock') {
+                toast.error('Sorry, this product is out of stock');
+            } else {
+                toast.error('Failed to add product to cart');
+            }
         } finally {
             setLoadingProducts(prev => ({ ...prev, [productId]: false }));
         }
@@ -229,7 +233,11 @@ export default function CartContextProvider({ children }) {
             }
         } catch (error) {
             console.error('Error updating cart:', error);
-            toast.error('Failed to update cart quantity');
+            if (error.response?.data?.errors?.productId?.msg === 'Product is out of stock') {
+                toast.error('Sorry, this product is out of stock');
+            } else {
+                toast.error('Failed to update cart quantity');
+            }
         } finally {
             setLoadingProducts(prev => ({ ...prev, [productId]: false }));
         }

@@ -11,6 +11,7 @@ function Dashboard() {
   }
   const [appointmentsNumber, setAppointmentsNumber] = useState([]);
   const [complaintsNumber, setComplaintsNumber] = useState([]);
+  const [usersNumber, setUsersNumber] = useState([]);
 
   // This would be replaced with API data
   const recentActivity = [
@@ -24,11 +25,11 @@ function Dashboard() {
     { id: 2, name: "Dr. Mike", action: "added new vaccine schedule", time: "4 hours ago", avatar: "/placeholder.svg" },
     { id: 3, name: "Emma", action: "submitted a new complaint", time: "6 hours ago", avatar: "/placeholder.svg" },
   ]
-
+  const token = localStorage.getItem('token');
   const fetchAppointments = async () => {
     // setIsLoading(true);
     try {
-      const token = localStorage.getItem('token'); // Assuming token is needed for admin API
+      // Assuming token is needed for admin API
       if (!token) {
           console.error('Authentication token not found for admin API');
           // setIsLoading(false);
@@ -91,13 +92,27 @@ function Dashboard() {
     }
   };
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
+  const fetchUsersNumbers = () => {
+    const res = axios.get('http://localhost:8000/api/user',{
+      headers:{
+        Authorization: `Bearer ${token}`
+      }
+    }).then((res)=>{
+      // console.log();
+      setUsersNumber(res.data.users.length)
+    })
+    .catch((err)=>{
+      console.log(err);
+      
+    })
+  }
 
   useEffect(() => {
+    fetchAppointments();
     fetchComplains();
+    fetchUsersNumbers()
   }, []);
+
 
   return (
     <div className="p-4 sm:p-6">
@@ -141,9 +156,9 @@ function Dashboard() {
                 />
               </svg>
             </div>
-            <span className="text-green-500 font-medium">{stats.totalUsers.change}</span>
+            {/* <span className="text-green-500 font-medium">{stats.totalUsers.change}</span> */}
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{stats.totalUsers.count.toLocaleString()}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{usersNumber}</h2>
           <p className="text-gray-500">Total Users</p>
         </div>
 
@@ -222,7 +237,7 @@ function Dashboard() {
           </Link>
 
           <Link
-            to="/admin/vaccinations"
+            to="/admin/vaccinations/add"
             state={{ showAddModal: true }}
             className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-md flex items-center justify-center hover:from-blue-600 hover:to-blue-700 transition duration-200"
           >

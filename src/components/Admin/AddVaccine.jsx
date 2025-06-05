@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -53,6 +53,37 @@ export default function AddVaccine() {
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState(null);
     const [successMsg, setSuccessMsg] = useState(false);
+    const [providers, setProviders] = useState([]);
+    const [loadingProviders, setLoadingProviders] = useState(true);
+
+    useEffect(() => {
+        fetchProviders();
+    }, []);
+
+    const fetchProviders = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                toast.error('Authentication token is missing. Please log in.');
+                return;
+            }
+
+            const response = await axios.get('http://localhost:8000/api/provider', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (response.data.message === 'Providers fetched successfully') {
+                setProviders(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching providers:', error);
+            toast.error('Failed to fetch providers');
+        } finally {
+            setLoadingProviders(false);
+        }
+    };
 
     const formik = useFormik({
         initialValues: {
@@ -60,7 +91,7 @@ export default function AddVaccine() {
             description: '',
             requiredAge: '',
             price: '',
-            provider: '683e857d58a48bef386da559',
+            provider: '',
         },
         validationSchema: vaccineValidationSchema,
         onSubmit: async (values) => {
@@ -85,7 +116,6 @@ export default function AddVaccine() {
                 if (response.status === 201) {
                     setSuccessMsg(true);
                     formik.resetForm();
-                    console.log(response.data);
                     
                     setTimeout(() => {
                         setSuccessMsg(false);
@@ -145,24 +175,35 @@ export default function AddVaccine() {
                 <div className="bg-white rounded-lg shadow-lg p-6">
                     <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Add New Vaccine</h2>
 
-                    {/* Provider ID */}
+                    {/* Provider Selection */}
                     <div className="relative z-0 w-full mb-5 group">
-                        <input
-                            type="text"
+                        <select
                             id="provider"
                             name="provider"
                             value={formik.values.provider}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            placeholder=" "
-                        />
+                            disabled={loadingProviders}
+                        >
+                            <option value="">Select a Provider</option>
+                            {providers.map((provider) => (
+                                <option key={provider._id} value={provider._id}>
+                                    {provider.name} - {provider.city}, {provider.governorate}
+                                </option>
+                            ))}
+                        </select>
                         <label htmlFor="provider" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-                            Provider ID
+                            Provider
                         </label>
                         {formik.errors.provider && formik.touched.provider && (
                             <div className="p-4 mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
                                 {formik.errors.provider}
+                            </div>
+                        )}
+                        {loadingProviders && (
+                            <div className="p-4 mt-2 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50">
+                                Loading providers...
                             </div>
                         )}
                     </div>
@@ -277,7 +318,7 @@ export default function AddVaccine() {
                     <div className="flex justify-center">
                         <button
                             type="submit"
-                            disabled={loading}
+                            disabled={loading || loadingProviders}
                             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Adding Vaccine...' : 'Add Vaccine'}

@@ -12,15 +12,47 @@ export default function ProductDetails() {
     const { id } = useParams();
     const { productQuantities, handleAddToCart, handleUpdateQuantity, loadingProducts, handleDeleteProduct } = useContext(CartContext);
     const [localProductQuantities, setLocalProductQuantities] = useState({});
-    const [ isAdmin , setIsAdmin ] = useState( false )
-    
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const role = localStorage.getItem('role')
-    if(role === 'admin'){
-        setIsAdmin(true)
+    const role = localStorage.getItem('role');
+    if (role === 'admin') {
+        setIsAdmin(true);
     }
 
-    // Fetch pending cart data on component mount
+    // Fetch product data
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                setLoading(true);
+                const token = localStorage.getItem('token');
+                const response = await axios.get('http://localhost:8000/api/products', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                
+                // Find the specific product using the ID from URL params
+                const foundProduct = response.data.data.find(p => p._id === id);
+                if (foundProduct) {
+                    setProduct(foundProduct);
+                } else {
+                    setError('Product not found');
+                }
+            } catch (error) {
+                console.error('Error fetching product:', error);
+                setError('Failed to load product details');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProduct();
+    }, [id]);
+
+    // Fetch pending cart data
     useEffect(() => {
         const fetchPendingCart = async () => {
             try {
@@ -46,25 +78,6 @@ export default function ProductDetails() {
         fetchPendingCart();
     }, []);
 
-    const { data: products, isLoading, error } = useQuery({
-        queryKey: ['products'],
-        queryFn: async () => {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8000/api/products', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            console.log(response.data.data);
-            return response.data.data;
-            
-            
-        }
-    });
-
-    // Find the specific product from the fetched products
-    const product = products?.find(p => p._id === id);
-
     const handleQuantityUpdate = async (e, productId, change) => {
         e.preventDefault();
         try {
@@ -74,16 +87,12 @@ export default function ProductDetails() {
             const newQuantity = currentQuantity + change;
 
             if (newQuantity <= 0) {
-                // Use the same deletion logic as handleDeleteProductWithUpdate
                 await handleDeleteProduct(e, productId);
-                
-                // Update local quantities by removing the deleted product
                 setLocalProductQuantities(prev => {
                     const newQuantities = { ...prev };
                     delete newQuantities[productId];
                     return newQuantities;
                 });
-
                 return;
             }
 
@@ -102,7 +111,6 @@ export default function ProductDetails() {
                 [productId]: newQuantity
             }));
 
-            // Add toast message for quantity change
             if (change > 0) {
                 toast.success(`Quantity increased to ${newQuantity}`);
             } else {
@@ -110,7 +118,11 @@ export default function ProductDetails() {
             }
         } catch (error) {
             console.error('Error updating quantity:', error);
-            toast.error('Failed to update quantity');
+            if (error.response?.data?.errors?.productId?.msg === 'Product is out of stock') {
+                toast.error('Sorry, this product is out of stock');
+            } else {
+                toast.error('Failed to update quantity');
+            }
         }
     };
 
@@ -135,19 +147,21 @@ export default function ProductDetails() {
         e.preventDefault();
         try {
             await handleAddToCart(e, productId);
-            
-            // Update local quantities by adding the new product
             setLocalProductQuantities(prev => ({
                 ...prev,
                 [productId]: 1
             }));
         } catch (error) {
             console.error('Error adding product to cart:', error);
-            toast.error('Failed to add product to cart');
+            if (error.response?.data?.errors?.productId?.msg === 'Product is out of stock') {
+                toast.error('Sorry, this product is out of stock');
+            } else {
+                toast.error('Failed to add product to cart');
+            }
         }
     };
 
-    if (isLoading) {
+    if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <Oval
@@ -167,11 +181,19 @@ export default function ProductDetails() {
     }
 
     if (error) {
-        return <div className="min-h-screen flex items-center justify-center text-red-500">Error: {error.message}</div>;
+        return (
+            <div className="min-h-screen flex items-center justify-center text-red-500">
+                Error: {error}
+            </div>
+        );
     }
 
     if (!product) {
-        return <div className="min-h-screen flex items-center justify-center text-red-500">Product not found</div>;
+        return (
+            <div className="min-h-screen flex items-center justify-center text-gray-500">
+                Product not found
+            </div>
+        );
     }
 
     // Function to render stars based on rating
@@ -292,17 +314,19 @@ export default function ProductDetails() {
                         </div>
 
                         {/* Features */}
-                        <div className="bg-white rounded-xl p-6 shadow-sm">
-                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Features</h3>
-                            <ul className="list-disc list-inside text-gray-700 space-y-2">
-                                {product.features?.map((feature, index) => (
-                                    <li key={index} className="flex items-center">
-                                        <span className="w-2 h-2 bg-pink-500 rounded-full mr-2"></span>
-                                        {feature}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                        {product.features && product.features.length > 0 && (
+                            <div className="bg-white rounded-xl p-6 shadow-sm">
+                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Features</h3>
+                                <ul className="list-disc list-inside text-gray-700 space-y-2">
+                                    {product.features.map((feature, index) => (
+                                        <li key={index} className="flex items-center">
+                                            <span className="w-2 h-2 bg-pink-500 rounded-full mr-2"></span>
+                                            {feature}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
 
                         {/* Product Details */}
                         <div className="bg-white rounded-xl p-6 shadow-sm">
@@ -327,61 +351,62 @@ export default function ProductDetails() {
                         </div>
 
                         {/* Reviews */}
-                        <div className="bg-white rounded-xl p-6 shadow-sm">
-                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Customer Reviews</h3>
-                            <div className="space-y-6">
-                                {product.reviews.map((review) => (
-                                    <div key={review._id} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex">
-                                                    {renderStars(review.rating)}
+                        {product.reviews && product.reviews.length > 0 && (
+                            <div className="bg-white rounded-xl p-6 shadow-sm">
+                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Customer Reviews</h3>
+                                <div className="space-y-6">
+                                    {product.reviews.map((review) => (
+                                        <div key={review._id} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex">
+                                                        {renderStars(review.rating)}
+                                                    </div>
+                                                    <span className="font-medium text-gray-900">{review.user?.name || 'Anonymous'}</span>
                                                 </div>
-                                                <span className="font-medium text-gray-900">{review.user.name}</span>
-                                            </div>
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-sm text-gray-500">
-                                                    {new Date(review.createdAt).toLocaleDateString('en-US', {
-                                                        year: 'numeric',
-                                                        month: 'long',
-                                                        day: 'numeric'
-                                                    })}
-                                                </span>
-                                                {isAdmin && (
-                                                    <button
-                                                        onClick={async () => {
-                                                            if (window.confirm('Are you sure you want to delete this review?')) {
-                                                                try {
-                                                                    const token = localStorage.getItem('token');
-                                                                    await axios.delete(
-                                                                        `http://localhost:8000/api/products-reviews/${review._id}`,
-                                                                        {
-                                                                            headers: {
-                                                                                Authorization: `Bearer ${token}`
+                                                <div className="flex items-center gap-4">
+                                                    <span className="text-sm text-gray-500">
+                                                        {new Date(review.createdAt).toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric'
+                                                        })}
+                                                    </span>
+                                                    {isAdmin && (
+                                                        <button
+                                                            onClick={async () => {
+                                                                if (window.confirm('Are you sure you want to delete this review?')) {
+                                                                    try {
+                                                                        const token = localStorage.getItem('token');
+                                                                        await axios.delete(
+                                                                            `http://localhost:8000/api/products-reviews/${review._id}`,
+                                                                            {
+                                                                                headers: {
+                                                                                    Authorization: `Bearer ${token}`
+                                                                                }
                                                                             }
-                                                                        }
-                                                                    );
-                                                                    toast.success('Review deleted successfully!');
-                                                                    // Refresh the page to update reviews
-                                                                    window.location.reload();
-                                                                } catch (error) {
-                                                                    console.error('Error deleting review:', error);
-                                                                    toast.error('Failed to delete review');
+                                                                        );
+                                                                        toast.success('Review deleted successfully!');
+                                                                        window.location.reload();
+                                                                    } catch (error) {
+                                                                        console.error('Error deleting review:', error);
+                                                                        toast.error('Failed to delete review');
+                                                                    }
                                                                 }
-                                                            }
-                                                        }}
-                                                        className="text-red-500 hover:text-red-600 transition-colors duration-200"
-                                                    >
-                                                        <Trash size={16} />
-                                                    </button>
-                                                )}
+                                                            }}
+                                                            className="text-red-500 hover:text-red-600 transition-colors duration-200"
+                                                        >
+                                                            <Trash size={16} />
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
+                                            <p className="text-gray-700 mt-2">{review.message}</p>
                                         </div>
-                                        <p className="text-gray-700 mt-2">{review.message}</p>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
 
                     {/* Related Products */}

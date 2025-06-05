@@ -280,7 +280,7 @@ const AddChild = () => {
                     <div className="flex justify-center items-center">
                         <button
                             type="submit"
-                            className="text-white bg-pink-400 cursor-pointer hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-pink-500 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-pink-400 dark:hover:bg-pink-500 dark:focus:ring-pink-500"
+                            className="text-white bg-rose-300 cursor-pointer hover:bg-rose-400 focus:ring-4 focus:outline-none focus:ring-rose-400 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-rose-300 dark:hover:bg-rose-400 dark:focus:ring-rose-400"
                             disabled={loading}
                         >
                             {loading ? 'Adding...' : 'Add Child'}

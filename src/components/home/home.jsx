@@ -250,8 +250,8 @@ const Home = () => {
 
     // Add this function to filter products
     const filteredProducts = products.filter(product => 
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchQuery.toLowerCase())
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+        // product.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     if (loading) {
@@ -260,12 +260,12 @@ const Home = () => {
                 <Oval
                     height={80}
                     width={80}
-                    color="#ec4899"
+                    color="#fda4af"
                     wrapperStyle={{}}
                     wrapperClass=""
                     visible={true}
                     ariaLabel='oval-loading'
-                    secondaryColor="#f9a8d4"
+                    secondaryColor="#fb7185"
                     strokeWidth={2}
                     strokeWidthSecondary={2}
                 />
@@ -279,16 +279,16 @@ const Home = () => {
 
     return (
         <>
-            <div className="wrapper py-20   px-10 mx-auto max-w-[1200px]">
-                <div className="mb-8 lg:mt-5  mt-20">
-                    <h2 className='text-4xl mb-4 text-gray-700'>Our Featured Products:</h2>
+            <div className="wrapper py-20 px-10 mx-auto max-w-[1200px]">
+                <div className="mb-8 lg:mt-5 mt-20">
+                    <h2 className='text-4xl mb-4 text-rose-300'>Our Featured Products:</h2>
                     <div className="mx-auto">
                         <input
                             type="text"
                             placeholder="Search products..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent"
                         />
                     </div>
                 </div>
@@ -301,7 +301,7 @@ const Home = () => {
                                 <Link
                                     to={`/productDetails/${product._id}`}
                                     key={product._id}
-                                    className="bg-white pb-15 rounded-2xl relative shadow-md p-4 flex flex-col items-center text-center w-64 group  transition-all"
+                                    className="bg-white pb-15 rounded-2xl relative shadow-md p-4 flex flex-col items-center text-center w-64 group transition-all"
                                 >
                                     <img
                                         src={product.image}
@@ -309,7 +309,7 @@ const Home = () => {
                                         className='w-full h-full mb-4 object-cover w-[] h-[]'
                                     />
                                     <h3 className='text-lg font-semibold text-black-600 mb-1'>{product.name}</h3>
-                                    <h2 className='text-black-600 text-sm mb-2'>{product.description}</h2>
+                                    {/* <h2 className='text-black-600 text-sm mb-2'>{product.description}</h2> */}
                                     <p className='text-black-400 mb-2 font-semibold'>EGP: {product.price}</p>
                                     
                                     {/* Stock Level Indicator */}
@@ -345,12 +345,12 @@ const Home = () => {
                                                 <Oval
                                                     height={30}
                                                     width={30}
-                                                    color="#EC4899"
+                                                    color="#fda4af"
                                                     wrapperStyle={{}}
                                                     wrapperClass=""
                                                     visible={true}
                                                     ariaLabel='oval-loading'
-                                                    secondaryColor="#EC4899"
+                                                    secondaryColor="#fb7185"
                                                     strokeWidth={4}
                                                     strokeWidthSecondary={4}
                                                 />
@@ -360,17 +360,17 @@ const Home = () => {
                                         <div className="flex items-center justify-center gap-2 absolute bottom-3">
                                             <button
                                                 onClick={(e) => handleQuantityUpdate(e, product._id, -1)}
-                                                className="bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
+                                                className="bg-rose-300 hover:bg-rose-350 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
                                             >
                                                 -
                                             </button>
-                                            <span className="bg-pink-400 text-white font-medium px-3 py-1 rounded-full">
+                                            <span className="bg-rose-300 text-white font-medium px-3 py-1 rounded-full">
                                                 {currentQuantity}
                                             </span>
                                             <button
                                                 onClick={(e) => handleQuantityUpdate(e, product._id, 1)}
                                                 disabled={product.quantity <= currentQuantity}
-                                                className={`bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center ${
+                                                className={`bg-rose-300 hover:bg-rose-350 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center ${
                                                     product.quantity <= currentQuantity ? 'opacity-50 cursor-not-allowed' : ''
                                                 }`}
                                             >
@@ -378,7 +378,7 @@ const Home = () => {
                                             </button>
                                             <button
                                                 onClick={(e) => handleDeleteProductWithUpdate(e, product._id)}
-                                                className="bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
+                                                className="bg-rose-300 hover:bg-rose-350 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -387,7 +387,7 @@ const Home = () => {
                                         <button
                                             onClick={(e) => handleAddToCartWithCheck(e, product._id)}
                                             disabled={product.quantity === 0}
-                                            className={`bg-pink-400 absolute bottom-3 hover:bg-pink-500 text-white font-medium py-2 px-4 rounded-full cursor-pointer ${
+                                            className={`bg-rose-300 absolute bottom-3 hover:bg-rose-350 text-white font-medium py-2 px-4 rounded-full cursor-pointer ${
                                                 product.quantity === 0 ? 'opacity-50 cursor-not-allowed' : ''
                                             }`}
                                         >

@@ -11,7 +11,7 @@ const WhatsAppButton = () => {
   };
 
   return (
-    <button onClick={handleClick} className='fixed bottom-15 right-5.5 bg-pink-400 rounded-2xl p-2 rounded-br-none cursor-pointer'>
+    <button onClick={handleClick} className='fixed bottom-15 right-5.5 bg-rose-300 rounded-2xl p-2 rounded-br-none cursor-pointer'>
       <i class="fa-brands fa-whatsapp text-white text-3xl cursor-pointer"></i>
     </button>
   );

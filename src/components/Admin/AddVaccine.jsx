@@ -87,33 +87,33 @@ export default function AddVaccine() {
 
     const formik = useFormik({
         initialValues: {
-            name: '',
-            description: '',
-            requiredAge: '',
-            price: '',
+        name: '',
+        description: '',
+        requiredAge: '',
+        price: '',
             provider: '',
         },
         validationSchema: vaccineValidationSchema,
         onSubmit: async (values) => {
-            setLoading(true);
-            try {
-                const token = localStorage.getItem('token');
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('token');
                 if (!token) {
                     toast.error('Authentication token is missing. Please log in.');
                     return;
                 }
 
-                const response = await axios.post(
-                    'http://localhost:8000/api/vaccines/admin',
+            const response = await axios.post(
+                'http://localhost:8000/api/vaccines/admin',
                     values,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
                     }
-                );
+                }
+            );
 
-                if (response.status === 201) {
+            if (response.status === 201) {
                     setSuccessMsg(true);
                     formik.resetForm();
                     
@@ -121,9 +121,9 @@ export default function AddVaccine() {
                         setSuccessMsg(false);
                         navigate('/admin/vaccinations');
                     }, 2000);
-                }
-            } catch (error) {
-                console.error('Error adding vaccine:', error);
+            }
+        } catch (error) {
+            console.error('Error adding vaccine:', error);
                 if (error.response && error.response.data && error.response.data.errors) {
                     const apiErrors = error.response.data.errors;
                     const formikErrors = {};
@@ -151,8 +151,8 @@ export default function AddVaccine() {
                 setTimeout(() => {
                     setErrorMsg(null);
                 }, 5000);
-            } finally {
-                setLoading(false);
+        } finally {
+            setLoading(false);
             }
         }
     });
@@ -178,8 +178,8 @@ export default function AddVaccine() {
                     {/* Provider Selection */}
                     <div className="relative z-0 w-full mb-5 group">
                         <select
-                            id="provider"
-                            name="provider"
+                                    id="provider"
+                                    name="provider"
                             value={formik.values.provider}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
@@ -206,14 +206,14 @@ export default function AddVaccine() {
                                 Loading providers...
                             </div>
                         )}
-                    </div>
+                        </div>
 
-                    {/* Vaccine Name */}
+                        {/* Vaccine Name */}
                     <div className="relative z-0 w-full mb-5 group">
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
                             value={formik.values.name}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
@@ -228,13 +228,13 @@ export default function AddVaccine() {
                                 {formik.errors.name}
                             </div>
                         )}
-                    </div>
+                        </div>
 
-                    {/* Description */}
+                        {/* Description */}
                     <div className="relative z-0 w-full mb-5 group">
-                        <textarea
-                            id="description"
-                            name="description"
+                            <textarea
+                                id="description"
+                                name="description"
                             rows="3"
                             value={formik.values.description}
                             onChange={formik.handleChange}
@@ -250,9 +250,9 @@ export default function AddVaccine() {
                                 {formik.errors.description}
                             </div>
                         )}
-                    </div>
+                        </div>
 
-                    {/* Required Age */}
+                        {/* Required Age */}
                     <div className="relative z-0 w-full mb-5 group">
                         <select
                             id="requiredAge"
@@ -282,22 +282,22 @@ export default function AddVaccine() {
                             <option value="4 years">4 years</option>
                         </select>
                         <label htmlFor="requiredAge" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-                            Required Age
-                        </label>
+                                Required Age
+                            </label>
                         {formik.errors.requiredAge && formik.touched.requiredAge && (
                             <div className="p-4 mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
                                 {formik.errors.requiredAge}
                             </div>
                         )}
-                    </div>
+                        </div>
 
-                    {/* Price */}
+                        {/* Price */}
                     <div className="relative z-0 w-full mb-5 group">
-                        <input
-                            type="number"
-                            id="price"
-                            name="price"
-                            step="0.01"
+                            <input
+                                type="number"
+                                id="price"
+                                name="price"
+                                step="0.01"
                             value={formik.values.price}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
@@ -312,18 +312,18 @@ export default function AddVaccine() {
                                 {formik.errors.price}
                             </div>
                         )}
-                    </div>
+                        </div>
 
-                    {/* Submit Button */}
+                        {/* Submit Button */}
                     <div className="flex justify-center">
-                        <button
-                            type="submit"
+                            <button
+                                type="submit"
                             disabled={loading || loadingProviders}
                             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                            >
                             {loading ? 'Adding Vaccine...' : 'Add Vaccine'}
-                        </button>
-                    </div>
+                            </button>
+                        </div>
                 </div>
             </form>
         </div>

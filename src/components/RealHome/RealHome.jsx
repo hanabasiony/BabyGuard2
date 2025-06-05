@@ -34,10 +34,9 @@ export default function Home() {
   }, []);
 
   return (
-
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className=" bg-gradient-to-r from-pink-50 to-blue-50  mx-auto px-4 py-12 md:py-20 flex flex-col md:flex-row items-center">
+      <section className="bg-gradient-to-r from-rose-50 to-blue-50 mx-auto px-4 py-12 md:py-20 flex flex-col md:flex-row items-center">
         <div className="md:w-1/2 space-y-6 ml-8 mr-8">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800">Your Kid's Health is Your Wealth</h1>
           <p className="text-gray-600 max-w-md">
@@ -45,7 +44,7 @@ export default function Home() {
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full flex items-center">
+            className="bg-rose-300 hover:bg-rose-350 text-white px-6 py-2 rounded-full flex items-center">
             Get Started <span className="ml-2">→</span>
           </button>
         </div>
@@ -65,7 +64,6 @@ export default function Home() {
                 <div key={index}>
                   <img
                     src={image || "/placeholder.svg"}
-
                     className="rounded-lg w-full h-auto object-cover"
                   />
                 </div>
@@ -75,14 +73,27 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Vaccine Reminder Banner */}
+      <div className="bg-rose-200 py-4">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center">
+            <div className="flex items-center space-x-2">
+              <span className="text-white text-lg">🔔</span>
+              <p className="text-white text-center font-medium">
+                Once you register your child, we will send you vaccine reminders to make sure that you remember
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Core Features */}
-      <section className=" mx-auto px-12 py-12 ">
+      <section className="mx-auto px-12 py-12">
         <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12 mt-10">Core Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-pink-50 border-none rounded-lg shadow-sm p-6">
             <div className="bg-pink-200 w-10 h-10 rounded-full flex items-center justify-center mb-4">
-              <span className="text-pink-600">💉</span>
+              <span className="text-rose-600">💉</span>
             </div>
             <h3 className="font-semibold text-lg mb-2">Vaccination Appointments</h3>
             <p className="text-gray-600 text-sm">Book hassle-free at-home vaccination appointments.</p>
@@ -96,9 +107,9 @@ export default function Home() {
             <p className="text-gray-600 text-sm">Get real-time alerts for upcoming vaccinations.</p>
           </div>
 
-          <div className="bg-pink-50 border-none rounded-lg shadow-sm p-6">
-            <div className="bg-pink-200 w-10 h-10 rounded-full flex items-center justify-center mb-4">
-              <span className="text-pink-600">📚</span>
+          <div className="bg-rose-50 border-none rounded-lg shadow-sm p-6">
+            <div className="bg-rose-200 w-10 h-10 rounded-full flex items-center justify-center mb-4">
+              <span className="text-rose-600">📚</span>
             </div>
             <h3 className="font-semibold text-lg mb-2">Expert Tips</h3>
             <p className="text-gray-600 text-sm">Access pregnancy and baby care tips from experts.</p>
@@ -107,7 +118,7 @@ export default function Home() {
       </section>
 
       {/* Pregnancy Tips */}
-      <section className=" mx-auto px-14 py-12 bg-gradient-to-r from-pink-50 to-blue-50 ">
+      <section className=" mx-auto px-14 py-12 bg-gradient-to-r from-rose-50 to-blue-50 ">
         <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12">Pregnancy Tips</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="rounded-lg shadow-lg overflow-hidden">
@@ -160,7 +171,7 @@ export default function Home() {
             <div className="col-span-4 text-center">Loading products...</div>
           ) : (
             featuredProducts.map((product) => (
-              <div key={product._id} className="bg-pink-50 border-none rounded-lg shadow-sm p-6">
+              <div key={product._id} className="bg-rose-50 border-none rounded-lg shadow-sm p-6">
                 <div className="flex flex-col items-center">
                   <img 
                     src={product.image} 
@@ -177,13 +188,13 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="mx-auto px-14 py-12 bg-gradient-to-r from-pink-50 to-blue-50">
+      <section className="mx-auto px-14 py-12 bg-gradient-to-r from-rose-50 to-blue-50">
         <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12">What Parents Say</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="rounded-lg shadow-lg bg-white">
             <div className="p-6 flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-full bg-pink-200 flex items-center justify-center mb-4">
-                <span className="text-pink-500 text-xl font-semibold">AM</span>
+              <div className="w-16 h-16 rounded-full bg-rose-200 flex items-center justify-center mb-4">
+                <span className="text-rose-500 text-xl font-semibold">AM</span>
               </div>
               <p className="text-gray-600 mb-4">
                 "Baby Guard has been a lifesaver! The vaccination reminders are so helpful."
@@ -218,6 +229,5 @@ export default function Home() {
 
       <AboutUs />
     </div>
-
   )
 }

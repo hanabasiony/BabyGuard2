@@ -48,7 +48,11 @@ export default function ProductDetails() {
                 }
             } catch (error) {
                 console.error('Error fetching product:', error);
-                setError('Failed to load product details');
+                if (error.code === 'ERR_NETWORK') {
+                    setError('Network Error: Please check your internet connection and try again');
+                } else {
+                    setError('Failed to load product details');
+                }
             } finally {
                 setLoading(false);
             }
@@ -180,12 +184,12 @@ export default function ProductDetails() {
                 <Oval
                     height={80}
                     width={80}
-                    color="#ec4899"
+                    color="#fda4af"
                     wrapperStyle={{}}
                     wrapperClass=""
                     visible={true}
                     ariaLabel='oval-loading'
-                    secondaryColor="#f9a8d4"
+                    secondaryColor="#fb7185"
                     strokeWidth={2}
                     strokeWidthSecondary={2}
                 />
@@ -195,8 +199,17 @@ export default function ProductDetails() {
 
     if (error) {
         return (
-            <div className="min-h-screen flex items-center justify-center text-red-500">
-                Error: {error}
+            <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                <div className="text-red-500 text-center">
+                    <h2 className="text-xl font-semibold mb-2">Error Loading Product</h2>
+                    <p className="text-gray-600">{error}</p>
+                    <button 
+                        onClick={() => window.location.reload()} 
+                        className="mt-4 bg-rose-300 hover:bg-rose-350 text-white px-4 py-2 rounded-lg"
+                    >
+                        Try Again
+                    </button>
+                </div>
             </div>
         );
     }
@@ -282,12 +295,12 @@ export default function ProductDetails() {
                                     <Oval
                                         height={30}
                                         width={30}
-                                        color="#EC4899"
+                                        color="#fda4af"
                                         wrapperStyle={{}}
                                         wrapperClass=""
                                         visible={true}
                                         ariaLabel='oval-loading'
-                                        secondaryColor="#EC4899"
+                                        secondaryColor="#fb7185"
                                         strokeWidth={4}
                                         strokeWidthSecondary={4}
                                     />
@@ -296,17 +309,17 @@ export default function ProductDetails() {
                                 <div className="flex items-center justify-center gap-2">
                                     <button 
                                         onClick={(e) => handleQuantityUpdate(e, product._id, -1)}
-                                        className="bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
+                                        className="bg-rose-300 hover:bg-rose-350 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
                                     >
                                         -
                                     </button>
-                                    <span className="bg-pink-400 text-white font-medium px-3 py-1 rounded-full">
+                                    <span className="bg-rose-300 text-white font-medium px-3 py-1 rounded-full">
                                         {currentQuantity}
                                     </span>
                                     <button 
                                         onClick={(e) => handleQuantityUpdate(e, product._id, 1)}
                                         disabled={product.quantity <= currentQuantity}
-                                        className={`bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center ${
+                                        className={`bg-rose-300 hover:bg-rose-350 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center ${
                                             product.quantity <= currentQuantity ? 'opacity-50 cursor-not-allowed' : ''
                                         }`}
                                     >
@@ -314,7 +327,7 @@ export default function ProductDetails() {
                                     </button>
                                     <button 
                                         onClick={(e) => handleDeleteProductWithUpdate(e, product._id)}
-                                        className="bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
+                                        className="bg-rose-300 hover:bg-rose-350 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
                                     >
                                         <Trash size={16} />
                                     </button>
@@ -323,7 +336,7 @@ export default function ProductDetails() {
                                 <button 
                                     onClick={(e) => handleAddToCartWithUpdate(e, product._id)}
                                     disabled={product.quantity === 0}
-                                    className={`bg-pink-400 hover:bg-pink-500 text-white font-medium py-2 px-4 rounded-full cursor-pointer ${
+                                    className={`bg-rose-300 hover:bg-rose-350 text-white font-medium py-2 px-4 rounded-full cursor-pointer ${
                                         product.quantity === 0 ? 'opacity-50 cursor-not-allowed' : ''
                                     }`}
                                 >
@@ -357,7 +370,7 @@ export default function ProductDetails() {
                                 <ul className="list-disc list-inside text-gray-700 space-y-2">
                                     {product.features.map((feature, index) => (
                                         <li key={index} className="flex items-center">
-                                            <span className="w-2 h-2 bg-pink-500 rounded-full mr-2"></span>
+                                            <span className="w-2 h-2 bg-rose-300 rounded-full mr-2"></span>
                                             {feature}
                                         </li>
                                     ))}

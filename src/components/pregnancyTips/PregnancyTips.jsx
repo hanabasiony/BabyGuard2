@@ -49,7 +49,7 @@ export default function PregnancyTips() {
             <h2 className="text-2xl font-semibold">Pregnancy Tips</h2>
             <p className="text-sm text-gray-500">Helpful advice for a healthy and happy pregnancy</p>
           </div>
-          <div className="text-pink-500">
+          <div className="text-rose-300">
             <Info className="w-6 h-6" />
           </div>
         </div>
@@ -59,8 +59,8 @@ export default function PregnancyTips() {
           {data?.pregnancyTips.map((tip) => (
             <div key={tip._id} className="bg-white p-4 rounded-xl shadow hover:shadow-md transition-shadow duration-300">
               <div className="flex items-start space-x-3">
-                <div className="bg-pink-100 p-2 rounded-full">
-                  <Info className="w-4 h-4 text-pink-500" />
+                <div className="bg-rose-100 p-2 rounded-full">
+                  <Info className="w-4 h-4 text-rose-300" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-base font-medium text-gray-800 mb-1">{tip.title}</h3>
@@ -78,7 +78,7 @@ export default function PregnancyTips() {
             {Object.entries(data?.trimesters || {}).map(([trimester, items]) => (
               <div key={trimester} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
                 <p className={`font-medium mb-2 ${
-                  trimester === '1' ? 'text-pink-600' :
+                  trimester === '1' ? 'text-rose-300' :
                   trimester === '2' ? 'text-yellow-600' :
                   'text-green-600'
                 }`}>

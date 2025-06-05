@@ -13,7 +13,7 @@ import toast from 'react-hot-toast'
 import { Trash2, Star, StarHalf } from 'lucide-react'
 import './home.css'
 
-export default function Home() {
+const Home = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -110,7 +110,7 @@ export default function Home() {
             }
 
             // Update the quantity in the cart
-            await axios.patch(
+            const response = await axios.patch(
                 `http://localhost:8000/api/carts/${cartId}/products/${productId}`,
                 { quantity: newQuantity },
                 {
@@ -120,20 +120,30 @@ export default function Home() {
                 }
             );
 
-            // Update local state
-            const newQuantities = { ...localProductQuantities };
-            newQuantities[productId] = newQuantity;
-            setLocalProductQuantities(newQuantities);
-            localStorage.setItem('productQuantities', JSON.stringify(newQuantities));
+            // Only update local state if the API call was successful
+            if (response.status === 200) {
+                // Update local state
+                const newQuantities = { ...localProductQuantities };
+                newQuantities[productId] = newQuantity;
+                setLocalProductQuantities(newQuantities);
+                localStorage.setItem('productQuantities', JSON.stringify(newQuantities));
 
-            // Update pending cart products if they exist
-            const updatedPendingProducts = pendingCartProducts.map(product =>
-                product.productId === productId
-                    ? { ...product, quantity: newQuantity }
-                    : product
-            );
-            setPendingCartProducts(updatedPendingProducts);
-            localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
+                // Update pending cart products if they exist
+                const updatedPendingProducts = pendingCartProducts.map(product =>
+                    product.productId === productId
+                        ? { ...product, quantity: newQuantity }
+                        : product
+                );
+                setPendingCartProducts(updatedPendingProducts);
+                localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
+
+                // Show success message
+                if (change > 0) {
+                    toast.success(`Quantity increased to ${newQuantity}`);
+                } else {
+                    toast.success(`Quantity decreased to ${newQuantity}`);
+                }
+            }
         } catch (error) {
             console.error('Error updating quantity:', error);
             if (error.response?.data?.errors?.productId?.msg === 'Product is out of stock') {
@@ -157,19 +167,24 @@ export default function Home() {
                 await handleQuantityUpdate(e, productId, 1);
             } else {
                 // If product doesn't exist, add it
-                await handleAddToCart(e, productId);
-                // Update local quantities
-                const newQuantities = { ...localProductQuantities, [productId]: 1 };
-                setLocalProductQuantities(newQuantities);
-                localStorage.setItem('productQuantities', JSON.stringify(newQuantities));
+                try {
+                    const response = await handleAddToCart(e, productId);
+                    // Only update UI if we got a successful response
+                    if (response && response.status === 201) {
+                        const newQuantities = { ...localProductQuantities, [productId]: 1 };
+                        setLocalProductQuantities(newQuantities);
+                        localStorage.setItem('productQuantities', JSON.stringify(newQuantities));
+                        
+                        // toast.success('Product added to cart successfully!');
+                    }
+                } catch (addError) {
+                    // The error is already handled in CartContext, just don't update the UI
+                    console.error('Error adding product:', addError);
+                }
             }
         } catch (error) {
             console.error('Error handling cart operation:', error);
-            if (error.response?.data?.errors?.productId?.msg === 'Product is out of stock') {
-                toast.error('Sorry, this product is out of stock');
-            } else {
-                toast.error('Failed to update cart');
-            }
+            // Error is already handled in CartContext
         }
     };
 
@@ -296,6 +311,23 @@ export default function Home() {
                                     <h3 className='text-lg font-semibold text-black-600 mb-1'>{product.name}</h3>
                                     <h2 className='text-black-600 text-sm mb-2'>{product.description}</h2>
                                     <p className='text-black-400 mb-2 font-semibold'>EGP: {product.price}</p>
+                                    
+                                    {/* Stock Level Indicator */}
+                                    <div className="mb-2">
+                                        <span className={`text-sm font-medium ${
+                                            product.quantity === 0 
+                                                ? 'text-red-500' 
+                                                : product.quantity < 10 
+                                                    ? 'text-yellow-500' 
+                                                    : 'text-green-500'
+                                        }`}>
+                                            {product.quantity === 0 
+                                                ? 'Out of Stock' 
+                                                : product.quantity < 10 
+                                                    ? `Low Stock: ${product.quantity} left` 
+                                                    : `In Stock: ${product.quantity} available`}
+                                        </span>
+                                    </div>
 
                                     {/* Rating and Reviews Section */}
                                     <div className="flex flex-col items-center mb-3">
@@ -305,35 +337,24 @@ export default function Home() {
                                                 ({product.rating.toFixed(1)})
                                             </span>
                                         </div>
-                                        {/* <div className="text-sm text-gray-500">
-                                            {product.totalReviews} {product.totalReviews === 1 ? 'review' : 'reviews'}
-                                        </div> */}
                                     </div>
 
-                                    {/* Features Section */}
-                                    {/* <div className="text-sm text-gray-600 mb-3">
-                                        <p className="font-medium">Age: {product.requiredAge}</p>
-                                        <div className="mt-1">
-                                            {product.features.slice(0, 2).map((feature, index) => (
-                                                <p key={index} className="text-xs">• {feature}</p>
-                                            ))}
-                                        </div>
-                                    </div> */}
-
                                     {loadingProducts[product._id] ? (
-                                        <div className="absolute bottom-3">
-                                            <Oval
-                                                height={30}
-                                                width={30}
-                                                color="#EC4899"
-                                                wrapperStyle={{}}
-                                                wrapperClass=""
-                                                visible={true}
-                                                ariaLabel='oval-loading'
-                                                secondaryColor="#EC4899"
-                                                strokeWidth={4}
-                                                strokeWidthSecondary={4}
-                                            />
+                                        <div className="flex items-center justify-center gap-2 absolute bottom-3">
+                                            <div className="flex justify-center">
+                                                <Oval
+                                                    height={30}
+                                                    width={30}
+                                                    color="#EC4899"
+                                                    wrapperStyle={{}}
+                                                    wrapperClass=""
+                                                    visible={true}
+                                                    ariaLabel='oval-loading'
+                                                    secondaryColor="#EC4899"
+                                                    strokeWidth={4}
+                                                    strokeWidthSecondary={4}
+                                                />
+                                            </div>
                                         </div>
                                     ) : currentQuantity > 0 ? (
                                         <div className="flex items-center justify-center gap-2 absolute bottom-3">
@@ -348,7 +369,10 @@ export default function Home() {
                                             </span>
                                             <button
                                                 onClick={(e) => handleQuantityUpdate(e, product._id, 1)}
-                                                className="bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
+                                                disabled={product.quantity <= currentQuantity}
+                                                className={`bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center ${
+                                                    product.quantity <= currentQuantity ? 'opacity-50 cursor-not-allowed' : ''
+                                                }`}
                                             >
                                                 +
                                             </button>
@@ -362,9 +386,12 @@ export default function Home() {
                                     ) : (
                                         <button
                                             onClick={(e) => handleAddToCartWithCheck(e, product._id)}
-                                            className="bg-pink-400 absolute bottom-3 hover:bg-pink-500 text-white font-medium py-2 px-4 rounded-full cursor-pointer"
+                                            disabled={product.quantity === 0}
+                                            className={`bg-pink-400 absolute bottom-3 hover:bg-pink-500 text-white font-medium py-2 px-4 rounded-full cursor-pointer ${
+                                                product.quantity === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                                            }`}
                                         >
-                                            Add to Cart
+                                            {product.quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
                                         </button>
                                     )}
                                 </Link>
@@ -375,4 +402,6 @@ export default function Home() {
             </div>
         </>
     );
-}
+};
+
+export default Home;

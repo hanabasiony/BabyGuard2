@@ -2,13 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import slugify from 'slugify';
+
+// Validation Schema
+const validationSchema = Yup.object().shape({
+  fName: Yup.string()
+    .min(3, 'First name is too short')
+    .max(15, 'First name is too long'),
+  lName: Yup.string()
+    .min(3, 'Last name is too short')
+    .max(15, 'Last name is too long'),
+  email: Yup.string()
+    .email('Email is invalid'),
+  nationalIdNumer: Yup.string()
+    .length(14, 'SSN must be exactly 14 digits')
+    .matches(/^\d+$/, 'SSN must be numeric'),
+  birthDate: Yup.date()
+    .nullable()
+    .typeError('Date of birth is invalid'),
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters'),
+  governorate: Yup.string(),
+  city: Yup.string(),
+  street: Yup.string(),
+  buildingNumber: Yup.string(),
+  apartmentNumber: Yup.string()
+});
 
 function EditUser() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [editingFields, setEditingFields] = useState({});
-  const [editedValues, setEditedValues] = useState({});
 
   useEffect(() => {
     fetchUserData();
@@ -51,10 +78,6 @@ function EditUser() {
       ...prev,
       [field]: true
     }));
-    setEditedValues(prev => ({
-      ...prev,
-      [field]: user[field]
-    }));
   };
 
   const handleCancelEdit = (field) => {
@@ -62,14 +85,9 @@ function EditUser() {
       ...prev,
       [field]: false
     }));
-    setEditedValues(prev => {
-      const newValues = { ...prev };
-      delete newValues[field];
-      return newValues;
-    });
   };
 
-  const handleSaveEdit = async (field) => {
+  const handleSaveEdit = async (values, { setSubmitting, resetForm }) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -78,11 +96,21 @@ function EditUser() {
         return;
       }
 
-      const updateData = {
-        [field]: editedValues[field]
-      };
+      // Generate slug if both fName and lName are being updated
+      if (values.fName && values.lName) {
+        values.slug = slugify(
+          `${values.fName}-${values.lName}-${Date.now()}`,
+          {
+            lower: true,
+            trim: true,
+            remove: /[^\w-]+/g,
+          }
+        )
+          .replace(/--+/g, "-")
+          .replace(/^-+|-+$/g, "");
+      }
 
-      const response = await axios.put('http://localhost:8000/api/user/me', updateData, {
+      const response = await axios.put('http://localhost:8000/api/user/me', values, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -91,69 +119,28 @@ function EditUser() {
       if (response.data.status === 'success') {
         toast.success('Profile updated successfully');
         setUser(response.data.user);
-        setEditingFields(prev => ({
-          ...prev,
-          [field]: false
-        }));
-        setEditedValues(prev => {
-          const newValues = { ...prev };
-          delete newValues[field];
-          return newValues;
-        });
-      }
-    } catch (error) {
-      if (error.response?.status === 401) {
-        toast.error('Session expired. Please login again');
-        localStorage.removeItem('token');
-        navigate('/login');
-      } else {
-        toast.error('Failed to update profile');
-        console.error('Error updating user:', error);
-      }
-    }
-  };
-
-  const handleInputChange = (field, value) => {
-    setEditedValues(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSaveAll = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error('Please login to perform this action');
-        navigate('/login');
-        return;
-      }
-
-      const response = await axios.put('http://localhost:8000/api/user/me', editedValues, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      if (response.data.status === 'success') {
-        toast.success('All changes saved successfully');
-        setUser(response.data.user);
         setEditingFields({});
-        setEditedValues({});
+        resetForm({ values: response.data.user });
       }
     } catch (error) {
       if (error.response?.status === 401) {
         toast.error('Session expired. Please login again');
         localStorage.removeItem('token');
         navigate('/login');
+      } else if (error.response?.data?.errors) {
+        // Handle validation errors
+        const errors = error.response.data.errors;
+        Object.keys(errors).forEach(field => {
+          toast.error(`${field}: ${errors[field].msg}`);
+        });
       } else {
         toast.error('Failed to update profile');
         console.error('Error updating user:', error);
       }
+    } finally {
+      setSubmitting(false);
     }
   };
-
-  const hasEdits = Object.keys(editedValues).length > 0;
 
   if (isLoading) {
     return (
@@ -196,67 +183,77 @@ function EditUser() {
               <h3 className="text-lg leading-6 font-medium text-gray-900">Edit Profile</h3>
               <p className="mt-1 max-w-2xl text-sm text-gray-500">Update your personal information</p>
             </div>
-            <div className="flex space-x-3">
-              {hasEdits && (
-                <button
-                  onClick={handleSaveAll}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                >
-                  Save All Changes
-                </button>
-              )}
-              <button
-                onClick={() => navigate('/settings')}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-              >
-                Back to Settings
-              </button>
-            </div>
+            <button
+              onClick={() => navigate('/settings')}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+            >
+              Back to Settings
+            </button>
           </div>
-          <div className="border-t border-gray-200">
-            <dl>
-              {editableFields.map(({ key, label }) => (
-                <div key={key} className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">{label}</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {editingFields[key] ? (
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="text"
-                          value={editedValues[key]}
-                          onChange={(e) => handleInputChange(key, e.target.value)}
-                          className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-colors duration-200 sm:text-sm"
-                          placeholder={`Enter ${label.toLowerCase()}`}
-                        />
-                        <button
-                          onClick={() => handleSaveEdit(key)}
-                          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => handleCancelEdit(key)}
-                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                        >
-                          Cancel
-                        </button>
+          <Formik
+            initialValues={user}
+            validationSchema={validationSchema}
+            onSubmit={handleSaveEdit}
+            enableReinitialize
+          >
+            {({ isSubmitting, dirty }) => (
+              <Form>
+                <div className="border-t border-gray-200">
+                  <dl>
+                    {editableFields.map(({ key, label }) => (
+                      <div key={key} className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt className="text-sm font-medium text-gray-500">{label}</dt>
+                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                          {editingFields[key] ? (
+                            <div className="flex flex-col space-y-2">
+                              <Field
+                                type="text"
+                                name={key}
+                                className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-colors duration-200 sm:text-sm"
+                                placeholder={`Enter ${label.toLowerCase()}`}
+                              />
+                              <ErrorMessage
+                                name={key}
+                                component="div"
+                                className="text-red-500 text-sm mt-1"
+                              />
+                              <div className="flex space-x-2">
+                                <button
+                                  type="submit"
+                                  disabled={isSubmitting || !dirty}
+                                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50"
+                                >
+                                  {isSubmitting ? 'Saving...' : 'Save'}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCancelEdit(key)}
+                                  className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between">
+                              <span>{user[key]}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleEditClick(key)}
+                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-pink-700 bg-pink-100 hover:bg-pink-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                              >
+                                Edit
+                              </button>
+                            </div>
+                          )}
+                        </dd>
                       </div>
-                    ) : (
-                      <div className="flex items-center justify-between">
-                        <span>{user[key]}</span>
-                        <button
-                          onClick={() => handleEditClick(key)}
-                          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-pink-700 bg-pink-100 hover:bg-pink-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                        >
-                          Edit
-                        </button>
-                      </div>
-                    )}
-                  </dd>
+                    ))}
+                  </dl>
                 </div>
-              ))}
-            </dl>
-          </div>
+              </Form>
+            )}
+          </Formik>
         </div>
       </div>
     </div>

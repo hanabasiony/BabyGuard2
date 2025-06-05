@@ -132,7 +132,7 @@ const Cart = () => {
             }
 
             // Update the quantity in the cart
-            await axios.patch(
+            const response = await axios.patch(
                 `http://localhost:8000/api/carts/${cartId}/products/${product.productId}`,
                 { quantity: newQuantity },
                 {
@@ -142,27 +142,30 @@ const Cart = () => {
                 }
             );
 
-            // Update local state
-            await fetchCartData();
+            // Only update local state if the API call was successful
+            if (response.status === 200) {
+                // Update local state
+                await fetchCartData();
 
-            // Update pending cart products if they exist
-            const updatedPendingProducts = pendingCartProducts.map(p => 
-                p.productId === product.productId 
-                    ? { ...p, quantity: newQuantity }
-                    : p
-            );
-            setPendingCartProducts(updatedPendingProducts);
-            localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
+                // Update pending cart products if they exist
+                const updatedPendingProducts = pendingCartProducts.map(p => 
+                    p.productId === product.productId 
+                        ? { ...p, quantity: newQuantity }
+                        : p
+                );
+                setPendingCartProducts(updatedPendingProducts);
+                localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
 
-            // Update cart count in localStorage
-            const totalCount = updatedPendingProducts.reduce((total, p) => total + p.quantity, 0);
-            localStorage.setItem('cartCount', totalCount.toString());
+                // Update cart count in localStorage
+                const totalCount = updatedPendingProducts.reduce((total, p) => total + p.quantity, 0);
+                localStorage.setItem('cartCount', totalCount.toString());
 
-            // Add toast message for quantity change
-            if (change > 0) {
-                toast.success(`Quantity increased to ${newQuantity}`);
-            } else {
-                toast.success(`Quantity decreased to ${newQuantity}`);
+                // Add toast message for quantity change
+                if (change > 0) {
+                    toast.success(`Quantity increased to ${newQuantity}`);
+                } else {
+                    toast.success(`Quantity decreased to ${newQuantity}`);
+                }
             }
         } catch (error) {
             console.error('Error updating quantity:', error);

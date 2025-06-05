@@ -96,7 +96,7 @@ const router = createBrowserRouter([
       { path: 'PassSend/VerifyResetCode', element: <VerifyResetCode /> },
       { path: 'PassSend/VerifyResetCode/PassReset', element: <PassReset /> },
       { path: 'vacciens', element: <Vacciens /> },
-      { path: '/VaccineReservation/:vaccineId', element: <VaccinationForm /> },
+      { path: '/VaccineReservation/:vaccineId', element:<ProtectedRoute> <VaccinationForm /></ProtectedRoute> },
       { path: 'payment', element: <PaymentPage /> },
       { path: 'otp', element: <OTPInput /> },
       // { path: 'Admin', element: <AdminDashboardLayout /> },
@@ -169,9 +169,9 @@ const router = createBrowserRouter([
       {
         path: 'productDetails/:id',
         element: (
-          <ProtectedRoute>
+         
             <ProductDetails />
-          </ProtectedRoute>
+        
         ),
       },
       { path: 'add-child', element: <AddChild/> },

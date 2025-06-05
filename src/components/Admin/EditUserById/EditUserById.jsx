@@ -202,7 +202,7 @@ function EditUsersById() {
       <div className="max-w-7xl mx-auto">
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
           <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
-            <div>
+        <div>
               <h3 className="text-lg leading-6 font-medium text-gray-900">Edit User Information</h3>
               <p className="mt-1 max-w-2xl text-sm text-gray-500">Update user details below</p>
             </div>

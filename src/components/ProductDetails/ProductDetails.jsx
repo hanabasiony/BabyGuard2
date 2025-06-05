@@ -27,6 +27,7 @@ export default function ProductDetails() {
         const fetchProduct = async () => {
             try {
                 setLoading(true);
+                setError(null);
                 const token = localStorage.getItem('token');
                 const response = await axios.get('http://localhost:8000/api/products', {
                     headers: {
@@ -34,12 +35,16 @@ export default function ProductDetails() {
                     }
                 });
                 
-                // Find the specific product using the ID from URL params
-                const foundProduct = response.data.data.find(p => p._id === id);
-                if (foundProduct) {
-                    setProduct(foundProduct);
+                if (response.data && response.data.data) {
+                    // Find the specific product using the ID from URL params
+                    const foundProduct = response.data.data.find(p => p._id === id);
+                    if (foundProduct) {
+                        setProduct(foundProduct);
+                    } else {
+                        setError('Product not found');
+                    }
                 } else {
-                    setError('Product not found');
+                    setError('Invalid response format');
                 }
             } catch (error) {
                 console.error('Error fetching product:', error);
@@ -80,23 +85,22 @@ export default function ProductDetails() {
 
     const handleQuantityUpdate = async (e, productId, change) => {
         e.preventDefault();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error('Please login first to manage your cart');
+            return;
+        }
         try {
-            const token = localStorage.getItem('token');
             const cartId = localStorage.getItem('cartId');
             const currentQuantity = localProductQuantities[productId] || 0;
             const newQuantity = currentQuantity + change;
 
             if (newQuantity <= 0) {
-                await handleDeleteProduct(e, productId);
-                setLocalProductQuantities(prev => {
-                    const newQuantities = { ...prev };
-                    delete newQuantities[productId];
-                    return newQuantities;
-                });
+                await handleDeleteProductWithUpdate(e, productId);
                 return;
             }
 
-            await axios.patch(
+            const response = await axios.patch(
                 `http://localhost:8000/api/carts/${cartId}/products/${productId}`,
                 { quantity: newQuantity },
                 {
@@ -106,15 +110,18 @@ export default function ProductDetails() {
                 }
             );
 
-            setLocalProductQuantities(prev => ({
-                ...prev,
-                [productId]: newQuantity
-            }));
+            // Only update local state if the API call was successful
+            if (response.status === 200) {
+                setLocalProductQuantities(prev => ({
+                    ...prev,
+                    [productId]: newQuantity
+                }));
 
-            if (change > 0) {
-                toast.success(`Quantity increased to ${newQuantity}`);
-            } else {
-                toast.success(`Quantity decreased to ${newQuantity}`);
+                if (change > 0) {
+                    toast.success(`Quantity increased to ${newQuantity}`);
+                } else {
+                    toast.success(`Quantity decreased to ${newQuantity}`);
+                }
             }
         } catch (error) {
             console.error('Error updating quantity:', error);
@@ -145,8 +152,14 @@ export default function ProductDetails() {
 
     const handleAddToCartWithUpdate = async (e, productId) => {
         e.preventDefault();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error('Please login first to add items to your cart');
+            return;
+        }
         try {
             await handleAddToCart(e, productId);
+            // Only update local state if the add to cart was successful
             setLocalProductQuantities(prev => ({
                 ...prev,
                 [productId]: 1
@@ -235,6 +248,24 @@ export default function ProductDetails() {
                         <h1 className="text-2xl font-semibold">{product.name}</h1>
                         <p className="text-sm text-gray-600 mb-2">Required Age: {product.requiredAge}</p>
                         <p className="text-xl font-bold mb-2">EGP {product.price}</p>
+
+                        {/* Stock Level Indicator */}
+                        <div className="mb-4">
+                            <span className={`text-sm font-medium ${
+                                product.quantity === 0 
+                                    ? 'text-red-500' 
+                                    : product.quantity < 10 
+                                        ? 'text-yellow-500' 
+                                        : 'text-green-500'
+                            }`}>
+                                {product.quantity === 0 
+                                    ? 'Out of Stock' 
+                                    : product.quantity < 10 
+                                        ? `Low Stock: ${product.quantity} left` 
+                                        : `In Stock: ${product.quantity} available`}
+                            </span>
+                        </div>
+
                         <div className="flex items-center mb-4">
                             <div className="flex">
                                 {renderStars(product.rating || 0)}
@@ -274,7 +305,10 @@ export default function ProductDetails() {
                                     </span>
                                     <button 
                                         onClick={(e) => handleQuantityUpdate(e, product._id, 1)}
-                                        className="bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
+                                        disabled={product.quantity <= currentQuantity}
+                                        className={`bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center ${
+                                            product.quantity <= currentQuantity ? 'opacity-50 cursor-not-allowed' : ''
+                                        }`}
                                     >
                                         +
                                     </button>
@@ -288,9 +322,12 @@ export default function ProductDetails() {
                             ) : (
                                 <button 
                                     onClick={(e) => handleAddToCartWithUpdate(e, product._id)}
-                                    className="bg-pink-400 hover:bg-pink-500 text-white font-medium py-2 px-4 rounded-full cursor-pointer"
+                                    disabled={product.quantity === 0}
+                                    className={`bg-pink-400 hover:bg-pink-500 text-white font-medium py-2 px-4 rounded-full cursor-pointer ${
+                                        product.quantity === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
                                 >
-                                    Add to Cart
+                                    {product.quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
                                 </button>
                             )}
                         </div>

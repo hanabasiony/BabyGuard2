@@ -153,11 +153,11 @@ export default function Navbar() {
 
           {/* Desktop Nav Links */}
           <ul className="hidden md:flex items-center space-x-6">
-            <li>
+            {userToken ? <li>
               <NavLink to="/childProfile" className=" hover:text-pink-600     text-pink-400 font-semibold">
                 Child profile
               </NavLink>
-            </li>
+            </li> : ''}
             <li>
               <NavLink to="/products" className=" hover:text-pink-600    text-pink-400 font-semibold ">
                 Products

@@ -13,7 +13,10 @@ function Appointments() {
   const [isLoading, setIsLoading] = useState(true);
   // Assuming nurses are fetched separately, keeping this state
   const [nurses, setNurses] = useState([]); 
-  const [selectedNurse, setSelectedNurse] = useState('');
+  // Add a state to track selected nurses for each appointment
+  const [selectedNurses, setSelectedNurses] = useState({});
+  const [nurseSlots, setNurseSlots] = useState({}); // Add state for nurse slots
+  const [selectedSlot, setSelectedSlot] = useState(null); // Add state for selected slot
 
   // Fetch data when the component mounts
   useEffect(() => {
@@ -27,28 +30,23 @@ function Appointments() {
     let processed = rawAppointments.map(request => ({
       // Map API data to appointment structure expected by the component
       id: request._id,
-      parentId: request.parentId, // Keep parentId for potential future use
-      childId: request.childId,   // Keep childId for potential future use
-      vaccineId: request.vaccineId, // Keep vaccineId for potential future use
-      // Displaying IDs or placeholder as names/details are not in this API response
-      parentName: `Parent ID: ${request.parentId}`, // Replace with actual parent name if another API is available
-      parentAvatar: null, // No avatar in this API response, use placeholder in JSX
-      childName: `Child ID: ${request.childId}`, // Replace with actual child name if another API is available
-      childAge: 'N/A', // Child age not in this API response
-      vaccine: `Vaccine ID: ${request.vaccineId}`, // Replace with actual vaccine name if another API is available
-      // Construct location from available address fields
+      childId: request.childId,
+      vaccineId: request.vaccine?._id,
+      // Update these fields to show more meaningful information
+      parentName: request.parentName || 'Parent Name Not Available',
+      childName: request.child?.name || 'Child Name Not Available',
+      vaccine: request.vaccine?.name || 'Vaccine Name Not Available',
       location: `${request.street || ''}, ${request.city || ''}, ${request.governorate || ''}`.replace(/, ,/g, ', ').replace(/^, /,'').replace(/, $/, '') || 'Location not specified',
-      date: request.vaccinationDate ? new Date(request.vaccinationDate).toDateString() : 'Date not specified', // Format date
-      time: 'Time not specified', // Time not in this API response, use placeholder
-      status: request.status, // Status is available
-      nurse: null // Assigned nurse not in this API response, adjust assignment logic later
+      date: request.vaccinationDate ? new Date(request.vaccinationDate).toLocaleDateString() : 'Date not specified',
+      status: request.status,
+      nurse: request.nurse?.name || null
     }));
 
     setAppointments(processed);
 
     let filtered = [...processed];
     
-    // Filter by search term (search across the mapped fields)
+    // Update search to use the new fields
     if (searchTerm) {
       filtered = filtered.filter(appointment => 
         appointment.parentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -59,24 +57,22 @@ function Appointments() {
       );
     }
     
-    // Filter by date
+    // Rest of the filtering logic remains the same
     if (selectedDate) {
       const dateObj = new Date(selectedDate);
       filtered = filtered.filter(appointment => {
-        // Ensure valid dates before comparing
         const appDate = new Date(appointment.date);
         return !isNaN(appDate.getTime()) && appDate.toDateString() === dateObj.toDateString();
       });
     }
     
-    // Filter by unassigned only (status 'Pending' based on API)
     if (showUnassignedOnly) {
       filtered = filtered.filter(appointment => appointment.status === 'Pending');
     }
     
     setFilteredAppointments(filtered);
 
-  }, [rawAppointments, searchTerm, selectedDate, showUnassignedOnly]); // Depend on rawAppointments here
+  }, [rawAppointments, searchTerm, selectedDate, showUnassignedOnly]);
 
   const fetchAppointments = async () => {
     setIsLoading(true);
@@ -94,6 +90,7 @@ function Appointments() {
               Authorization: `Bearer ${token}`
           }
       });
+      console.log("API: response", response)
       
       if (response.data && response.data.data) {
         // Store raw data and let the next useEffect process and filter it
@@ -112,68 +109,225 @@ function Appointments() {
     }
   };
 
-  // Keep fetchNurses as is for now
-  const fetchNurses = () => {
-    // REPLACE THIS WITH YOUR API ENDPOINT for nurses
-    // axios.get('YOUR_API_URL/nurses')
-    //   .then(response => {
-    //     setNurses(response.data);
-    //   })
-    //   .catch(error => {
-    //     console.error('Error fetching nurses:', error);
-    //   });
-    
-    // Mock data for preview
-    const mockNurses = [
-      { id: 1, name: 'Dr. Jessica Smith' },
-      { id: 2, name: 'Dr. Michael Brown' },
-      { id: 3, name: 'Nurse Emily Davis' },
-      { id: 4, name: 'Nurse Robert Johnson' }
-    ];
-    
-    setNurses(mockNurses);
+  const fetchNurses = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('Authentication token is missing');
+        return;
+      }
+
+      const response = await axios.get('http://localhost:8000/api/nurse', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data && response.data.data) {
+        // Transform the nurse data to match the expected format
+        const nursesData = response.data.data.map(nurse => ({
+          id: nurse._id,
+          name: `${nurse.fName} ${nurse.lName}`
+        }));
+        setNurses(nursesData);
+      } else {
+        console.error('API returned unexpected data structure:', response.data);
+        setNurses([]);
+      }
+    } catch (error) {
+      console.error('Error fetching nurses:', error.response?.data || error.message);
+      setNurses([]);
+    }
   };
 
-  const handleAssignNurse = (appointmentId) => {
-    if (!selectedNurse) {
+  // Add function to fetch nurse slots
+  const fetchNurseSlots = async (nurseId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('Authentication token is missing');
+        return;
+      }
+
+      console.log('Fetching slots for nurse:', nurseId);
+      const response = await axios.get(`http://localhost:8000/api/nurse/${nurseId}/free-slots`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('Slots API Response:', response.data);
+      
+      if (response.data && response.data.data) {
+        console.log('Available slots:', response.data.data);
+        setNurseSlots(prev => ({
+          ...prev,
+          [nurseId]: response.data.data
+        }));
+      } else {
+        console.log('No slots data in response');
+      }
+    } catch (error) {
+      console.error('Error fetching nurse slots:', error.response?.data || error.message);
+      console.error('Full error object:', error);
+    }
+  };
+
+  // Modify handleNurseSelection to fetch slots when a nurse is selected
+  const handleNurseSelection = async (appointmentId, nurseId) => {
+    setSelectedNurses(prev => ({
+      ...prev,
+      [appointmentId]: nurseId
+    }));
+    
+    if (nurseId) {
+      await fetchNurseSlots(nurseId);
+    }
+  };
+
+  // Add this helper function to format dates
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  // Add this helper function to group slots by date
+  const groupSlotsByDate = (slots) => {
+    return slots.reduce((acc, slot) => {
+      const date = slot.date;
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(slot);
+      return acc;
+    }, {});
+  };
+
+  // Update the slot selection UI in the render section
+  {selectedNurses[appointments.id] && nurseSlots[selectedNurses[appointments.id]] && (
+    <div className="mb-3">
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        Available Time Slots
+      </label>
+      <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+        {Object.entries(groupSlotsByDate(nurseSlots[selectedNurses[appointment.id]])).map(([date, slots]) => (
+          <div key={date} className="border-b border-gray-200 last:border-b-0">
+            <div className="bg-gray-50 px-4 py-2">
+              <h3 className="text-sm font-medium text-gray-900">{formatDate(date)}</h3>
+            </div>
+            <div className="grid grid-cols-4 gap-2 p-4">
+              {slots.map((slot, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSlotSelection(appointment.id, slot)}
+                  className={`p-2 text-sm rounded-md transition-all duration-200 ${
+                    selectedSlot?.appointmentId === appointment.id && 
+                    selectedSlot?.slot.date === slot.date &&
+                    selectedSlot?.slot.time === slot.time
+                      ? 'bg-blue-500 text-white ring-2 ring-blue-600 ring-offset-2 transform scale-105'
+                      : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 hover:border-blue-300'
+                  }`}
+                >
+                  <div className="font-medium">{slot.time}</div>
+                  <div className={`text-xs ${selectedSlot?.appointmentId === appointment.id && 
+                    selectedSlot?.slot.date === slot.date &&
+                    selectedSlot?.slot.time === slot.time ? 'text-blue-100' : 'text-gray-500'}`}>
+                    {slot.startTime} - {slot.endTime}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  // Update the handleSlotSelection function
+  const handleSlotSelection = (appointmentId, slot) => {
+    setSelectedSlot({
+      appointmentId,
+      slot: {
+        ...slot,
+        time: `${slot.startTime} - ${slot.endTime}`
+      }
+    });
+  };
+
+  // Update the handleAssignNurse function to use the API
+  const handleAssignNurse = async (appointmentId) => {
+    const selectedNurseId = selectedNurses[appointmentId];
+    if (!selectedNurseId) {
       alert('Please select a nurse first');
       return;
     }
 
-    // THIS ASSIGNMENT LOGIC NEEDS TO BE UPDATED to use your actual API for assigning nurses to vaccine requests
-    console.log(`Attempting to assign nurse ${selectedNurse} to appointment ID ${appointmentId}`);
+    if (!selectedSlot || selectedSlot.appointmentId !== appointmentId) {
+      alert('Please select a time slot first');
+      return;
+    }
 
-    // Example placeholder for API call:
-    // axios.put(`YOUR_API_URL/vaccine-requests/${appointmentId}/assign-nurse`, { nurseId: selectedNurse }, {
-    //    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    // })
-    // .then(response => {
-    //    console.log('Assignment successful', response.data);
-    //    fetchAppointments(); // Refresh appointments after assignment
-    //    setSelectedNurse('');
-    // })
-    // .catch(error => {
-    //    console.error('Error assigning nurse:', error.response?.data || error.message);
-    //    alert('Failed to assign nurse.');
-    // });
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Authentication token is missing. Please log in again.');
+        return;
+      }
 
-    // For demo purposes (remove this section when implementing real API)
-    const selectedNurseObj = nurses.find(nurse => nurse.id === parseInt(selectedNurse));
-    if (selectedNurseObj) {
+      const appointment = appointments.find(app => app.id === appointmentId);
+      if (!appointment) {
+        alert('Appointment not found');
+        return;
+      }
+
+      // Make the API call to assign the nurse
+      const response = await axios.post(
+        `http://localhost:8000/api/nurse/${selectedNurseId}/assign`,
+        {
+          slotId: selectedSlot.slot._id, // Make sure this matches your slot ID field
+          vaccineId: appointment.id // Make sure this matches your vaccine ID field
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        // Update the local state
         const updatedRawAppointments = rawAppointments.map(request => {
-            if (request._id === appointmentId) {
-                 // Note: The API response structure doesn't include a nurse field,
-                 // so this local update won't reflect in data fetched again unless the API changes
-                return { ...request, status: 'Assigned', assignedNurseId: selectedNurseObj.id }; // Adding a dummy assignedNurseId
-            }
-            return request;
+          if (request._id === appointmentId) {
+            return { 
+              ...request, 
+              status: 'Assigned', 
+              assignedNurseId: selectedNurseId,
+              assignedSlot: selectedSlot.slot
+            };
+          }
+          return request;
         });
-         // Update raw data to trigger re-processing and re-rendering
         setRawAppointments(updatedRawAppointments);
-        setSelectedNurse('');
-        alert(`Nurse ${selectedNurseObj.name} assigned to appointment ${appointmentId} (Demo update only)`);
-    } else {
-        alert('Selected nurse not found (Demo issue)');
+        setSelectedNurses(prev => {
+          const newState = { ...prev };
+          delete newState[appointmentId];
+          return newState;
+        });
+        setSelectedSlot(null);
+        alert('Nurse assigned successfully!');
+      }
+    } catch (error) {
+      console.error('Error assigning nurse:', error);
+      if (error.response) {
+        alert(error.response.data.message || 'Failed to assign nurse. Please try again.');
+      } else {
+        alert('Error connecting to server. Please try again.');
+      }
     }
   };
 
@@ -242,7 +396,7 @@ function Appointments() {
             <p className="text-gray-500">No requests found</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {filteredAppointments.map((appointment) => (
               <div 
                 key={appointment.id} 
@@ -275,24 +429,40 @@ function Appointments() {
                     </svg>
                     <span className="text-sm text-gray-700">{appointment.location}</span>
                   </div>
+
+                  {/* Child and Vaccine Info */}
+                  <div className="mb-2">
+                    <div className="flex items-center mb-1">
+                      <svg className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span className="text-sm font-medium text-gray-900">{appointment.childName}</span>
+                      <span className="text-sm text-gray-500 ml-2">({appointment.childAge})</span>
+                    </div>
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-purple-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                      </svg>
+                      <span className="text-sm text-gray-700">{appointment.vaccine}</span>
+                    </div>
+                  </div>
                   
                   {/* Date/Time Info */}
                   <div className="mb-4 flex items-center">
                     <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span className="text-sm text-gray-700">{appointment.date} - {appointment.time}</span>{/* Time is placeholder */}
+                    <span className="text-sm text-gray-700">{appointment.date} - {appointment.time}</span>
                   </div>
                   
                   {/* Nurse Assignment */}
-                  {/* Adjusted logic based on available status and lack of nurse info in API */}
                   {appointment.status === 'Pending' ? (
                     <div>
                       <div className="mb-3">
                         <select
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                          value={selectedNurse}
-                          onChange={(e) => setSelectedNurse(e.target.value)}
+                          value={selectedNurses[appointment.id] || ''}
+                          onChange={(e) => handleNurseSelection(appointment.id, e.target.value)}
                         >
                           <option value="">Select Nurse</option>
                           {nurses.map(nurse => (
@@ -300,9 +470,50 @@ function Appointments() {
                           ))}
                         </select>
                       </div>
+
+                      {/* Slot Selection UI */}
+                      {selectedNurses[appointment.id] && nurseSlots[selectedNurses[appointment.id]] && (
+                        <div className="mb-3">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Available Time Slots
+                          </label>
+                          <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+                            {Object.entries(groupSlotsByDate(nurseSlots[selectedNurses[appointment.id]])).map(([date, slots]) => (
+                              <div key={date} className="border-b border-gray-200 last:border-b-0">
+                                <div className="bg-gray-50 px-4 py-2">
+                                  <h3 className="text-sm font-medium text-gray-900">{formatDate(date)}</h3>
+                                </div>
+                                <div className="grid grid-cols-4 gap-2 p-4">
+                                  {slots.map((slot, index) => (
+                                    <button
+                                      key={index}
+                                      onClick={() => handleSlotSelection(appointment.id, slot)}
+                                      className={`p-2 text-sm rounded-md transition-all duration-200 ${
+                                        selectedSlot?.appointmentId === appointment.id && 
+                                        selectedSlot?.slot.date === slot.date &&
+                                        selectedSlot?.slot.time === slot.time
+                                          ? 'bg-blue-500 text-white ring-2 ring-blue-600 ring-offset-2 transform scale-105'
+                                          : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 hover:border-blue-300'
+                                      }`}
+                                    >
+                                      <div className="font-medium">{slot.time}</div>
+                                      <div className={`text-xs ${selectedSlot?.appointmentId === appointment.id && 
+                                        selectedSlot?.slot.date === slot.date &&
+                                        selectedSlot?.slot.time === slot.time ? 'text-blue-100' : 'text-gray-500'}`}>
+                                        {slot.startTime} - {slot.endTime}
+                                      </div>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       <button
-                        onClick={() => handleAssignNurse(appointment.id)} // Pass appointment ID (which is the request _id)
-                        className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md flex justify-center items-center"
+                        onClick={() => handleAssignNurse(appointment.id)}
+                        className="w-full bg-pink-400 hover:bg-pink-500 text-white py-2 px-4 rounded-md flex justify-center items-center"
                       >
                         Assign & Send Request
                       </button>

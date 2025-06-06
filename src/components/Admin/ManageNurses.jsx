@@ -8,7 +8,6 @@ function ManageNurses() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showAssignModal, setShowAssignModal] = useState(false);
   const [selectedNurse, setSelectedNurse] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -17,11 +16,29 @@ function ManageNurses() {
   const [endIndex, setEndIndex] = useState(0);
   const [error, setError] = useState(null);
   const [nextPageToken, setNextPageToken] = useState(null);
-  const [limit, setLimit] = useState(10); // Default limit
+  const [limit, setLimit] = useState(10);
+  const [prevPageToken, setPrevPageToken] = useState(null);
+  const [pageHistory, setPageHistory] = useState([]);
 
   // Fetch nurses data from API
   useEffect(() => {
-    fetchNurses(null, limit); // Fetch first page on mount
+    fetchNurses(null, limit);
+
+    // Add event listener for nurses updates
+    const handleNursesUpdate = (event) => {
+      const updatedNurses = event.detail.nurses;
+      setNurses(updatedNurses);
+      setFilteredNurses(updatedNurses);
+      setTotalEntries(updatedNurses.length);
+      setEndIndex(updatedNurses.length);
+    };
+
+    window.addEventListener('nursesUpdated', handleNursesUpdate);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('nursesUpdated', handleNursesUpdate);
+    };
   }, []);
 
   const fetchNurses = async (cursor, limit) => {
@@ -35,8 +52,7 @@ function ManageNurses() {
         return;
       }
 
-      // Build the API URL with query parameters
-      const apiUrl = new URL('http://localhost:8000/api/nurse/');
+      const apiUrl = new URL('http://localhost:8000/api/nurse');
       if (cursor) {
         apiUrl.searchParams.append('cursor', cursor);
       }
@@ -48,16 +64,22 @@ function ManageNurses() {
         }
       });
 
-      // Ensure response.data is an array
-      const nursesData = Array.isArray(response.data.nurses) ? response.data.nurses : [];
+      console.log('API Response:', response.data); // Debug log
+
+      const nursesData = Array.isArray(response.data.data) ? response.data.data : [];
       setNurses(nursesData);
       setFilteredNurses(nursesData);
       setNextPageToken(response.data.nextCursor || null);
+      setPrevPageToken(cursor || null);
       setTotalEntries(response.data.totalEntries || 0);
 
-      // Update pagination display indices
+      // Update page history
+      if (cursor) {
+        setPageHistory(prev => [...prev, cursor]);
+      }
+
       const currentStartIndex = (currentPage - 1) * limit + 1;
-      const currentEndIndex = Math.min(currentPage * limit, response.data.totalEntries || 0);
+      const currentEndIndex = Math.min(currentStartIndex + nursesData.length - 1, response.data.totalEntries || 0);
       setStartIndex(currentStartIndex);
       setEndIndex(currentEndIndex);
 
@@ -68,6 +90,7 @@ function ManageNurses() {
       setNurses([]);
       setFilteredNurses([]);
       setNextPageToken(null);
+      setPrevPageToken(null);
       setTotalEntries(0);
       setStartIndex(0);
       setEndIndex(0);
@@ -85,10 +108,12 @@ function ManageNurses() {
     if (searchTerm === '') {
       setFilteredNurses(nurses);
     } else {
-      const filtered = nurses.filter(nurse => 
-        (nurse.name && nurse.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (nurse.hospital && nurse.hospital.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
+      const filtered = nurses.filter(nurse => {
+        const fullName = `${nurse.fName || ''} ${nurse.lName || ''}`.toLowerCase();
+        const hospital = (nurse.hospitalName || '').toLowerCase();
+        const term = searchTerm.toLowerCase();
+        return fullName.includes(term) || hospital.includes(term);
+      });
       setFilteredNurses(filtered);
     }
   }, [searchTerm, nurses]);
@@ -109,10 +134,8 @@ function ManageNurses() {
         alert('Please enter a valid email address');
         return;
       }
-      // Format phone number to ensure it's exactly 11 digits
-      const phoneNumber = nurseData.phone.replace(/\D/g, ''); // Remove non-digits
-      if (!phoneNumber || phoneNumber.length !== 11) {
-        alert('Phone number must be exactly 11 digits');
+      if (!nurseData.phone) {
+        alert('Phone number is required');
         return;
       }
       if (!nurseData.hospital) {
@@ -126,46 +149,32 @@ function ManageNurses() {
         return;
       }
 
-      // Create FormData for image upload
-      const formData = new FormData();
-      formData.append('fName', nurseData.fName.trim());
-      formData.append('lName', nurseData.lName.trim());
-      formData.append('email', nurseData.email.trim());
-      formData.append('phone', phoneNumber);
-      formData.append('hospitalName', nurseData.hospital.trim());
-      if (nurseData.image) {
-        formData.append('image', nurseData.image);
-      }
-
-      // Log the data being sent
-      console.log('Sending nurse data:', {
+      // Prepare the request body
+      const requestBody = {
         fName: nurseData.fName.trim(),
         lName: nurseData.lName.trim(),
         email: nurseData.email.trim(),
-        phone: phoneNumber,
-        hospitalName: nurseData.hospital.trim(),
-        hasImage: !!nurseData.image
-      });
-
-      // Log the FormData contents
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-      }
+        phone: nurseData.phone.trim(),
+        hospitalName: nurseData.hospital.trim()
+      };
 
       // Make API call
-      const response = await axios.post('http://localhost:8000/api/nurse', formData, {
+      const response = await axios.post('http://localhost:8000/api/nurse', requestBody, {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
+          'Content-Type': 'application/json'
+        }
       });
 
       if (response.status === 201) {
-        // Refresh the nurses list
-        fetchNurses();
-        // Close the modal
+        // Add the new nurse to the state arrays
+        const newNurse = response.data.data; // Access the nested data
+        // Ensure we're working with arrays
+        setNurses(prevNurses => Array.isArray(prevNurses) ? [...prevNurses, newNurse] : [newNurse]);
+        setFilteredNurses(prevFiltered => Array.isArray(prevFiltered) ? [...prevFiltered, newNurse] : [newNurse]);
+        setTotalEntries(prevTotal => prevTotal + 1);
+        setEndIndex(prevEnd => prevEnd + 1);
         setShowAddModal(false);
-        // Show success message
         alert('Nurse added successfully!');
       }
     } catch (error) {
@@ -173,30 +182,20 @@ function ManageNurses() {
       if (error.response) {
         console.error('Error response data:', error.response.data);
         console.error('Error response status:', error.response.status);
-        console.error('Error response headers:', error.response.headers);
         
         if (error.response.status === 409) {
           alert('Email or phone number already exists');
         } else if (error.response.status === 400) {
-          // Show validation errors from the server
           const errorMessage = error.response.data.message || 'Validation failed. Please check your input.';
           alert(`Validation Error: ${errorMessage}`);
-          // Log the specific validation errors if available
-          if (error.response.data.errors) {
-            console.error('Validation errors:', error.response.data.errors);
-          }
         } else if (error.response.status === 401) {
           alert('Authentication failed. Please log in again.');
         } else {
           alert(error.response.data.message || 'Error adding nurse');
         }
       } else if (error.request) {
-        // The request was made but no response was received
-        console.error('Error request:', error.request);
         alert('No response received from server. Please check your connection.');
       } else {
-        // Something happened in setting up the request
-        console.error('Error message:', error.message);
         alert('Error setting up the request: ' + error.message);
       }
       console.error('Full error object:', error);
@@ -207,6 +206,7 @@ function ManageNurses() {
   const handleEditNurse = async (nurseId, updatedData) => {
     try {
       const token = localStorage.getItem('token');
+      /* Commented out edit API
       const response = await axios.put(`http://localhost:8000/api/nurse/${nurseId}`, updatedData, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -216,6 +216,8 @@ function ManageNurses() {
         fetchNurses();
         alert('Nurse updated successfully!');
       }
+      */
+      console.log('Edit nurse functionality commented out:', { nurseId, updatedData });
     } catch (error) {
       if (error.response) {
         alert(error.response.data.message || 'Error updating nurse');
@@ -226,34 +228,51 @@ function ManageNurses() {
     }
   };
 
-  // Handle assign nurse
-  const handleAssignNurse = async (nurseId, assignmentData) => {
+  // Handle delete nurse
+  const handleDeleteNurse = async (nurseId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`http://localhost:8000/api/nurse/${nurseId}/assign`, assignmentData, {
+      if (!token) {
+        alert('Authentication token is missing. Please log in again.');
+        return;
+      }
+
+      // Confirm deletion
+      if (!window.confirm('Are you sure you want to delete this nurse?')) {
+        return;
+      }
+
+      // Make the DELETE request to the API
+      await axios.delete(`http://localhost:8000/api/nurse/${nurseId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      if (response.status === 201) {
-        fetchNurses();
-        setShowAssignModal(false);
-        alert('Nurse assigned successfully!');
-      }
-    } catch (error) {
-      if (error.response) {
-        alert(error.response.data.message || 'Error assigning nurse');
-      } else {
-        alert('Error connecting to server');
-      }
-      console.error('Error assigning nurse:', error);
-    }
-  };
 
-  // Open assign modal
-  const openAssignModal = (nurse) => {
-    setSelectedNurse(nurse);
-    setShowAssignModal(true);
+      // If we reach here, the deletion was successful
+      setNurses(prevNurses => prevNurses.filter(nurse => nurse._id !== nurseId));
+      setFilteredNurses(prevFiltered => prevFiltered.filter(nurse => nurse._id !== nurseId));
+      setTotalEntries(prev => prev - 1);
+      setEndIndex(prev => prev - 1);
+      alert('Nurse deleted successfully!');
+      
+    } catch (error) {
+      console.error('Delete error:', error);
+      
+      if (error.response) {
+        if (error.response.status === 401) {
+          alert('Authentication failed. Please log in again.');
+        } else if (error.response.status === 404) {
+          alert('Nurse not found.');
+        } else {
+          alert(error.response.data?.message || 'Failed to delete nurse. Please try again.');
+        }
+      } else if (error.request) {
+        alert('No response received from server. Please check your connection.');
+      } else {
+        alert('Error setting up the request. Please try again.');
+      }
+    }
   };
 
   // Open edit modal
@@ -270,15 +289,25 @@ function ManageNurses() {
     }
   };
 
+  // Handle previous page
+  const handlePrevPage = () => {
+    if (pageHistory.length > 0) {
+      const prevCursor = pageHistory[pageHistory.length - 2] || null;
+      setPageHistory(prev => prev.slice(0, -1));
+      setCurrentPage(prev => prev - 1);
+      fetchNurses(prevCursor, limit);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div className="min-h-screen bg-gray-50/35 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h2 className="text-2xl font-medium text-gray-800">Manage Nurses</h2>
-              <p className="mt-1 text-sm text-gray-500">View and manage registered nurses and their schedules</p>
+              <p className="mt-1 text-sm text-gray-500">View and manage registered nurses</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <button 
@@ -320,7 +349,7 @@ function ManageNurses() {
         </div>
 
         {/* Nurses Table */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
+        <div className="bg-white shadow overflow-hidden sm:rounded-md mb-4">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -335,9 +364,6 @@ function ManageNurses() {
                     Hospital
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Joined Date
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -345,19 +371,19 @@ function ManageNurses() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {isLoading ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
+                    <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
                       Loading...
                     </td>
                   </tr>
                 ) : error ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-4 text-center text-sm text-red-500">
+                    <td colSpan="4" className="px-6 py-4 text-center text-sm text-red-500">
                       {error}
                     </td>
                   </tr>
                 ) : !Array.isArray(filteredNurses) || filteredNurses.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
+                    <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
                       No nurses found
                     </td>
                   </tr>
@@ -368,9 +394,13 @@ function ManageNurses() {
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
                             <img 
-                              className="h-10 w-10 rounded-full" 
-                              src={nurse.profileImage || "/placeholder.svg"} 
+                              className="h-10 w-10 rounded-full object-cover" 
+                              src={nurse.profileImage} 
                               alt={`${nurse.fName} ${nurse.lName}`} 
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "/placeholder.svg";
+                              }}
                             />
                           </div>
                           <div className="ml-4">
@@ -384,33 +414,15 @@ function ManageNurses() {
                         <div className="text-sm text-gray-900">{nurse.email}</div>
                         <div className="text-sm text-gray-500">{nurse.phone}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {nurse.hospitalName}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{nurse.hospitalName}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(nurse.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex space-x-2 justify-end">
-                          <button
-                            onClick={() => openEditModal(nurse)}
-                            className="text-blue-600 hover:text-blue-900"
-                          >
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => openAssignModal(nurse)}
-                            className="text-green-600 hover:text-green-900"
-                          >
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                          </button>
+                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <div className="flex justify-center">
                           <button
                             onClick={() => handleDeleteNurse(nurse._id)}
-                            className="text-red-600 hover:text-red-900"
+                            className="text-red-600 hover:text-red-900 transition-colors duration-200"
+                            title="Delete Nurse"
                           >
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -427,75 +439,30 @@ function ManageNurses() {
         </div>
 
         {/* Pagination */}
-        {!showAddModal && (
-          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={handleNextPage}
-                disabled={!nextPageToken}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Next
-              </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{startIndex}</span> to <span className="font-medium">{endIndex}</span> of{' '}
-                  <span className="font-medium">{totalEntries}</span> entries
-                </p>
-              </div>
-              <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  >
-                    <span className="sr-only">Previous</span>
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  
-                  {/* Page numbers */}
-                  {/* {[1, 2, 3].map((pageNumber) => (
-                    <button
-                      key={pageNumber}
-                      onClick={() => setCurrentPage(pageNumber)}
-                      className={`relative inline-flex items-center px-4 py-2 border ${
-                        currentPage === pageNumber
-                          ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                      } text-sm font-medium`}
-                    >
-                      {pageNumber}
-                    </button>
-                  ))}
-                   */}
-                  
-                  <button
-                    onClick={handleNextPage}
-                    disabled={!nextPageToken}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  >
-                    <span className="sr-only">Next</span>
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </nav>
-              </div>
-            </div>
-          </div>
-        )}
+        <div className="flex justify-end space-x-2 pr-4">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded-md text-sm font-medium ${
+              currentPage === 1
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+            }`}
+          >
+            Previous
+          </button>
+          <button
+            onClick={handleNextPage}
+            disabled={!nextPageToken}
+            className={`px-4 py-2 rounded-md text-sm font-medium ${
+              !nextPageToken
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+            }`}
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       {/* Add Nurse Modal */}
@@ -520,8 +487,7 @@ function ManageNurses() {
                   lName: formData.get('lName'),
                   email: formData.get('email'),
                   phone: formData.get('phone'),
-                  hospital: formData.get('hospital'),
-                  image: formData.get('image') || null,
+                  hospital: formData.get('hospital')
                 };
                 handleAddNurse(nurseData);
               }}>
@@ -537,6 +503,7 @@ function ManageNurses() {
                     minLength={3}
                     maxLength={15}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                    placeholder="Enter first name"
                   />
                 </div>
 
@@ -552,6 +519,7 @@ function ManageNurses() {
                     minLength={3}
                     maxLength={15}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                    placeholder="Enter last name"
                   />
                 </div>
                 
@@ -565,28 +533,22 @@ function ManageNurses() {
                     name="email"
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                    placeholder="Enter email address"
                   />
                 </div>
 
                 <div className="mb-4">
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number (11 digits)
+                    Phone Number
                   </label>
                   <input
                     type="tel"
                     id="phone"
                     name="phone"
                     required
-                    pattern="[0-9]{11}"
-                    maxLength={11}
-                    placeholder="Enter 11 digits (e.g., 01234567890)"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                    onChange={(e) => {
-                      // Remove any non-digit characters
-                      e.target.value = e.target.value.replace(/\D/g, '');
-                    }}
+                    placeholder="Enter phone number"
                   />
-                  <p className="mt-1 text-sm text-gray-500">Enter exactly 11 digits without spaces or special characters</p>
                 </div>
 
                 <div className="mb-4">
@@ -599,19 +561,7 @@ function ManageNurses() {
                     name="hospital"
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
-                    Image (Optional)
-                  </label>
-                  <input
-                    type="file"
-                    id="image"
-                    name="image"
-                    accept="image/*"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100"
+                    placeholder="Enter hospital name"
                   />
                 </div>
 
@@ -632,102 +582,6 @@ function ManageNurses() {
                 </div>
               </form>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Assign Modal */}
-      {showAssignModal && selectedNurse && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Assign {selectedNurse.name}</h2>
-              <button onClick={() => setShowAssignModal(false)} className="text-gray-400 hover:text-gray-500">
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.target);
-              const assignmentData = {
-                patient: formData.get('patient'),
-                date: formData.get('date'),
-                time: formData.get('time'),
-                notes: formData.get('notes')
-              };
-              handleAssignNurse(selectedNurse.id, assignmentData);
-            }}>
-              <div className="mb-4">
-                <label htmlFor="patient" className="block text-sm font-medium text-gray-700 mb-1">
-                  Patient Name
-                </label>
-                <input
-                  type="text"
-                  id="patient"
-                  name="patient"
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
-                    Date
-                  </label>
-                  <input
-                    type="date"
-                    id="date"
-                    name="date"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
-                    Time
-                  </label>
-                  <input
-                    type="time"
-                    id="time"
-                    name="time"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                  />
-                </div>
-              </div>
-              
-              <div className="mb-4">
-                <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
-                  Notes
-                </label>
-                <textarea
-                  id="notes"
-                  name="notes"
-                  rows="3"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                ></textarea>
-              </div>
-              
-              <div className="mt-6 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowAssignModal(false)}
-                  className="mr-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                >
-                  Assign
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}

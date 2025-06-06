@@ -9,6 +9,9 @@ export default function UserPage() {
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
+        localStorage.removeItem('userData')
+        localStorage.removeItem('cartId')
+
         setuserToken(null);
         navigate('/login');
     };

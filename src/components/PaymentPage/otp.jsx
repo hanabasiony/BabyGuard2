@@ -4,9 +4,12 @@ import { useState, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import axios from "axios";
+import { useContext } from "react";
+import { CartContext } from "../../context/CartContext";
 
 export default function OTPInput() {
   const navigate = useNavigate();
+  const { resetCart } = useContext(CartContext);
   const [otp, setOtp] = useState(["", "", "", "", "", ""])
   const [activeIndex, setActiveIndex] = useState(0)
   const [timer, setTimer] = useState(30)
@@ -95,7 +98,7 @@ export default function OTPInput() {
     if (otpValue.length === 6) {
       try {
         const token = localStorage.getItem('token');
-        const cartId = localStorage.getItem('cartId'); // Get cartId from localStorage
+        const cartId = localStorage.getItem('cartId');
 
         if (!cartId) {
           toast.error("Cart ID not found. Please try again.");
@@ -116,15 +119,49 @@ export default function OTPInput() {
 
         if (response.status === 200) {
           toast.success("OTP verified successfully!");
-          // You can add navigation here if needed
-          // navigate('/success');
+          
+          // Reset the current cart state
+          resetCart();
+          
+          // Create a new cart
+          try {
+            const newCartResponse = await axios.post(
+              'http://localhost:8000/api/carts',
+              {
+                cart: {
+                  governorate: "Cairo",
+                  city: "1st Settlement",
+                  street: "Main Street",
+                  buildingNumber: 123,
+                  apartmentNumber: 45,
+                  paymentType: "Cash"
+                }
+              },
+              {
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              }
+            );
+
+            // Store the new cart ID
+            if (newCartResponse.data?.data?._id) {
+              localStorage.setItem('cartId', newCartResponse.data.data._id);
+              toast.success("New cart initialized successfully!");
+            }
+
+            // Navigate to success page or home
+            navigate('/');
+          } catch (error) {
+            console.error("Error creating new cart:", error);
+            toast.error("Payment successful but failed to initialize new cart");
+            navigate('/');
+          }
         }
       } catch (error) {
         console.error("Error verifying OTP:", error);
         if (error.response?.status === 401) {
           toast.error("Unauthorized. Please login again.");
-          // Optionally redirect to login page
-          // navigate('/login');
         } else {
           toast.error(error.response?.data?.message || "Failed to verify OTP");
         }

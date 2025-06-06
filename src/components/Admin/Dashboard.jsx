@@ -12,6 +12,7 @@ function Dashboard() {
   }
   const [appointmentsNumber, setAppointmentsNumber] = useState([]);
   const [showAddVaccineModal, setShowAddVaccineModal] = useState(false);
+  const [complaintsNumber, setComplaintsNumber] = useState([]);
 
   // This would be replaced with API data
   const recentActivity = [
@@ -55,12 +56,49 @@ function Dashboard() {
       console.error('Error fetching appointments:', error.response?.data || error.message);
       // setRawAppointments([]); // Set empty array on error
     } finally {
-      // setIsLoading(false);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchComplains = async () => {
+    // setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token'); // Assuming token is needed for admin API
+      if (!token) {
+          console.error('Authentication token not found for admin API');
+          // setIsLoading(false);
+          // Optionally navigate to login or show an error message
+          return;
+      }
+      
+      const response = await axios.get('http://localhost:8000/api/complaints/admin', {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      });
+      
+      if (response.data && response.data.data) {
+        setComplaintsNumber(response.data.data.length);
+        console.log(response.data.data.length);
+      } else {
+        console.error('API returned unexpected data structure:', response.data);
+        
+      }
+      
+    } catch (error) {
+      console.error('Error fetching appointments:', error.response?.data || error.message);
+      // setRawAppointments([]); // Set empty array on error
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchAppointments();
+  }, []);
+
+  useEffect(() => {
+    fetchComplains();
   }, []);
 
   return (
@@ -79,12 +117,7 @@ function Dashboard() {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-              />
+             
             </svg>
           </button>
         </div>
@@ -136,8 +169,8 @@ function Dashboard() {
             </div>
             <span className="text-green-500 font-medium"></span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{appointmentsNumber}</h2>
-          <p className="text-gray-500">New Appointments</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{appointmentsNumber ? appointmentsNumber : 'Loading...'}</h2>
+          <p className="text-gray-500">Total Appointments</p>
         </div>
 
         <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
@@ -158,9 +191,9 @@ function Dashboard() {
                 />
               </svg>
             </div>
-            <span className="text-red-500 font-medium">{stats.activeComplaints.change}</span>
+            {/* <span className="text-red-500 font-medium">{stats.activeComplaints.change}</span> */}
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{stats.activeComplaints.count}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{complaintsNumber}</h2>
           <p className="text-gray-500">Active Complaints</p>
         </div>
       </div>

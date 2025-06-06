@@ -20,6 +20,10 @@ import EditUsersById from './EditUserById/EditUserById';
 import ManageProviders from './ManageProviders';
 import EditProviderById from './EditProviderById/EditProviderById';
 import ChooseFromFour from './ChooseFromFour';
+import AddPregnancyTips from './AddPregnancyTips';
+import AddTrimester from './AddTrimester';
+import AddMilestone from './AddMilestone';
+import AddRecommendedFoods from './AddRecommendedFoods';
 
 const AdminDashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -79,7 +83,12 @@ const AdminDashboardLayout = () => {
               <Route path='manage-carts' element={<ManageCarts/> }/>
               <Route path='cart-details/:userId' element={<CartDetails/> }/>
               <Route path='manage-users/edit-user/:userId' element={<EditUsersById/> }/>
-              <Route path='tips-articles/choose-from-for' element={<ChooseFromFour/> }/>
+              {/* <Route path='tips-articles/choose-from-for' element={<ChooseFromFour/> }/> */}
+              <Route path='tips-articles/add-pregnancytips' element={<AddPregnancyTips/>}/>
+              <Route path='tips-articles/add-trimeseter' element={<AddTrimester/>}/>
+              <Route path='tips-articles/add-recommended-food' element={<AddRecommendedFoods/>}/>
+              <Route path='tips-articles/add-milestone' element={<AddMilestone/>}/>
+
             </Routes>
           </div>
         </main>

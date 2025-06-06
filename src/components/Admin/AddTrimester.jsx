@@ -5,28 +5,14 @@ import toast from 'react-hot-toast';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-const AddMilestone = () => {
+const AddTrimester = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
   const validationSchema = Yup.object({
-    weekNumber: Yup.number()
-      .required('Week number is required')
-      .min(1, 'Week number must be at least 1')
-      .max(52, 'Week number must be at most 52')
-      .test('unique-week', 'Milestone for this week already exists', async function(value) {
-        if (!value) return true;
-        try {
-          const response = await axios.get(`http://localhost:8000/api/tips/milestone/check/${value}`, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          return !response.data.exists;
-        } catch (error) {
-          return true;
-        }
-      }),
+    number: Yup.number()
+      .required('Trimester number is required')
+      .oneOf([1, 2, 3], 'Trimester number must be 1, 2, or 3'),
     content: Yup.string()
       .required('Content is required')
       .min(5, 'Content must be at least 5 characters long')
@@ -34,24 +20,22 @@ const AddMilestone = () => {
   });
 
   const initialValues = {
-    weekNumber: '',
+    number: '',
     content: '',
   };
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/tips/milestone', values, {
+      const response = await axios.post('http://localhost:8000/api/tips/trimester', values, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      toast.success('Milestone added successfully!');
+      toast.success('Trimester information added successfully!');
       resetForm();
       navigate('/admin/tips-articles');
-      console.log(response);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Something went wrong');
-      console.log(error);
     } finally {
       setSubmitting(false);
     }
@@ -67,22 +51,22 @@ const AddMilestone = () => {
         {({ isSubmitting }) => (
           <Form className="max-w-md mx-auto px-4 sm:px-8">
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Add Milestone</h2>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Add Trimester Information</h2>
               
-              {/* Week Number Field */}
+              {/* Trimester Number Field */}
               <div className="relative z-0 w-full mb-5 group">
                 <Field
                   type="number"
-                  name="weekNumber"
-                  id="weekNumber"
+                  name="number"
+                  id="number"
                   className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-sky-400 peer"
                   placeholder=" "
                 />
-                <label htmlFor="weekNumber" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-sky-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-                  Week Number (1-52)
+                <label htmlFor="number" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-sky-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                  Trimester Number (1, 2, or 3)
                 </label>
                 <ErrorMessage
-                  name="weekNumber"
+                  name="number"
                   component="div"
                   className="p-4 mt-2 mb-4 text-center text-sm text-red-800 rounded-lg bg-red-50"
                 />
@@ -114,7 +98,7 @@ const AddMilestone = () => {
                   disabled={isSubmitting}
                   className="text-white bg-rose-300 cursor-pointer hover:bg-rose-350 focus:ring-4 focus:outline-none focus:ring-rose-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
                 >
-                  {isSubmitting ? 'Adding...' : 'Add Milestone'}
+                  {isSubmitting ? 'Adding...' : 'Add Trimester'}
                 </button>
               </div>
             </div>
@@ -125,4 +109,4 @@ const AddMilestone = () => {
   );
 };
 
-export default AddMilestone;
+export default AddTrimester; 

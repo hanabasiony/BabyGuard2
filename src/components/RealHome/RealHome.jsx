@@ -227,7 +227,9 @@ export default function Home() {
         </div>
       </section>
 
-      <AboutUs />
+      <div id="about-section">
+        <AboutUs />
+      </div>
     </div>
   )
 }

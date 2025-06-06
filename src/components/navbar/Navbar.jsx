@@ -142,7 +142,7 @@ export default function Navbar() {
     <>
 
 
-      <nav className="bg-white shadow pe-7 shadow-rose-300 px-2 fixed py-2 w-full">
+      <nav className="bg-white shadow pe-7 shadow-rose-300 px-2 fixed py-1 w-full">
         <div className="container mx-auto flex items-center justify-between max-w-[1200px]">
           {/* Left Side: Logo & Links */}
           <div className="flex items-center">
@@ -199,7 +199,7 @@ export default function Navbar() {
               {userToken ? (
                 <>
                   <span className="text-rose-300 font-medium">
-                    Hello, {userData?.user?.fName || (isAdmin ? 'Admin' : 'User')}!
+                    Hello, {userData.user.fName || (isAdmin ? 'Admin' : 'User')} !
                   </span>
                   {isAdmin ? '' : <li>
                     <NavLink to="/settings" className="text-rose-300 hover:text-rose-300">

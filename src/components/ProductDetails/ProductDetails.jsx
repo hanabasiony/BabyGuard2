@@ -220,7 +220,11 @@ export default function ProductDetails() {
                             <span className="text-gray-500 ml-2">({product.rating || 0})</span>
                         </div>
                         <p className="text-gray-700 mb-4">
-                            {product.description}
+                            {Array.isArray(product.description) 
+                                ? product.description.map((desc, index) => (
+                                    <p key={index} className="mb-2">{desc}</p>
+                                  ))
+                                : product.description}
                         </p>
 
                         <div className="flex items-center space-x-3 mb-4">

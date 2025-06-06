@@ -63,6 +63,16 @@ import AddVaccine from './components/Admin/AddVaccine'
 import ManageCarts from './components/ManageCarts/ManageCarts'
 import CartDetails from './components/ManageCarts/CartDetails'
 import ScrollToTop from './components/ScrollToTop'
+import EditUsersById from './components/Admin/EditUserById/EditUserById'
+import EditUser from './components/EditUser/EditUser'
+import ManageProviders from './components/Admin/ManageProviders'
+import NetworkStatus from './components/NetworkStatus'
+import EditProviderById from './components/Admin/EditProviderById/EditProviderById'
+import ChooseFromFour from './components/Admin/ChooseFromFour'
+import AddPregnancyTips from './components/Admin/AddPregnancyTips'
+import AddTrimester from './components/Admin/AddTrimester'
+import AddRecommendedFoods from './components/Admin/AddRecommendedFoods.jsx'
+import AddMilestone from './components/Admin/AddMilestone'
 
 const router = createBrowserRouter([
   {
@@ -199,6 +209,14 @@ const router = createBrowserRouter([
       { path: 'vaccinations/add', element: <AddVaccine/> },
       { path: 'manage-carts' , element: <ManageCarts/> },
       { path: 'cart-details/:userId' , element: <CartDetails/> }
+      { path: 'cart-details/:userId' , element: <CartDetails/> },
+      { path: 'manage-users/edit-user/:userId' , element: <EditUsersById/> },
+      { path: 'tips-articles/add-pregnancytips', element:<AddPregnancyTips/> },
+      { path: 'tips-articles/add-trimeseter', element:<AddTrimester/>  },
+      { path: 'tips-articles/add-recommended-food', element: <AddRecommendedFoods/>},
+      { path: 'tips-articles/add-milestone', element:<AddMilestone/> },
+      
+      
     ],
   },
 ]);

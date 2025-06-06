@@ -13,7 +13,7 @@ const AddProductPage = () => {
     const initialValues = {
         name: '',
         price: '',
-        description: '',
+        description: [''],
         quantity: '',
         image: null,
         features: [''],
@@ -29,10 +29,12 @@ const AddProductPage = () => {
             .required("Price is required")
             .positive("Price must be positive")
             .min(0, "Price must be positive"),
-        description: yup.string()
-            .required("Description is required")
-            .min(20, "Description must be at least 20 characters")
-            .max(1000, "Description must not exceed 1000 characters"),
+        description: yup.array()
+            .of(yup.string()
+                .min(3, "Description must be at least 3 characters")
+                .max(250, "Description must not exceed 250 characters"))
+            .min(1, "At least one description is required")
+            .max(10, "Maximum 10 descriptions allowed"),
         quantity: yup.number()
             .required("Quantity is required")
             .integer("Quantity must be a whole number")
@@ -65,14 +67,17 @@ const AddProductPage = () => {
         onSubmit: async (values) => {
             setLoading(true);
             try {
-                // Create FormData object to handle file upload
                 const formData = new FormData();
                 formData.append('name', values.name);
                 formData.append('price', values.price);
-                formData.append('description', values.description);
                 formData.append('quantity', values.quantity);
                 formData.append('requiredAge', values.requiredAge);
                 formData.append('image', values.image);
+                
+                // Append each description individually to maintain array structure
+                values.description.forEach((desc, index) => {
+                    formData.append(`description[${index}]`, desc);
+                });
                 
                 // Append each feature individually to maintain array structure
                 values.features.forEach((feature, index) => {
@@ -80,7 +85,6 @@ const AddProductPage = () => {
                 });
 
                 const token = localStorage.getItem('token');
-                // Send the request
                 const response = await axios.post('http://localhost:8000/api/products/admin/add', formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -115,15 +119,32 @@ const AddProductPage = () => {
         formik.setFieldValue('features', newFeatures);
     };
 
+    const handleDescriptionChange = (index, value) => {
+        const newDescriptions = [...formik.values.description];
+        newDescriptions[index] = value;
+        formik.setFieldValue('description', newDescriptions);
+    };
+
     const addFeature = () => {
         if (formik.values.features.length < 10) {
             formik.setFieldValue('features', [...formik.values.features, '']);
         }
     };
 
+    const addDescription = () => {
+        if (formik.values.description.length < 10) {
+            formik.setFieldValue('description', [...formik.values.description, '']);
+        }
+    };
+
     const removeFeature = (index) => {
         const newFeatures = formik.values.features.filter((_, i) => i !== index);
         formik.setFieldValue('features', newFeatures);
+    };
+
+    const removeDescription = (index) => {
+        const newDescriptions = formik.values.description.filter((_, i) => i !== index);
+        formik.setFieldValue('description', newDescriptions);
     };
 
     return (
@@ -170,7 +191,6 @@ const AddProductPage = () => {
                     <div className="relative z-0 w-full mb-5 group">
                         <input
                             type="number"
-                            // step="0.01"
                             name="price"
                             id="price"
                             value={formik.values.price}
@@ -191,23 +211,38 @@ const AddProductPage = () => {
 
                     {/* Description */}
                     <div className="relative z-0 w-full mb-5 group">
-                        <textarea
-                            name="description"
-                            id="description"
-                            value={formik.values.description}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            placeholder=" "
-                            rows="3"
-                        />
-                        <label htmlFor="description" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-                            Description
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        {formik.values.description.map((desc, index) => (
+                            <div key={index} className="flex gap-2 mb-2">
+                                <input
+                                    type="text"
+                                    value={desc}
+                                    onChange={(e) => handleDescriptionChange(index, e.target.value)}
+                                    className="flex-1 block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                    placeholder="Enter description"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => removeDescription(index)}
+                                    className="text-red-600 hover:text-red-800"
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        ))}
                         {formik.errors.description && formik.touched.description && (
                             <div className="p-4 mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
                                 {formik.errors.description}
                             </div>
+                        )}
+                        {formik.values.description.length < 10 && (
+                            <button
+                                type="button"
+                                onClick={addDescription}
+                                className="mt-2 text-blue-600 hover:text-blue-800"
+                            >
+                                Add Description
+                            </button>
                         )}
                     </div>
 

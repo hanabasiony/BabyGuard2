@@ -55,6 +55,50 @@ function ManageUsers() {
           dateOfBirth: 'January 5, 2025',
           hasCertificate: false,
           avatar: 'https://via.placeholder.com/40'
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedRole, setSelectedRole] = useState('all');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const itemsPerPage = 10;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Please login to access this page');
+      navigate('/login');
+      return;
+    }
+    fetchCurrentUser(token);
+    fetchUsers(token);
+  }, [navigate]);
+
+  // Reset to first page when search term or role filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedRole]);
+
+  const fetchCurrentUser = async (token) => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/user/me', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response.data.status === 'success') {
+        setCurrentUser(response.data.user);
+      }
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+    }
+  };
+
+  const fetchUsers = async (token) => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/user', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
       ];
       
@@ -68,6 +112,119 @@ function ManageUsers() {
   useEffect(() => {
     if (searchTerm === '') {
       setFilteredUsers(users);
+  const filteredUsers = users.filter(user => {
+    const searchTerms = searchTerm.toLowerCase().split(' ').filter(term => term.length > 0);
+    const fullName = `${user.fName} ${user.lName}`.toLowerCase();
+    const email = user.email.toLowerCase();
+    const phone = user.phoneNumber.toLowerCase();
+    const location = `${user.governorate} ${user.city}`.toLowerCase();
+
+    // First filter by role
+    if (selectedRole !== 'all' && user.role !== selectedRole) {
+      return false;
+    }
+
+    // If no search terms, return all users that match the role filter
+    if (searchTerms.length === 0) return true;
+
+    // Check if all search terms are found in any of the fields
+    return searchTerms.every(term => 
+      fullName.includes(term) ||
+      email.includes(term) ||
+      phone.includes(term) ||
+      location.includes(term)
+    );
+  });
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, filteredUsers.length);
+  const totalEntries = filteredUsers.length;
+
+  // Get current page items
+  const currentPageItems = filteredUsers.slice(startIndex, endIndex);
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const handleNavigateToEdit = (user) => {
+    // Check if current user is admin and trying to edit another admin
+    if (currentUser?.role === 'admin' && user.role === 'admin') {
+      toast.error('Admins cannot modify other admin accounts');
+      return;
+    }
+    navigate(`./edit-user/${user._id}`);
+  };
+
+  const handleDeleteUser = async (userId) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Please login to perform this action');
+      navigate('/login');
+      return;
+    }
+
+    // Check if current user is admin and trying to delete another admin
+    const userToDelete = users.find(user => user._id === userId);
+    if (currentUser?.role === 'admin' && userToDelete?.role === 'admin') {
+      toast.error('Admins cannot delete other admin accounts');
+      setDeleteModalOpen(false);
+      setUserToDelete(null);
+      return;
+    }
+
+    try {
+      const response = await axios.delete(`http://localhost:8000/api/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.data.status === 'success') {
+        toast.success('User deleted successfully');
+        fetchUsers(token);
+        setDeleteModalOpen(false);
+        setUserToDelete(null);
+      } else {
+        toast.error('Failed to delete user');
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again');
+        localStorage.removeItem('token');
+        navigate('/login');
+      } else {
+        toast.error('Failed to delete user');
+        console.error('Error deleting user:', error);
+      }
+    }
+  };
+
+  const openDeleteModal = (user) => {
+    // Check if current user is admin and trying to delete another admin
+    if (currentUser?.role === 'admin' && user.role === 'admin') {
+      toast.error('Admins cannot delete other admin accounts');
+      return;
+    }
+    setUserToDelete(user);
+    setDeleteModalOpen(true);
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      // Show all pages if total pages is less than max visible pages
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
     } else {
       const filtered = users.filter(user => 
         user.parentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -330,6 +487,26 @@ function ManageUsers() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                           </button>
+                          {(!currentUser?.role === 'admin' || user.role !== 'admin') && (
+                            <button
+                              onClick={() => handleNavigateToEdit(user)}
+                              className="text-blue-600 hover:text-blue-900"
+                            >
+                              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                          )}
+                          {(!currentUser?.role === 'admin' || user.role !== 'admin') && (
+                            <button
+                              onClick={() => openDeleteModal(user)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

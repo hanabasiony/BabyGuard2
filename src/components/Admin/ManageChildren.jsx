@@ -112,7 +112,7 @@ function ManageChildren() {
           <p className="mb-4 text-gray-800">Are you sure you want to delete this child?</p>
           <div className="flex gap-2">
             <button
-              className="px-4 py-2 bg-pink-400 text-white rounded hover:bg-pink-500"
+              className="px-4 py-2 bg-rose-300 text-white rounded hover:bg-rose-400"
               onClick={async () => {
                 toast.dismiss(t.id);
                 // Immediately remove from UI

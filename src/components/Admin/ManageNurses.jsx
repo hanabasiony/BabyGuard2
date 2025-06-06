@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 function ManageNurses() {
   // State for nurses data
@@ -123,29 +124,29 @@ function ManageNurses() {
     try {
       // Validate required fields
       if (!nurseData.fName || nurseData.fName.length < 3 || nurseData.fName.length > 15) {
-        alert('First name must be between 3 and 15 characters');
+        toast.error('First name must be between 3 and 15 characters');
         return;
       }
       if (!nurseData.lName || nurseData.lName.length < 3 || nurseData.lName.length > 15) {
-        alert('Last name must be between 3 and 15 characters');
+        toast.error('Last name must be between 3 and 15 characters');
         return;
       }
       if (!nurseData.email || !nurseData.email.includes('@')) {
-        alert('Please enter a valid email address');
+        toast.error('Please enter a valid email address');
         return;
       }
       if (!nurseData.phone) {
-        alert('Phone number is required');
+        toast.error('Phone number is required');
         return;
       }
       if (!nurseData.hospital) {
-        alert('Hospital name is required');
+        toast.error('Hospital name is required');
         return;
       }
 
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('Authentication token is missing. Please log in again.');
+        toast.error('Authentication token is missing. Please log in again.');
         return;
       }
 
@@ -162,7 +163,7 @@ function ManageNurses() {
       const response = await axios.post('http://localhost:8000/api/nurse', requestBody, {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/json'
         }
       });
 
@@ -175,7 +176,9 @@ function ManageNurses() {
         setTotalEntries(prevTotal => prevTotal + 1);
         setEndIndex(prevEnd => prevEnd + 1);
         setShowAddModal(false);
-        alert('Nurse added successfully!');
+        toast.success('Nurse added successfully!');
+        console.log("add nurse", response.data.data)
+
       }
     } catch (error) {
       // Handle specific error cases
@@ -184,19 +187,19 @@ function ManageNurses() {
         console.error('Error response status:', error.response.status);
         
         if (error.response.status === 409) {
-          alert('Email or phone number already exists');
+          toast.error('Email or phone number already exists');
         } else if (error.response.status === 400) {
           const errorMessage = error.response.data.message || 'Validation failed. Please check your input.';
-          alert(`Validation Error: ${errorMessage}`);
+          toast.error(`Validation Error: ${errorMessage}`);
         } else if (error.response.status === 401) {
-          alert('Authentication failed. Please log in again.');
+          toast.error('Authentication failed. Please log in again.');
         } else {
-          alert(error.response.data.message || 'Error adding nurse');
+          toast.error(error.response.data.message || 'Error adding nurse');
         }
       } else if (error.request) {
-        alert('No response received from server. Please check your connection.');
+        toast.error('No response received from server. Please check your connection.');
       } else {
-        alert('Error setting up the request: ' + error.message);
+        toast.error('Error setting up the request: ' + error.message);
       }
       console.error('Full error object:', error);
     }
@@ -233,12 +236,43 @@ function ManageNurses() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('Authentication token is missing. Please log in again.');
+        toast.error('Authentication token is missing. Please log in again.');
         return;
       }
 
-      // Confirm deletion
-      if (!window.confirm('Are you sure you want to delete this nurse?')) {
+      // Show confirmation toast
+      const confirmDelete = await new Promise((resolve) => {
+        toast.custom((t) => (
+          <div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center">
+            <p className="mb-4 text-gray-800">Are you sure you want to delete this nurse?</p>
+            <div className="flex gap-2">
+              <button
+                className="px-4 py-2 bg-rose-300 text-white rounded hover:bg-rose-400"
+                onClick={async () => {
+                  toast.dismiss(t.id);
+                  resolve(true);
+                }}
+              >
+                Yes, Delete
+              </button>
+              <button
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(false);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ), {
+          duration: Infinity,
+          position: 'top-center',
+        });
+      });
+
+      if (!confirmDelete) {
         return;
       }
 
@@ -254,23 +288,23 @@ function ManageNurses() {
       setFilteredNurses(prevFiltered => prevFiltered.filter(nurse => nurse._id !== nurseId));
       setTotalEntries(prev => prev - 1);
       setEndIndex(prev => prev - 1);
-      alert('Nurse deleted successfully!');
+      toast.success('Nurse deleted successfully!');
       
     } catch (error) {
       console.error('Delete error:', error);
       
       if (error.response) {
         if (error.response.status === 401) {
-          alert('Authentication failed. Please log in again.');
+          toast.error('Authentication failed. Please log in again.');
         } else if (error.response.status === 404) {
-          alert('Nurse not found.');
+          toast.error('Nurse not found.');
         } else {
-          alert(error.response.data?.message || 'Failed to delete nurse. Please try again.');
+          toast.error(error.response.data?.message || 'Failed to delete nurse. Please try again.');
         }
       } else if (error.request) {
-        alert('No response received from server. Please check your connection.');
+        toast.error('No response received from server. Please check your connection.');
       } else {
-        alert('Error setting up the request. Please try again.');
+        toast.error('Error setting up the request. Please try again.');
       }
     }
   };
@@ -311,7 +345,7 @@ function ManageNurses() {
             </div>
             <div className="flex flex-wrap gap-2">
               <button 
-                className="px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 flex items-center justify-center w-full sm:w-auto"
+                className="px-4 py-2 bg-rose-300 text-white rounded-md hover:bg-rose-400 flex items-center justify-center w-full sm:w-auto"
                 onClick={() => setShowAddModal(true)}
               >
                 <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -502,7 +536,7 @@ function ManageNurses() {
                     required
                     minLength={3}
                     maxLength={15}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-400"
                     placeholder="Enter first name"
                   />
                 </div>
@@ -518,7 +552,7 @@ function ManageNurses() {
                     required
                     minLength={3}
                     maxLength={15}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
                     placeholder="Enter last name"
                   />
                 </div>
@@ -532,7 +566,7 @@ function ManageNurses() {
                     id="email"
                     name="email"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-400"
                     placeholder="Enter email address"
                   />
                 </div>
@@ -546,7 +580,7 @@ function ManageNurses() {
                     id="phone"
                     name="phone"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
                     placeholder="Enter phone number"
                   />
                 </div>
@@ -560,7 +594,7 @@ function ManageNurses() {
                     id="hospital"
                     name="hospital"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
                     placeholder="Enter hospital name"
                   />
                 </div>
@@ -575,7 +609,7 @@ function ManageNurses() {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-rose-300 hover:rose-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-300"
                   >
                     Add Nurse
                   </button>

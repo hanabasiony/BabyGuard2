@@ -127,7 +127,7 @@ export default function AddProvider() {
                                 id="name"
                                 name="name"
                                 {...formik.getFieldProps('name')}
-                                className={`w-full px-3 py-2 border rounded-md ${formik.touched.name && formik.errors.name ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500`}
+                                className={`w-full px-3 py-2 border rounded-md ${formik.touched.name && formik.errors.name ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300`}
                                 placeholder="e.g., Health Ministry"
                             />
                             {formik.touched.name && formik.errors.name && (
@@ -145,7 +145,7 @@ export default function AddProvider() {
                                 id="phone"
                                 name="phone"
                                 {...formik.getFieldProps('phone')}
-                                className={`w-full px-3 py-2 border rounded-md ${formik.touched.phone && formik.errors.phone ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500`}
+                                className={`w-full px-3 py-2 border rounded-md ${formik.touched.phone && formik.errors.phone ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300`}
                                 placeholder="e.g., +201012345678"
                             />
                             {formik.touched.phone && formik.errors.phone && (
@@ -164,7 +164,7 @@ export default function AddProvider() {
                                     id="governorate"
                                     name="governorate"
                                     {...formik.getFieldProps('governorate')}
-                                    className={`w-full px-3 py-2 border rounded-md ${formik.touched.governorate && formik.errors.governorate ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500`}
+                                    className={`w-full px-3 py-2 border rounded-md ${formik.touched.governorate && formik.errors.governorate ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300`}
                                     placeholder="e.g., Cairo"
                                 />
                                 {formik.touched.governorate && formik.errors.governorate && (
@@ -180,7 +180,7 @@ export default function AddProvider() {
                                     id="city"
                                     name="city"
                                     {...formik.getFieldProps('city')}
-                                    className={`w-full px-3 py-2 border rounded-md ${formik.touched.city && formik.errors.city ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500`}
+                                    className={`w-full px-3 py-2 border rounded-md ${formik.touched.city && formik.errors.city ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300`}
                                     placeholder="e.g., Cairo"
                                 />
                                 {formik.touched.city && formik.errors.city && (
@@ -196,7 +196,7 @@ export default function AddProvider() {
                                     id="district"
                                     name="district"
                                     {...formik.getFieldProps('district')}
-                                    className={`w-full px-3 py-2 border rounded-md ${formik.touched.district && formik.errors.district ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500`}
+                                    className={`w-full px-3 py-2 border rounded-md ${formik.touched.district && formik.errors.district ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300`}
                                     placeholder="e.g., Nasr City"
                                 />
                                 {formik.touched.district && formik.errors.district && (
@@ -215,7 +215,7 @@ export default function AddProvider() {
                                 id="workHours"
                                 name="workHours"
                                 {...formik.getFieldProps('workHours')}
-                                className={`w-full px-3 py-2 border rounded-md ${formik.touched.workHours && formik.errors.workHours ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500`}
+                                className={`w-full px-3 py-2 border rounded-md ${formik.touched.workHours && formik.errors.workHours ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300`}
                                 placeholder="e.g., 9 AM to 5 PM"
                             />
                             {formik.touched.workHours && formik.errors.workHours && (
@@ -235,7 +235,7 @@ export default function AddProvider() {
                             <button
                                 type="submit"
                                 disabled={formik.isSubmitting}
-                                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-rose-300 hover:bg-rose-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-300"
                             >
                                 {formik.isSubmitting ? 'Adding...' : 'Add Provider'}
                             </button>

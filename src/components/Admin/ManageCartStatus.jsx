@@ -68,7 +68,7 @@ export default function ManageCartStatus() {
                                 value={cartId}
                                 onChange={(e) => setCartId(e.target.value)}
                                 required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
                                 placeholder="Enter cart ID"
                             />
                         </div>
@@ -83,7 +83,7 @@ export default function ManageCartStatus() {
                                 value={status}
                                 onChange={(e) => setStatus(e.target.value)}
                                 required
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
                             >
                                 <option value="">Select a status</option>
                                 {statusOptions.map((option) => (
@@ -99,7 +99,7 @@ export default function ManageCartStatus() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-rose-300 hover:bg-rose-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-300"
                             >
                                 {loading ? 'Updating...' : 'Update Status'}
                             </button>

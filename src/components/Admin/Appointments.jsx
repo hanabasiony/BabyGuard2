@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 function Appointments() {
   // State for appointments data (raw data from API)
@@ -27,20 +28,34 @@ function Appointments() {
 
   // Process raw appointments and apply filters whenever raw data, search, date, or filter changes
   useEffect(() => {
-    let processed = rawAppointments.map(request => ({
-      // Map API data to appointment structure expected by the component
-      id: request._id,
-      childId: request.childId,
-      vaccineId: request.vaccine?._id,
-      // Update these fields to show more meaningful information
-      parentName: request.parentName || 'Parent Name Not Available',
-      childName: request.child?.name || 'Child Name Not Available',
-      vaccine: request.vaccine?.name || 'Vaccine Name Not Available',
-      location: `${request.street || ''}, ${request.city || ''}, ${request.governorate || ''}`.replace(/, ,/g, ', ').replace(/^, /,'').replace(/, $/, '') || 'Location not specified',
-      date: request.vaccinationDate ? new Date(request.vaccinationDate).toLocaleDateString() : 'Date not specified',
-      status: request.status,
-      nurse: request.nurse?.name || null
-    }));
+    let processed = rawAppointments.map(request => {
+      // Add console.log to see the raw request data
+      console.log('Raw Request Data:', {
+        childName: request.child?.name,
+        vaccineName: request.vaccine?.name,
+        fullRequest: request
+      });
+
+      return {
+        // Map API data to appointment structure expected by the component
+        id: request._id,
+        childId: request.childId,
+        vaccineId: request.vaccine?._id,
+        parentName: request.parentName || 'Parent Name Not Available',
+        childName: request.child?.name || 'Child Name Not Available',
+        vaccine: request.vaccine?.name || 'Vaccine Name Not Available',
+        location: `${request.street || ''}, ${request.city || ''}, ${request.governorate || ''}`.replace(/, ,/g, ', ').replace(/^, /,'').replace(/, $/, '') || 'Location not specified',
+        date: request.vaccinationDate ? new Date(request.vaccinationDate).toLocaleDateString() : 'Date not specified',
+        status: request.status,
+        nurse: request.nurse?.name || null
+      };
+    });
+
+    // Add console.log to see the processed data
+    console.log('Processed Appointments Data:', processed.map(app => ({
+      childName: app.childName,
+      vaccine: app.vaccine
+    })));
 
     setAppointments(processed);
 
@@ -77,25 +92,21 @@ function Appointments() {
   const fetchAppointments = async () => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem('token'); // Assuming token is needed for admin API
+      const token = localStorage.getItem('token');
       if (!token) {
-          console.error('Authentication token not found for admin API');
-          setIsLoading(false);
-          // Optionally navigate to login or show an error message
-          return;
+        toast.error('Authentication token not found for admin API');
+        setIsLoading(false);
+        return;
       }
       
       const response = await axios.get('http://localhost:8000/api/vaccine-requests/admin', {
-          headers: {
-              Authorization: `Bearer ${token}`
-          }
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
-      console.log("API: response", response)
       
       if (response.data && response.data.data) {
-        // Store raw data and let the next useEffect process and filter it
         setRawAppointments(response.data.data);
-        console.log(response.data.data);
       } else {
         console.error('API returned unexpected data structure:', response.data);
         setRawAppointments([]);
@@ -103,7 +114,8 @@ function Appointments() {
       
     } catch (error) {
       console.error('Error fetching appointments:', error.response?.data || error.message);
-      setRawAppointments([]); // Set empty array on error
+      toast.error('Failed to fetch appointments. Please try again.');
+      setRawAppointments([]);
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +125,7 @@ function Appointments() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        console.error('Authentication token is missing');
+        toast.error('Authentication token is missing');
         return;
       }
 
@@ -124,7 +136,6 @@ function Appointments() {
       });
 
       if (response.data && response.data.data) {
-        // Transform the nurse data to match the expected format
         const nursesData = response.data.data.map(nurse => ({
           id: nurse._id,
           name: `${nurse.fName} ${nurse.lName}`
@@ -136,6 +147,7 @@ function Appointments() {
       }
     } catch (error) {
       console.error('Error fetching nurses:', error.response?.data || error.message);
+      toast.error('Failed to fetch nurses. Please try again.');
       setNurses([]);
     }
   };
@@ -145,21 +157,17 @@ function Appointments() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        console.error('Authentication token is missing');
+        toast.error('Authentication token is missing');
         return;
       }
 
-      console.log('Fetching slots for nurse:', nurseId);
       const response = await axios.get(`http://localhost:8000/api/nurse/${nurseId}/free-slots`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-
-      console.log('Slots API Response:', response.data);
       
       if (response.data && response.data.data) {
-        console.log('Available slots:', response.data.data);
         setNurseSlots(prev => ({
           ...prev,
           [nurseId]: response.data.data
@@ -169,7 +177,7 @@ function Appointments() {
       }
     } catch (error) {
       console.error('Error fetching nurse slots:', error.response?.data || error.message);
-      console.error('Full error object:', error);
+      toast.error('Failed to fetch available time slots. Please try again.');
     }
   };
 
@@ -262,25 +270,25 @@ function Appointments() {
   const handleAssignNurse = async (appointmentId) => {
     const selectedNurseId = selectedNurses[appointmentId];
     if (!selectedNurseId) {
-      alert('Please select a nurse first');
+      toast.error('Please select a nurse first');
       return;
     }
 
     if (!selectedSlot || selectedSlot.appointmentId !== appointmentId) {
-      alert('Please select a time slot first');
+      toast.error('Please select a time slot first');
       return;
     }
 
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('Authentication token is missing. Please log in again.');
+        toast.error('Authentication token is missing. Please log in again.');
         return;
       }
 
       const appointment = appointments.find(app => app.id === appointmentId);
       if (!appointment) {
-        alert('Appointment not found');
+        toast.error('Appointment not found');
         return;
       }
 
@@ -288,8 +296,8 @@ function Appointments() {
       const response = await axios.post(
         `http://localhost:8000/api/nurse/${selectedNurseId}/assign`,
         {
-          slotId: selectedSlot.slot._id, // Make sure this matches your slot ID field
-          vaccineId: appointment.id // Make sure this matches your vaccine ID field
+          slotId: selectedSlot.slot._id,
+          vaccineId: appointment.id
         },
         {
           headers: {
@@ -319,14 +327,14 @@ function Appointments() {
           return newState;
         });
         setSelectedSlot(null);
-        alert('Nurse assigned successfully!');
+        toast.success('Nurse assigned successfully!');
       }
     } catch (error) {
       console.error('Error assigning nurse:', error);
       if (error.response) {
-        alert(error.response.data.message || 'Failed to assign nurse. Please try again.');
+        toast.error(error.response.data.message || 'Failed to assign nurse. Please try again.');
       } else {
-        alert('Error connecting to server. Please try again.');
+        toast.error('Error connecting to server. Please try again.');
       }
     }
   };
@@ -421,29 +429,51 @@ function Appointments() {
                     </button>
                   </div>
                   
-                  {/* Location Info */}
-                  <div className="mb-2 flex items-center">
-                    <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span className="text-sm text-gray-700">{appointment.location}</span>
-                  </div>
-
                   {/* Child and Vaccine Info */}
-                  <div className="mb-2">
-                    <div className="flex items-center mb-1">
+                  <div className="mb-4 bg-gray-50 p-3 rounded-lg">
+                    {/* Parent Name 
+                    <div className="flex items-center mb-2">
+                      <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <div>
+                        <span className="text-sm font-semibold text-gray-900">Parent Name: </span>
+                        <span className="text-sm text-gray-700">{appointment.parentName}</span>
+                      </div>
+                    </div> */}
+
+                    {/* Child Name */}
+                    <div className="flex items-center mb-2">
                       <svg className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
-                      <span className="text-sm font-medium text-gray-900">{appointment.childName}</span>
-                      <span className="text-sm text-gray-500 ml-2">({appointment.childAge})</span>
+                      <div>
+                        <span className="text-sm font-semibold text-gray-900">Child Name: </span>
+                        <span className="text-sm text-gray-700">{appointment.childName}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center">
+
+                    {/* Vaccine */}
+                    <div className="flex items-center mb-2">
                       <svg className="h-5 w-5 text-purple-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                       </svg>
-                      <span className="text-sm text-gray-700">{appointment.vaccine}</span>
+                      <div>
+                        <span className="text-sm font-semibold text-gray-900">Vaccine: </span>
+                        <span className="text-sm text-gray-700">{appointment.vaccine}</span>
+                      </div>
+                    </div>
+
+                    {/* Location Info */}
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <div>
+                        <span className="text-sm font-semibold text-gray-900">Location: </span>
+                        <span className="text-sm text-gray-700">{appointment.location}</span>
+                      </div>
                     </div>
                   </div>
                   
@@ -513,7 +543,7 @@ function Appointments() {
 
                       <button
                         onClick={() => handleAssignNurse(appointment.id)}
-                        className="w-full bg-pink-400 hover:bg-pink-500 text-white py-2 px-4 rounded-md flex justify-center items-center"
+                        className="w-full bg-rose-300 hover:bg-rose-400 text-white py-2 px-4 rounded-md flex justify-center items-center"
                       >
                         Assign & Send Request
                       </button>

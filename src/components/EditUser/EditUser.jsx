@@ -1,34 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import slugify from 'slugify';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import slugify from "slugify";
 
 // Validation Schema
 const validationSchema = Yup.object().shape({
   fName: Yup.string()
-    .min(3, 'First name is too short')
-    .max(15, 'First name is too long'),
+    .min(3, "First name is too short")
+    .max(15, "First name is too long"),
   lName: Yup.string()
-    .min(3, 'Last name is too short')
-    .max(15, 'Last name is too long'),
-  email: Yup.string()
-    .email('Email is invalid'),
+    .min(3, "Last name is too short")
+    .max(15, "Last name is too long"),
+  email: Yup.string().email("Email is invalid"),
   nationalIdNumer: Yup.string()
-    .length(14, 'SSN must be exactly 14 digits')
-    .matches(/^\d+$/, 'SSN must be numeric'),
-  birthDate: Yup.date()
-    .nullable()
-    .typeError('Date of birth is invalid'),
-  password: Yup.string()
-    .min(6, 'Password must be at least 6 characters'),
+    .length(14, "SSN must be exactly 14 digits")
+    .matches(/^\d+$/, "SSN must be numeric"),
+  birthDate: Yup.date().nullable().typeError("Date of birth is invalid"),
+  password: Yup.string().min(6, "Password must be at least 6 characters"),
   governorate: Yup.string(),
   city: Yup.string(),
   street: Yup.string(),
   buildingNumber: Yup.string(),
-  apartmentNumber: Yup.string()
+  apartmentNumber: Yup.string(),
 });
 
 function EditUser() {
@@ -43,30 +39,33 @@ function EditUser() {
 
   const fetchUserData = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        toast.error('Please login to access this page');
-        navigate('/login');
+        toast.error("Please login to access this page");
+        navigate("/login");
         return;
       }
 
-      const response = await axios.get('http://localhost:8000/api/user/me', {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.get(
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user/me",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
-      if (response.data.status === 'success') {
+      if (response.data.status === "success") {
         setUser(response.data.user);
       }
     } catch (error) {
       if (error.response?.status === 401) {
-        toast.error('Session expired. Please login again');
-        localStorage.removeItem('token');
-        navigate('/login');
+        toast.error("Session expired. Please login again");
+        localStorage.removeItem("token");
+        navigate("/login");
       } else {
-        toast.error('Failed to fetch user data');
-        console.error('Error fetching user:', error);
+        toast.error("Failed to fetch user data");
+        console.error("Error fetching user:", error);
       }
     } finally {
       setIsLoading(false);
@@ -74,68 +73,69 @@ function EditUser() {
   };
 
   const handleEditClick = (field) => {
-    setEditingFields(prev => ({
+    setEditingFields((prev) => ({
       ...prev,
-      [field]: true
+      [field]: true,
     }));
   };
 
   const handleCancelEdit = (field) => {
-    setEditingFields(prev => ({
+    setEditingFields((prev) => ({
       ...prev,
-      [field]: false
+      [field]: false,
     }));
   };
 
   const handleSaveEdit = async (values, { setSubmitting, resetForm }) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        toast.error('Please login to perform this action');
-        navigate('/login');
+        toast.error("Please login to perform this action");
+        navigate("/login");
         return;
       }
 
       // Generate slug if both fName and lName are being updated
       if (values.fName && values.lName) {
-        values.slug = slugify(
-          `${values.fName}-${values.lName}-${Date.now()}`,
-          {
-            lower: true,
-            trim: true,
-            remove: /[^\w-]+/g,
-          }
-        )
+        values.slug = slugify(`${values.fName}-${values.lName}-${Date.now()}`, {
+          lower: true,
+          trim: true,
+          remove: /[^\w-]+/g,
+        })
           .replace(/--+/g, "-")
           .replace(/^-+|-+$/g, "");
       }
 
-      const response = await axios.put('http://localhost:8000/api/user/me', values, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.put(
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user/me",
+        values,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
-      if (response.data.status === 'success') {
-        toast.success('Profile updated successfully');
+      if (response.data.status === "success") {
+        toast.success("Profile updated successfully");
         setUser(response.data.user);
         setEditingFields({});
         resetForm({ values: response.data.user });
       }
     } catch (error) {
       if (error.response?.status === 401) {
-        toast.error('Session expired. Please login again');
-        localStorage.removeItem('token');
-        navigate('/login');
+        toast.error("Session expired. Please login again");
+        localStorage.removeItem("token");
+        navigate("/login");
       } else if (error.response?.data?.errors) {
         // Handle validation errors
         const errors = error.response.data.errors;
-        Object.keys(errors).forEach(field => {
+        Object.keys(errors).forEach((field) => {
           toast.error(`${field}: ${errors[field].msg}`);
         });
       } else {
-        toast.error('Failed to update profile');
-        console.error('Error updating user:', error);
+        toast.error("Failed to update profile");
+        console.error("Error updating user:", error);
       }
     } finally {
       setSubmitting(false);
@@ -163,15 +163,15 @@ function EditUser() {
   }
 
   const editableFields = [
-    { key: 'fName', label: 'First Name' },
-    { key: 'lName', label: 'Last Name' },
-    { key: 'email', label: 'Email' },
-    { key: 'phoneNumber', label: 'Phone Number' },
-    { key: 'governorate', label: 'Governorate' },
-    { key: 'city', label: 'City' },
-    { key: 'street', label: 'Street' },
-    { key: 'buildingNumber', label: 'Building Number' },
-    { key: 'apartmentNumber', label: 'Apartment Number' }
+    { key: "fName", label: "First Name" },
+    { key: "lName", label: "Last Name" },
+    { key: "email", label: "Email" },
+    { key: "phoneNumber", label: "Phone Number" },
+    { key: "governorate", label: "Governorate" },
+    { key: "city", label: "City" },
+    { key: "street", label: "Street" },
+    { key: "buildingNumber", label: "Building Number" },
+    { key: "apartmentNumber", label: "Apartment Number" },
   ];
 
   return (
@@ -180,11 +180,15 @@ function EditUser() {
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
           <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
             <div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Edit Profile</h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">Update your personal information</p>
+              <h3 className="text-lg leading-6 font-medium text-gray-900">
+                Edit Profile
+              </h3>
+              <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                Update your personal information
+              </p>
             </div>
             <button
-              onClick={() => navigate('/settings')}
+              onClick={() => navigate("/settings")}
               className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
             >
               Back to Settings
@@ -201,8 +205,13 @@ function EditUser() {
                 <div className="border-t border-gray-200">
                   <dl>
                     {editableFields.map(({ key, label }) => (
-                      <div key={key} className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt className="text-sm font-medium text-gray-500">{label}</dt>
+                      <div
+                        key={key}
+                        className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+                      >
+                        <dt className="text-sm font-medium text-gray-500">
+                          {label}
+                        </dt>
                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                           {editingFields[key] ? (
                             <div className="flex flex-col space-y-2">
@@ -223,7 +232,7 @@ function EditUser() {
                                   disabled={isSubmitting || !dirty}
                                   className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-rose-400 hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 disabled:opacity-50"
                                 >
-                                  {isSubmitting ? 'Saving...' : 'Save'}
+                                  {isSubmitting ? "Saving..." : "Save"}
                                 </button>
                                 <button
                                   type="button"
@@ -260,4 +269,4 @@ function EditUser() {
   );
 }
 
-export default EditUser; 
+export default EditUser;

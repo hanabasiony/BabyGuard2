@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { toast } from "react-hot-toast";
-import { PlusCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-
+import { PlusCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function ManageChildren() {
   // State for children data
   const [children, setChildren] = useState([]);
   const [filteredChildren, setFilteredChildren] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedChild, setSelectedChild] = useState(null); // For edit/details modal
   const [showFilters, setShowFilters] = useState(false); // Placeholder
@@ -36,26 +35,30 @@ function ManageChildren() {
     setIsLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        toast.error('Authentication token is missing. Please log in again.');
+        toast.error("Authentication token is missing. Please log in again.");
         setIsLoading(false);
         return;
       }
 
-      const apiUrl = new URL('http://localhost:8000/api/child/admin');
+      const apiUrl = new URL(
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/child/admin"
+      );
       if (cursor) {
-        apiUrl.searchParams.append('cursor', cursor);
+        apiUrl.searchParams.append("cursor", cursor);
       }
-      apiUrl.searchParams.append('limit', limit);
+      apiUrl.searchParams.append("limit", limit);
 
       const response = await axios.get(apiUrl.toString(), {
         headers: {
-          'Authorization': `Bearer ${token}`,
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      const childrenData = Array.isArray(response.data.data) ? response.data.data : [];
+      const childrenData = Array.isArray(response.data.data)
+        ? response.data.data
+        : [];
       setChildren(childrenData);
       setFilteredChildren(childrenData);
       setNextPageToken(response.data.nextCursor || null);
@@ -64,18 +67,21 @@ function ManageChildren() {
 
       // Update page history
       if (cursor) {
-        setPageHistory(prev => [...prev, cursor]);
+        setPageHistory((prev) => [...prev, cursor]);
       }
 
       const currentStartIndex = (currentPage - 1) * limit + 1;
-      const currentEndIndex = Math.min(currentStartIndex + childrenData.length - 1, response.data.totalEntries || 0);
+      const currentEndIndex = Math.min(
+        currentStartIndex + childrenData.length - 1,
+        response.data.totalEntries || 0
+      );
       setStartIndex(currentStartIndex);
       setEndIndex(currentEndIndex);
 
       setIsLoading(false);
     } catch (error) {
-      console.error('Error fetching children:', error);
-      setError('Failed to fetch children data');
+      console.error("Error fetching children:", error);
+      setError("Failed to fetch children data");
       setChildren([]);
       setFilteredChildren([]);
       setNextPageToken(null);
@@ -94,12 +100,15 @@ function ManageChildren() {
       return;
     }
 
-    if (searchTerm === '') {
+    if (searchTerm === "") {
       setFilteredChildren(children);
     } else {
-      const filtered = children.filter(child =>
-        (child.name && child.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (child.userId && child.userId.toLowerCase().includes(searchTerm.toLowerCase())) // Assuming search by user ID is useful
+      const filtered = children.filter(
+        (child) =>
+          (child.name &&
+            child.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (child.userId &&
+            child.userId.toLowerCase().includes(searchTerm.toLowerCase())) // Assuming search by user ID is useful
       );
       setFilteredChildren(filtered);
     }
@@ -116,37 +125,46 @@ function ManageChildren() {
   const handleDeleteChild = async (childId) => {
     // Show confirmation toast
     const confirmDelete = await new Promise((resolve) => {
-      toast.custom((t) => (
-        <div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center">
-          <p className="mb-4 text-gray-800">Are you sure you want to delete this child?</p>
-          <div className="flex gap-2">
-            <button
-              className="px-4 py-2 bg-pink-400 text-white rounded hover:bg-pink-500"
-              onClick={async () => {
-                toast.dismiss(t.id);
-                // Immediately remove from UI
-                setChildren(prevChildren => prevChildren.filter(child => child._id !== childId));
-                setFilteredChildren(prevChildren => prevChildren.filter(child => child._id !== childId));
-                resolve(true);
-              }}
-            >
-              Yes, Delete
-            </button>
-            <button
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-              onClick={() => {
-                toast.dismiss(t.id);
-                resolve(false);
-              }}
-            >
-              Cancel
-            </button>
+      toast.custom(
+        (t) => (
+          <div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center">
+            <p className="mb-4 text-gray-800">
+              Are you sure you want to delete this child?
+            </p>
+            <div className="flex gap-2">
+              <button
+                className="px-4 py-2 bg-pink-400 text-white rounded hover:bg-pink-500"
+                onClick={async () => {
+                  toast.dismiss(t.id);
+                  // Immediately remove from UI
+                  setChildren((prevChildren) =>
+                    prevChildren.filter((child) => child._id !== childId)
+                  );
+                  setFilteredChildren((prevChildren) =>
+                    prevChildren.filter((child) => child._id !== childId)
+                  );
+                  resolve(true);
+                }}
+              >
+                Yes, Delete
+              </button>
+              <button
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  resolve(false);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-        </div>
-      ), {
-        duration: Infinity,
-        position: 'top-center',
-      });
+        ),
+        {
+          duration: Infinity,
+          position: "top-center",
+        }
+      );
     });
 
     if (!confirmDelete) {
@@ -154,49 +172,55 @@ function ManageChildren() {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        toast.error('Authentication token is missing. Please log in again.');
+        toast.error("Authentication token is missing. Please log in again.");
         return;
       }
 
       // Make the API call in the background
-      const response = await axios.delete(`http://localhost:8000/api/child/${childId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
+      const response = await axios.delete(
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/child/${childId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
       if (response.status === 200 || response.status === 204) {
-        toast.success('Child deleted successfully!');
-            console.log(response)
+        toast.success("Child deleted successfully!");
+        console.log(response);
       } else {
         // If the API call fails, revert the UI changes
         fetchChildren(null, limit);
-        toast.error('Failed to delete child. Please try again.');
+        toast.error("Failed to delete child. Please try again.");
       }
     } catch (error) {
-      console.error('Error deleting child:', error);
+      console.error("Error deleting child:", error);
       // If there's an error, revert the UI changes
       fetchChildren(null, limit);
       if (error.response) {
-        toast.error(error.response.data.message || `Error deleting child: ${error.response.status}`);
+        toast.error(
+          error.response.data.message ||
+            `Error deleting child: ${error.response.status}`
+        );
       } else {
-        toast.error('Error connecting to server');
+        toast.error("Error connecting to server");
       }
     }
   };
 
   // Handle assign/view details for child (Placeholder)
   const handleChildAction = (child) => {
-      console.log('Performing action on child:', child);
-      toast.error('Action functionality not yet implemented');
+    console.log("Performing action on child:", child);
+    toast.error("Action functionality not yet implemented");
   };
 
   // Handle next page
   const handleNextPage = () => {
     if (nextPageToken) {
-      setCurrentPage(prev => prev + 1);
+      setCurrentPage((prev) => prev + 1);
       fetchChildren(nextPageToken, limit);
     }
   };
@@ -205,8 +229,8 @@ function ManageChildren() {
   const handlePrevPage = () => {
     if (pageHistory.length > 0) {
       const prevCursor = pageHistory[pageHistory.length - 2] || null;
-      setPageHistory(prev => prev.slice(0, -1));
-      setCurrentPage(prev => prev - 1);
+      setPageHistory((prev) => prev.slice(0, -1));
+      setCurrentPage((prev) => prev - 1);
       fetchChildren(prevCursor, limit);
     }
   };
@@ -218,11 +242,14 @@ function ManageChildren() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h2 className="text-2xl font-medium text-gray-800">Manage Children</h2>
-              <p className="mt-1 text-sm text-gray-500">View and manage registered children</p>
+              <h2 className="text-2xl font-medium text-gray-800">
+                Manage Children
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                View and manage registered children
+              </p>
             </div>
-             {/* Button to open Add Child modal */}
-            
+            {/* Button to open Add Child modal */}
           </div>
         </div>
 
@@ -237,8 +264,18 @@ function ManageChildren() {
         <div className="mb-6 flex flex-col sm:flex-row justify-between gap-4">
           <div className="relative flex-grow ">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="h-5 w-5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
             <input
@@ -257,25 +294,40 @@ function ManageChildren() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Name
                   </th>
-                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Birth Date
                   </th>
-                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Gender
                   </th>
                   {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Blood Type
                   </th> */}
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     SSN
                   </th>
                   {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     User ID
                   </th> */}
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Actions
                   </th>
                 </tr>
@@ -283,19 +335,29 @@ function ManageChildren() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {isLoading ? (
                   <tr>
-                    <td colSpan="7" className="px-6 py-4 text-center text-sm text-gray-500">
+                    <td
+                      colSpan="7"
+                      className="px-6 py-4 text-center text-sm text-gray-500"
+                    >
                       Loading...
                     </td>
                   </tr>
                 ) : error ? (
                   <tr>
-                    <td colSpan="7" className="px-6 py-4 text-center text-sm text-red-500">
+                    <td
+                      colSpan="7"
+                      className="px-6 py-4 text-center text-sm text-red-500"
+                    >
                       {error}
                     </td>
                   </tr>
-                ) : !Array.isArray(filteredChildren) || filteredChildren.length === 0 ? (
+                ) : !Array.isArray(filteredChildren) ||
+                  filteredChildren.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="px-6 py-4 text-center text-sm text-gray-500">
+                    <td
+                      colSpan="7"
+                      className="px-6 py-4 text-center text-sm text-gray-500"
+                    >
                       No children found
                     </td>
                   </tr>
@@ -305,63 +367,89 @@ function ManageChildren() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           {/* Optional: Child avatar/icon */}
-                           {/* <div className="flex-shrink-0 h-10 w-10">
+                          {/* <div className="flex-shrink-0 h-10 w-10">
                             <img className="h-10 w-10 rounded-full" src={child.avatar || "/placeholder.svg"} alt="" />
                           </div> */}
-                          <div className="text-sm font-medium text-gray-900">{child.name}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {child.name}
+                          </div>
                         </div>
                       </td>
-                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {child.birthDate ? new Date(child.birthDate).toLocaleDateString() : 'N/A'}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {child.birthDate
+                          ? new Date(child.birthDate).toLocaleDateString()
+                          : "N/A"}
                       </td>
-                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {child.gender}
                       </td>
                       {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {child.bloodType}
                       </td> */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {child.ssn}
-                        </td>
-                        {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {child.ssn}
+                      </td>
+                      {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {child.userId}
                         </td> */}
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex space-x-2 justify-start">
-                           {/* View Certificate Button */}
+                          {/* View Certificate Button */}
                           <button
                             className="text-blue-600 hover:text-blue-900"
                             onClick={() => {
-                                if (child.birthCertificate) {
-                                    window.open(child.birthCertificate, '_blank');
-                                } else {
-                                    toast.error('No birth certificate available for this child.');
-                                }
+                              if (child.birthCertificate) {
+                                window.open(child.birthCertificate, "_blank");
+                              } else {
+                                toast.error(
+                                  "No birth certificate available for this child."
+                                );
+                              }
                             }}
                           >
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            <svg
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
                             </svg>
                           </button>
-                           {/* Edit Button */}
+                          {/* Edit Button */}
                           {/* <button
                              onClick={() => handleEditChild(child._id, child)} // Pass child data for editing
                              className="text-yellow-600 hover:text-yellow-900"
                            >
                              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 {/* Icon for Edit */}
-                                {/* <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          {/* <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                              </svg>
                            </button> */}
-                           {/* Delete Button */}
-                           <button
-                             onClick={() => handleDeleteChild(child._id)}
-                             className="text-red-600 hover:text-red-900"
-                           >
-                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                             </svg>
-                           </button>
+                          {/* Delete Button */}
+                          <button
+                            onClick={() => handleDeleteChild(child._id)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            <svg
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -371,11 +459,9 @@ function ManageChildren() {
             </table>
           </div>
         </div>
-
-        
       </div>
     </div>
   );
 }
 
-export default ManageChildren; 
+export default ManageChildren;

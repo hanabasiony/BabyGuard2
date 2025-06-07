@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 function EditUsersById() {
   const { userId } = useParams();
@@ -17,64 +17,70 @@ function EditUsersById() {
 
   const fetchUserData = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        toast.error('Please login to access this page');
-        navigate('/login');
+        toast.error("Please login to access this page");
+        navigate("/login");
         return;
       }
 
-      const response = await axios.get(`http://localhost:8000/api/user`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.get(
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
-      if (response.data.status === 'success') {
-        const foundUser = response.data.users.find(user => user._id === userId);
+      if (response.data.status === "success") {
+        const foundUser = response.data.users.find(
+          (user) => user._id === userId
+        );
         console.log(response.data);
         if (foundUser) {
           setUser(foundUser);
           console.log(foundUser);
         } else {
-          toast.error('User not found');
+          toast.error("User not found");
         }
       } else {
-        toast.error('Failed to fetch user data');
+        toast.error("Failed to fetch user data");
       }
     } catch (error) {
-      console.error('Error fetching user:', error);
+      console.error("Error fetching user:", error);
       if (error.response?.status === 401) {
-        toast.error('Session expired. Please login again');
-        localStorage.removeItem('token');
-        navigate('/login');
+        toast.error("Session expired. Please login again");
+        localStorage.removeItem("token");
+        navigate("/login");
       } else {
-        toast.error(error.response?.data?.message || 'Failed to fetch user data');
+        toast.error(
+          error.response?.data?.message || "Failed to fetch user data"
+        );
       }
     } finally {
       setIsLoading(false);
     }
   };
   console.log(userId);
-  
-  
+
   const handleEditClick = (field) => {
-    setEditingFields(prev => ({
+    setEditingFields((prev) => ({
       ...prev,
-      [field]: true
+      [field]: true,
     }));
-    setEditedValues(prev => ({
+    setEditedValues((prev) => ({
       ...prev,
-      [field]: user[field]
+      [field]: user[field],
     }));
   };
 
   const handleCancelEdit = (field) => {
-    setEditingFields(prev => ({
+    setEditingFields((prev) => ({
       ...prev,
-      [field]: false
+      [field]: false,
     }));
-    setEditedValues(prev => {
+    setEditedValues((prev) => {
       const newValues = { ...prev };
       delete newValues[field];
       return newValues;
@@ -83,31 +89,35 @@ function EditUsersById() {
 
   const handleSaveEdit = async (field) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        toast.error('Please login to perform this action');
-        navigate('/login');
+        toast.error("Please login to perform this action");
+        navigate("/login");
         return;
       }
 
       const updateData = {
-        [field]: editedValues[field]
+        [field]: editedValues[field],
       };
 
-      const response = await axios.put(`http://localhost:8000/api/user/${userId}`, updateData, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.put(
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user/${userId}`,
+        updateData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
-      if (response.data.status === 'success') {
-        toast.success('User data updated successfully');
+      if (response.data.status === "success") {
+        toast.success("User data updated successfully");
         setUser(response.data.user);
-        setEditingFields(prev => ({
+        setEditingFields((prev) => ({
           ...prev,
-          [field]: false
+          [field]: false,
         }));
-        setEditedValues(prev => {
+        setEditedValues((prev) => {
           const newValues = { ...prev };
           delete newValues[field];
           return newValues;
@@ -115,52 +125,56 @@ function EditUsersById() {
       }
     } catch (error) {
       if (error.response?.status === 401) {
-        toast.error('Session expired. Please login again');
-        localStorage.removeItem('token');
-        navigate('/login');
+        toast.error("Session expired. Please login again");
+        localStorage.removeItem("token");
+        navigate("/login");
       } else {
-        toast.error('Failed to update user data');
-        console.error('Error updating user:', error);
+        toast.error("Failed to update user data");
+        console.error("Error updating user:", error);
       }
     }
   };
 
   const handleInputChange = (field, value) => {
-    setEditedValues(prev => ({
+    setEditedValues((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleSaveAll = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        toast.error('Please login to perform this action');
-        navigate('/login');
+        toast.error("Please login to perform this action");
+        navigate("/login");
         return;
       }
 
-      const response = await axios.put(`http://localhost:8000/api/user/${userId}`, editedValues, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.put(
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user/${userId}`,
+        editedValues,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
-      if (response.data.status === 'success') {
-        toast.success('All changes saved successfully');
+      if (response.data.status === "success") {
+        toast.success("All changes saved successfully");
         setUser(response.data.user);
         setEditingFields({});
         setEditedValues({});
       }
     } catch (error) {
       if (error.response?.status === 401) {
-        toast.error('Session expired. Please login again');
-        localStorage.removeItem('token');
-        navigate('/login');
+        toast.error("Session expired. Please login again");
+        localStorage.removeItem("token");
+        navigate("/login");
       } else {
-        toast.error('Failed to update user data');
-        console.error('Error updating user:', error);
+        toast.error("Failed to update user data");
+        console.error("Error updating user:", error);
       }
     }
   };
@@ -188,13 +202,13 @@ function EditUsersById() {
   }
 
   const editableFields = [
-    { key: 'fName', label: 'First Name' },
-    { key: 'lName', label: 'Last Name' },
-    { key: 'email', label: 'Email' },
-    { key: 'phoneNumber', label: 'Phone Number' },
-    { key: 'governorate', label: 'Governorate' },
-    { key: 'city', label: 'City' },
-    { key: 'role', label: 'Role' }
+    { key: "fName", label: "First Name" },
+    { key: "lName", label: "Last Name" },
+    { key: "email", label: "Email" },
+    { key: "phoneNumber", label: "Phone Number" },
+    { key: "governorate", label: "Governorate" },
+    { key: "city", label: "City" },
+    { key: "role", label: "Role" },
   ];
 
   return (
@@ -202,9 +216,13 @@ function EditUsersById() {
       <div className="max-w-7xl mx-auto">
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
           <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
-        <div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Edit User Information</h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">Update user details below</p>
+            <div>
+              <h3 className="text-lg leading-6 font-medium text-gray-900">
+                Edit User Information
+              </h3>
+              <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                Update user details below
+              </p>
             </div>
             {hasEdits && (
               <button
@@ -218,15 +236,20 @@ function EditUsersById() {
           <div className="border-t border-gray-200">
             <dl>
               {editableFields.map(({ key, label }) => (
-                <div key={key} className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <div
+                  key={key}
+                  className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+                >
                   <dt className="text-sm font-medium text-gray-500">{label}</dt>
                   <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                     {editingFields[key] ? (
                       <div className="flex items-center space-x-2">
-                        {key === 'role' ? (
+                        {key === "role" ? (
                           <select
                             value={editedValues[key]}
-                            onChange={(e) => handleInputChange(key, e.target.value)}
+                            onChange={(e) =>
+                              handleInputChange(key, e.target.value)
+                            }
                             className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors duration-200 sm:text-sm"
                           >
                             <option value="parent">Parent</option>
@@ -236,7 +259,9 @@ function EditUsersById() {
                           <input
                             type="text"
                             value={editedValues[key]}
-                            onChange={(e) => handleInputChange(key, e.target.value)}
+                            onChange={(e) =>
+                              handleInputChange(key, e.target.value)
+                            }
                             className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors duration-200 sm:text-sm"
                             placeholder={`Enter ${label.toLowerCase()}`}
                           />

@@ -1,166 +1,172 @@
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import axios from "axios"
-import toast from 'react-hot-toast'
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 function ProductStore() {
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [productToDelete, setProductToDelete] = useState(null)
-  const [showQuantityModal, setShowQuantityModal] = useState(false)
-  const [productToEdit, setProductToEdit] = useState(null)
-  const [newQuantity, setNewQuantity] = useState("")
-  const [quantityError, setQuantityError] = useState("")
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [showQuantityModal, setShowQuantityModal] = useState(false);
+  const [productToEdit, setProductToEdit] = useState(null);
+  const [newQuantity, setNewQuantity] = useState("");
+  const [quantityError, setQuantityError] = useState("");
 
   useEffect(() => {
-    fetchProducts()
-  }, [])
+    fetchProducts();
+  }, []);
 
   const fetchProducts = async () => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get('http://localhost:8000/api/products', {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/products",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      })
-      setProducts(response.data.data)
-      setLoading(false)
+      );
+      setProducts(response.data.data);
+      setLoading(false);
     } catch (error) {
-      setError("Failed to fetch products")
-      setLoading(false)
-      console.error("Error fetching products:", error)
-      toast.error("Failed to fetch products")
+      setError("Failed to fetch products");
+      setLoading(false);
+      console.error("Error fetching products:", error);
+      toast.error("Failed to fetch products");
     }
-  }
+  };
 
   const handleDeleteClick = (product) => {
-    setProductToDelete(product)
-    setShowDeleteModal(true)
-  }
+    setProductToDelete(product);
+    setShowDeleteModal(true);
+  };
 
   const handleDeleteConfirm = async () => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.delete(`http://localhost:8000/api/products/admin/delete/${productToDelete._id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const token = localStorage.getItem("token");
+      const response = await axios.delete(
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/products/admin/delete/${productToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      })
-      setProducts(products.filter((product) => product._id !== productToDelete._id))
-      toast.success("Product deleted successfully")
-      setShowDeleteModal(false)
-      setProductToDelete(null)
+      );
+      setProducts(
+        products.filter((product) => product._id !== productToDelete._id)
+      );
+      toast.success("Product deleted successfully");
+      setShowDeleteModal(false);
+      setProductToDelete(null);
     } catch (error) {
-      console.error("Error deleting product:", error)
-      toast.error("Failed to delete product")
+      console.error("Error deleting product:", error);
+      toast.error("Failed to delete product");
     }
-  }
+  };
 
   const handleDeleteCancel = () => {
-    setShowDeleteModal(false)
-    setProductToDelete(null)
-  }
+    setShowDeleteModal(false);
+    setProductToDelete(null);
+  };
 
   const handleEditQuantityClick = (product) => {
-    setProductToEdit(product)
-    setNewQuantity(product.quantity.toString())
-    setQuantityError("")
-    setShowQuantityModal(true)
-  }
+    setProductToEdit(product);
+    setNewQuantity(product.quantity.toString());
+    setQuantityError("");
+    setShowQuantityModal(true);
+  };
 
   const handleQuantityChange = (e) => {
-    const value = e.target.value
-    setNewQuantity(value)
+    const value = e.target.value;
+    setNewQuantity(value);
     if (value < 0) {
-      setQuantityError("Quantity cannot be negative")
+      setQuantityError("Quantity cannot be negative");
     } else if (!Number.isInteger(Number(value))) {
-      setQuantityError("Quantity must be a whole number")
+      setQuantityError("Quantity must be a whole number");
     } else {
-      setQuantityError("")
+      setQuantityError("");
     }
-  }
+  };
 
   const handleQuantitySubmit = async () => {
-    if (quantityError || !newQuantity) return
+    if (quantityError || !newQuantity) return;
 
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
       const response = await axios.patch(
-        `http://localhost:8000/api/products/admin/update-quantity/${productToEdit._id}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/products/admin/update-quantity/${productToEdit._id}`,
         { quantity: parseInt(newQuantity) },
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
-      )
+      );
 
-      setProducts(products.map(product => 
-        product._id === productToEdit._id 
-          ? { ...product, quantity: parseInt(newQuantity) }
-          : product
-      ))
+      setProducts(
+        products.map((product) =>
+          product._id === productToEdit._id
+            ? { ...product, quantity: parseInt(newQuantity) }
+            : product
+        )
+      );
 
-      toast.success("Quantity updated successfully")
-      setShowQuantityModal(false)
-      setProductToEdit(null)
-      setNewQuantity("")
+      toast.success("Quantity updated successfully");
+      setShowQuantityModal(false);
+      setProductToEdit(null);
+      setNewQuantity("");
     } catch (error) {
-      console.error("Error updating quantity:", error)
-      setQuantityError("Failed to update quantity")
-      toast.error("Failed to update quantity")
+      console.error("Error updating quantity:", error);
+      setQuantityError("Failed to update quantity");
+      toast.error("Failed to update quantity");
     }
-  }
+  };
 
   const handleQuantityCancel = () => {
-    setShowQuantityModal(false)
-    setProductToEdit(null)
-    setNewQuantity("")
-    setQuantityError("")
-  }
+    setShowQuantityModal(false);
+    setProductToEdit(null);
+    setNewQuantity("");
+    setQuantityError("");
+  };
 
   const getStatusColor = (quantity) => {
-    if (quantity === 0) return "bg-red-100 text-red-800"
-    if (quantity <= 10) return "bg-yellow-100 text-yellow-800"
-    return "bg-green-100 text-green-800"
-  }
+    if (quantity === 0) return "bg-red-100 text-red-800";
+    if (quantity <= 10) return "bg-yellow-100 text-yellow-800";
+    return "bg-green-100 text-green-800";
+  };
 
   const getStatusText = (quantity) => {
-    if (quantity === 0) return "Out of Stock"
-    if (quantity <= 10) return "Low Stock"
-    return "In Stock"
-  }
+    if (quantity === 0) return "Out of Stock";
+    if (quantity <= 10) return "Low Stock";
+    return "In Stock";
+  };
 
-  const filteredProducts = products.filter(
-    (product) => {
-      const searchTermLower = searchTerm.toLowerCase();
-      const nameMatch = product.name.toLowerCase().includes(searchTermLower);
-      const descriptionMatch = Array.isArray(product.description) 
-        ? product.description.some(desc => desc.toLowerCase().includes(searchTermLower))
-        : false;
-      
-      return nameMatch || descriptionMatch;
-    }
-  )
+  const filteredProducts = products.filter((product) => {
+    const searchTermLower = searchTerm.toLowerCase();
+    const nameMatch = product.name.toLowerCase().includes(searchTermLower);
+    const descriptionMatch = Array.isArray(product.description)
+      ? product.description.some((desc) =>
+          desc.toLowerCase().includes(searchTermLower)
+        )
+      : false;
+
+    return nameMatch || descriptionMatch;
+  });
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-300"></div>
       </div>
-    )
+    );
   }
 
   if (error) {
-    return (
-      <div className="text-center text-red-600 mt-10">
-        {error}
-      </div>
-    )
+    return <div className="text-center text-red-600 mt-10">{error}</div>;
   }
 
   return (
@@ -171,14 +177,27 @@ function ProductStore() {
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3 text-center">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="h-6 w-6 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900 mt-4">Delete Product</h3>
+              <h3 className="text-lg leading-6 font-medium text-gray-900 mt-4">
+                Delete Product
+              </h3>
               <div className="mt-2 px-7 py-3">
                 <p className="text-sm text-gray-500">
-                  Are you sure you want to delete "{productToDelete?.name}"? This action cannot be undone.
+                  Are you sure you want to delete "{productToDelete?.name}"?
+                  This action cannot be undone.
                 </p>
               </div>
               <div className="flex justify-center gap-4 mt-4">
@@ -206,11 +225,23 @@ function ProductStore() {
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3 text-center">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100">
-                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                <svg
+                  className="h-6 w-6 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
                 </svg>
               </div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900 mt-4">Edit Quantity</h3>
+              <h3 className="text-lg leading-6 font-medium text-gray-900 mt-4">
+                Edit Quantity
+              </h3>
               <div className="mt-2 px-7 py-3">
                 <p className="text-sm text-gray-500 mb-4">
                   Update quantity for "{productToEdit?.name}"
@@ -273,59 +304,89 @@ function ProductStore() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Image
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Price
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Stock
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Rating
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredProducts.map((product) => (
                 <tr key={product._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <img 
-                      src={product.image} 
+                    <img
+                      src={product.image}
                       alt={product.name}
                       className="h-12 w-12 object-cover rounded-lg"
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                    <div className="text-xs text-gray-500">{product.requiredAge}</div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {product.name}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {product.requiredAge}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">${product.price}</div>
+                    <div className="text-sm text-gray-500">
+                      ${product.price}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{product.quantity}</div>
+                    <div className="text-sm text-gray-500">
+                      {product.quantity}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <span className="text-sm text-gray-500">{product.rating}</span>
-                      <svg className="w-4 h-4 text-yellow-400 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                      <span className="text-sm text-gray-500">
+                        {product.rating}
+                      </span>
+                      <svg
+                        className="w-4 h-4 text-yellow-400 ml-1"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(product.quantity)}`}
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
+                        product.quantity
+                      )}`}
                     >
                       {getStatusText(product.quantity)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button 
+                    <button
                       onClick={() => handleEditQuantityClick(product)}
                       className="text-indigo-800 hover:text-indigo-950 mr-3"
                     >
                       Edit Quantity
                     </button>
-                    <button 
-                      className="text-red-600 hover:text-red-900" 
+                    <button
+                      className="text-red-600 hover:text-red-900"
                       onClick={() => handleDeleteClick(product)}
                     >
                       Delete
@@ -338,7 +399,7 @@ function ProductStore() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default ProductStore
+export default ProductStore;

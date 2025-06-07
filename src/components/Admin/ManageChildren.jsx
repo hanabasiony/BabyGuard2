@@ -266,15 +266,15 @@ function ManageChildren() {
                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Gender
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Blood Type
-                  </th>
+                  </th> */}
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     SSN
                   </th>
-                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     User ID
-                  </th>
+                  </th> */}
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
@@ -317,17 +317,17 @@ function ManageChildren() {
                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {child.gender}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {child.bloodType}
-                      </td>
+                      </td> */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {child.ssn}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {child.userId}
-                        </td>
+                        </td> */}
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex space-x-2 justify-end">
+                        <div className="flex space-x-2 justify-start">
                            {/* View Certificate Button */}
                           <button
                             className="text-blue-600 hover:text-blue-900"
@@ -355,11 +355,10 @@ function ManageChildren() {
                            </button> */}
                            {/* Delete Button */}
                            <button
-                             onClick={() => handleDeleteChild(child._id)} // Pass child ID for deleting
+                             onClick={() => handleDeleteChild(child._id)}
                              className="text-red-600 hover:text-red-900"
                            >
                              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                               {/* Icon for Delete */}
                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                              </svg>
                            </button>

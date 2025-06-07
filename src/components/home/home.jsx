@@ -280,8 +280,8 @@ const Home = () => {
     return (
         <>
             <div className="wrapper py-20 px-10 mx-auto max-w-[1200px]">
-                <div className="mb-8 lg:mt-5 mt-20">
-                    <h2 className='text-4xl mb-4 text-rose-300'>Our Featured Products:</h2>
+                <div className="mb-12 lg:mt-8 mt-24">
+                    <h2 className='text-4xl mb-6 text-rose-300 tracking-wide font-semibold'>Our Featured Products</h2>
                     <div className="mx-auto">
                         <input
                             type="text"

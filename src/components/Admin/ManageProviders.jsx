@@ -47,6 +47,74 @@ const ManageProviders = () => {
     }
   };
 
+  const handleDeleteProvider = async (providerId) => {
+    // Show confirmation toast
+    const confirmDelete = await new Promise((resolve) => {
+      toast.custom((t) => (
+        <div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center">
+          <p className="mb-4 text-gray-800">Are you sure you want to delete this provider?</p>
+          <div className="flex gap-2">
+            <button
+              className="px-4 py-2 bg-pink-400 text-white rounded hover:bg-pink-500"
+              onClick={() => {
+                toast.dismiss(t.id);
+                resolve(true);
+              }}
+            >
+              Yes, Delete
+            </button>
+            <button
+              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              onClick={() => {
+                toast.dismiss(t.id);
+                resolve(false);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ), {
+        duration: Infinity,
+        position: 'top-center',
+      });
+    });
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Authentication token is missing. Please log in again.');
+        navigate('/login');
+        return;
+      }
+
+      const response = await axios.delete(`http://localhost:8000/api/provider/${providerId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 200 || response.status === 204) {
+        toast.success('Provider deleted successfully!');
+        // Remove the deleted provider from the state
+        setProviders(prevProviders => prevProviders.filter(provider => provider._id !== providerId));
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again');
+        localStorage.removeItem('token');
+        navigate('/login');
+      } else {
+        toast.error('Failed to delete provider');
+        console.error('Error deleting provider:', error);
+      }
+    }
+  };
+
   const filteredProviders = providers.filter(provider => {
     const searchTerms = searchTerm.toLowerCase().split(' ').filter(term => term.length > 0);
     const name = provider.name.toLowerCase();
@@ -168,7 +236,7 @@ const ManageProviders = () => {
                             </svg>
                           </button>
                           <button
-                            onClick={() => {/* Handle delete */}}
+                            onClick={() => handleDeleteProvider(provider._id)}
                             className="text-red-600 hover:text-red-900"
                           >
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

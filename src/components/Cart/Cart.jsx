@@ -299,7 +299,7 @@ const Cart = () => {
         <Oval
             height={80}
             width={80}
-            color="#ec4899"
+            color="#fda4af"
             wrapperStyle={{}}
             wrapperClass=""
             visible={true}

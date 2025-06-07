@@ -62,7 +62,7 @@ export default function MyOrders() {
             <div className="min-h-screen pt-32 pb-12 px-4">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-400"></div>
                     </div>
                 </div>
             </div>
@@ -76,7 +76,7 @@ export default function MyOrders() {
                     <h1 className="text-3xl font-bold text-gray-800">My Orders</h1>
                     <Link 
                         to="/"
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700"
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-rose-300 hover:bg-rose-400"
                     >
                         <ShoppingBag className="h-5 w-5 mr-2" />
                         Continue Shopping

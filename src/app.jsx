@@ -89,6 +89,7 @@ const router = createBrowserRouter([
       { path: 'UpdatePass', element: <UpdateLoggedUserPassword /> },
       { path: 'Reg', element: <Reg /> },
       { path: 'settings', element: <Settings /> },
+      { path: 'edit-user', element: <EditUser /> },
       { path: '*', element: <Notfound /> },
       {
         path: 'products',
@@ -100,7 +101,7 @@ const router = createBrowserRouter([
       { path: 'PassSend/VerifyResetCode', element: <VerifyResetCode /> },
       { path: 'PassSend/VerifyResetCode/PassReset', element: <PassReset /> },
       { path: 'vacciens', element: <Vacciens /> },
-      { path: '/VaccineReservation/:vaccineId', element: <VaccinationForm /> },
+      { path: '/VaccineReservation/:vaccineId', element:<ProtectedRoute> <VaccinationForm /></ProtectedRoute> },
       { path: 'payment', element: <PaymentPage /> },
       { path: 'otp', element: <OTPInput /> },
       // { path: 'Admin', element: <AdminDashboardLayout /> },
@@ -173,9 +174,9 @@ const router = createBrowserRouter([
       {
         path: 'productDetails/:id',
         element: (
-          <ProtectedRoute>
+         
             <ProductDetails />
-          </ProtectedRoute>
+        
         ),
       },
       { path: 'add-child', element: <AddChild/> },
@@ -197,18 +198,19 @@ const router = createBrowserRouter([
       { path: '', element: <Dashboard /> },    
       { path: 'manage-users', element: <ManageUsers /> },
       { path: 'manage-nurses', element: <ManageNurses /> },
-      { path: 'manage-children', element: <ProtectedRouteAdmin><ManageChildren /></ProtectedRouteAdmin> },
+      { path: 'manage-children', element:<ManageChildren /> },
       { path: 'vaccinations', element: <Vaccinations /> },
       { path: 'appointments', element: <Appointments /> },
       { path: 'product-store', element: <ProductStore /> },
       { path: 'product-store/add', element: <AddProductPage /> },
       { path: 'tips-articles', element: <TipsArticles /> },
       { path: 'complaints', element: <Complaints /> },
-      { path: 'providers', element: <AddProvider/> },
+      { path: 'manage-providers', element: <ManageProviders/> },
+      { path: 'manage-providers/add-providers', element: <AddProvider/> },
+      { path: 'manage-providers/edit-provider/:providerId', element: <EditProviderById/> },
       { path: 'cart-status', element: <ManageCartStatus/> },
       { path: 'vaccinations/add', element: <AddVaccine/> },
       { path: 'manage-carts' , element: <ManageCarts/> },
-      { path: 'cart-details/:userId' , element: <CartDetails/> }
       { path: 'cart-details/:userId' , element: <CartDetails/> },
       { path: 'manage-users/edit-user/:userId' , element: <EditUsersById/> },
       { path: 'tips-articles/add-pregnancytips', element:<AddPregnancyTips/> },
@@ -247,6 +249,7 @@ export function App() {
             }}
             
             />
+            <NetworkStatus/>
           </QueryClientProvider>
         </CartContextProvider>
       </AuthcontextProvider>

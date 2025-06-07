@@ -80,7 +80,7 @@ export default function ChildDashboard() {
                     }
                 });
                 setVaccineRequests(response.data.data);
-                console.log(response.data.data);
+                console.log('vacc req',response.data.data);
             } catch (err) {
                 console.error('Error fetching vaccine requests:', err);
                 // toast.error("Failed to fetch vaccine requests");
@@ -157,12 +157,12 @@ export default function ChildDashboard() {
                     <Oval
                         height={80}
                         width={80}
-                        color="#ec4899"
+                        color="#fda4af"
                         wrapperStyle={{}}
                         wrapperClass=""
                         visible={true}
                         ariaLabel='oval-loading'
-                        secondaryColor="#f9a8d4"
+                        secondaryColor="#fb7185"
                         strokeWidth={2}
                         strokeWidthSecondary={2}
                     />
@@ -249,7 +249,7 @@ export default function ChildDashboard() {
                             </button>
                             <button
                                 onClick={handleDeleteRequest}
-                                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                className="px-4 py-2 bg-red-300 text-white rounded-lg hover:bg-red-350 transition-colors"
                             >
                                 Delete
                             </button>
@@ -267,7 +267,7 @@ export default function ChildDashboard() {
                         {childData.length === 0 ? (
                             <button 
                                 onClick={() => navigate('/add-child')}  
-                                className="md:ms-auto  m-auto cursor-pointer flex items-center justify-center px-4 py-2 bg-green-100 text-green-600 rounded hover:bg-green-200"
+                                className="md:ms-auto  m-auto cursor-pointer flex items-center justify-center px-4 py-2 bg-green-100 text-green-300 rounded hover:bg-green-200"
                             >
                                 <Plus className="w-4 h-4 mr-2" /> Add Child
                             </button>
@@ -277,10 +277,10 @@ export default function ChildDashboard() {
                                     <div key={child._id}>
                                         <button 
                                             onClick={() => setSelectedChild(child)} 
-                                            className={`px-4 py-2 cursor-pointer rounded-lg transition-all duration-100 ease-in-out transform hover:shadow-md focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-opacity-50 ${
+                                            className={`px-4 py-2 cursor-pointer rounded-lg transition-all duration-100 ease-in-out transform hover:shadow-md focus:outline-none focus:ring-2 focus:ring-rose-300 focus:ring-opacity-50 ${
                                                 selectedChild?._id === child._id 
-                                                    ? 'bg-pink-500 text-white' 
-                                                    : 'bg-pink-100 text-pink-600 hover:bg-pink-200'
+                                                    ? 'bg-rose-300 text-white' 
+                                                    : 'bg-rose-100 text-rose-600 hover:bg-rose-200'
                                             }`}
                                         >
                                             {child.name}
@@ -327,7 +327,7 @@ export default function ChildDashboard() {
                                     <h3 className="font-semibold text-lg">Vaccine Requests</h3>
                                     <button 
                                         onClick={() => navigate('/vacciens')}
-                                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700"
+                                        className="inline-flex cursor-pointer items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-rose-300 hover:bg-rose-350"
                                     >
                                         <Plus className="w-4 h-4 mr-1" />
                                         New Request

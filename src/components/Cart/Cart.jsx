@@ -20,6 +20,8 @@ const Cart = () => {
 
     const { handleUpdateQuantity, loadingProducts, productQuantities, handleDeleteProduct, resetCart } = useContext(CartContext);
     const [loadingPayment, setLoadingPayment] = useState(true);
+    const [ isAdmin , setIsAdmin ] =useState(false)
+    setIsAdmin( localStorage.getItem('role') )
 
     // Get user data from localStorage
     useEffect(() => {
@@ -130,7 +132,7 @@ const Cart = () => {
             }
 
             // Update the quantity in the cart
-            await axios.patch(
+            const response = await axios.patch(
                 `http://localhost:8000/api/carts/${cartId}/products/${product.productId}`,
                 { quantity: newQuantity },
                 {
@@ -140,27 +142,30 @@ const Cart = () => {
                 }
             );
 
-            // Update local state
-            await fetchCartData();
+            // Only update local state if the API call was successful
+            if (response.status === 200) {
+                // Update local state
+                await fetchCartData();
 
-            // Update pending cart products if they exist
-            const updatedPendingProducts = pendingCartProducts.map(p => 
-                p.productId === product.productId 
-                    ? { ...p, quantity: newQuantity }
-                    : p
-            );
-            setPendingCartProducts(updatedPendingProducts);
-            localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
+                // Update pending cart products if they exist
+                const updatedPendingProducts = pendingCartProducts.map(p => 
+                    p.productId === product.productId 
+                        ? { ...p, quantity: newQuantity }
+                        : p
+                );
+                setPendingCartProducts(updatedPendingProducts);
+                localStorage.setItem('productQuantitiesOfPendingCart', JSON.stringify(updatedPendingProducts));
 
-            // Update cart count in localStorage
-            const totalCount = updatedPendingProducts.reduce((total, p) => total + p.quantity, 0);
-            localStorage.setItem('cartCount', totalCount.toString());
+                // Update cart count in localStorage
+                const totalCount = updatedPendingProducts.reduce((total, p) => total + p.quantity, 0);
+                localStorage.setItem('cartCount', totalCount.toString());
 
-            // Add toast message for quantity change
-            if (change > 0) {
-                toast.success(`Quantity increased to ${newQuantity}`);
-            } else {
-                toast.success(`Quantity decreased to ${newQuantity}`);
+                // Add toast message for quantity change
+                if (change > 0) {
+                    toast.success(`Quantity increased to ${newQuantity}`);
+                } else {
+                    toast.success(`Quantity decreased to ${newQuantity}`);
+                }
             }
         } catch (error) {
             console.error('Error updating quantity:', error);
@@ -273,6 +278,8 @@ const Cart = () => {
             setLoadingPayment(false);
         }
     };
+
+    
 
     if (loading) {
         return  <div className="min-h-screen flex items-center justify-center">
@@ -398,6 +405,7 @@ const Cart = () => {
                 </div>
             ))}
 
+           { isAdmin ? '' : <>
             {/* Address Section */}
             <div className="bg-white rounded-2xl shadow p-6 mb-6">
                 <h2 className="text-xl font-semibold text-gray-700 mb-4">Delivery Address</h2>
@@ -514,6 +522,7 @@ const Cart = () => {
                     </svg>
                 </button>
             </div>
+           </> }
         </div>
     );
 };

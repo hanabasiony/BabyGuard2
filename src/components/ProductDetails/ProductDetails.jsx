@@ -12,15 +12,56 @@ export default function ProductDetails() {
     const { id } = useParams();
     const { productQuantities, handleAddToCart, handleUpdateQuantity, loadingProducts, handleDeleteProduct } = useContext(CartContext);
     const [localProductQuantities, setLocalProductQuantities] = useState({});
-    const [ isAdmin , setIsAdmin ] = useState( false )
-    
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const role = localStorage.getItem('role')
-    if(role === 'admin'){
-        setIsAdmin(true)
+    const role = localStorage.getItem('role');
+    if (role === 'admin') {
+        setIsAdmin(true);
     }
 
-    // Fetch pending cart data on component mount
+    // Fetch product data
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const token = localStorage.getItem('token');
+                const response = await axios.get('http://localhost:8000/api/products', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                
+                if (response.data && response.data.data) {
+                    // Find the specific product using the ID from URL params
+                    const foundProduct = response.data.data.find(p => p._id === id);
+                    if (foundProduct) {
+                        setProduct(foundProduct);
+                    } else {
+                        setError('Product not found');
+                    }
+                } else {
+                    setError('Invalid response format');
+                }
+            } catch (error) {
+                console.error('Error fetching product:', error);
+                if (error.code === 'ERR_NETWORK') {
+                    setError('Network Error: Please check your internet connection and try again');
+                } else {
+                    setError('Failed to load product details');
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProduct();
+    }, [id]);
+
+    // Fetch pending cart data
     useEffect(() => {
         const fetchPendingCart = async () => {
             try {
@@ -46,48 +87,24 @@ export default function ProductDetails() {
         fetchPendingCart();
     }, []);
 
-    const { data: products, isLoading, error } = useQuery({
-        queryKey: ['products'],
-        queryFn: async () => {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8000/api/products', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            console.log(response.data.data);
-            return response.data.data;
-            
-            
-        }
-    });
-
-    // Find the specific product from the fetched products
-    const product = products?.find(p => p._id === id);
-
     const handleQuantityUpdate = async (e, productId, change) => {
         e.preventDefault();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error('Please login first to manage your cart');
+            return;
+        }
         try {
-            const token = localStorage.getItem('token');
             const cartId = localStorage.getItem('cartId');
             const currentQuantity = localProductQuantities[productId] || 0;
             const newQuantity = currentQuantity + change;
 
             if (newQuantity <= 0) {
-                // Use the same deletion logic as handleDeleteProductWithUpdate
-                await handleDeleteProduct(e, productId);
-                
-                // Update local quantities by removing the deleted product
-                setLocalProductQuantities(prev => {
-                    const newQuantities = { ...prev };
-                    delete newQuantities[productId];
-                    return newQuantities;
-                });
-
+                await handleDeleteProductWithUpdate(e, productId);
                 return;
             }
 
-            await axios.patch(
+            const response = await axios.patch(
                 `http://localhost:8000/api/carts/${cartId}/products/${productId}`,
                 { quantity: newQuantity },
                 {
@@ -97,20 +114,26 @@ export default function ProductDetails() {
                 }
             );
 
-            setLocalProductQuantities(prev => ({
-                ...prev,
-                [productId]: newQuantity
-            }));
+            // Only update local state if the API call was successful
+            if (response.status === 200) {
+                setLocalProductQuantities(prev => ({
+                    ...prev,
+                    [productId]: newQuantity
+                }));
 
-            // Add toast message for quantity change
-            if (change > 0) {
-                toast.success(`Quantity increased to ${newQuantity}`);
-            } else {
-                toast.success(`Quantity decreased to ${newQuantity}`);
+                if (change > 0) {
+                    toast.success(`Quantity increased to ${newQuantity}`);
+                } else {
+                    toast.success(`Quantity decreased to ${newQuantity}`);
+                }
             }
         } catch (error) {
             console.error('Error updating quantity:', error);
-            toast.error('Failed to update quantity');
+            if (error.response?.data?.errors?.productId?.msg === 'Product is out of stock') {
+                toast.error('Sorry, this product is out of stock');
+            } else {
+                toast.error('Failed to update quantity');
+            }
         }
     };
 
@@ -133,32 +156,40 @@ export default function ProductDetails() {
 
     const handleAddToCartWithUpdate = async (e, productId) => {
         e.preventDefault();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error('Please login first to add items to your cart');
+            return;
+        }
         try {
             await handleAddToCart(e, productId);
-            
-            // Update local quantities by adding the new product
+            // Only update local state if the add to cart was successful
             setLocalProductQuantities(prev => ({
                 ...prev,
                 [productId]: 1
             }));
         } catch (error) {
             console.error('Error adding product to cart:', error);
-            toast.error('Failed to add product to cart');
+            if (error.response?.data?.errors?.productId?.msg === 'Product is out of stock') {
+                toast.error('Sorry, this product is out of stock');
+            } else {
+                toast.error('Failed to add product to cart');
+            }
         }
     };
 
-    if (isLoading) {
+    if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <Oval
                     height={80}
                     width={80}
-                    color="#ec4899"
+                    color="#fda4af"
                     wrapperStyle={{}}
                     wrapperClass=""
                     visible={true}
                     ariaLabel='oval-loading'
-                    secondaryColor="#f9a8d4"
+                    secondaryColor="#fb7185"
                     strokeWidth={2}
                     strokeWidthSecondary={2}
                 />
@@ -167,11 +198,28 @@ export default function ProductDetails() {
     }
 
     if (error) {
-        return <div className="min-h-screen flex items-center justify-center text-red-500">Error: {error.message}</div>;
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                <div className="text-red-500 text-center">
+                    <h2 className="text-xl font-semibold mb-2">Error Loading Product</h2>
+                    <p className="text-gray-600">{error}</p>
+                    <button 
+                        onClick={() => window.location.reload()} 
+                        className="mt-4 bg-rose-300 hover:bg-rose-350 text-white px-4 py-2 rounded-lg"
+                    >
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     if (!product) {
-        return <div className="min-h-screen flex items-center justify-center text-red-500">Product not found</div>;
+        return (
+            <div className="min-h-screen flex items-center justify-center text-gray-500">
+                Product not found
+            </div>
+        );
     }
 
     // Function to render stars based on rating
@@ -213,6 +261,24 @@ export default function ProductDetails() {
                         <h1 className="text-2xl font-semibold">{product.name}</h1>
                         <p className="text-sm text-gray-600 mb-2">Required Age: {product.requiredAge}</p>
                         <p className="text-xl font-bold mb-2">EGP {product.price}</p>
+
+                        {/* Stock Level Indicator */}
+                        <div className="mb-4">
+                            <span className={`text-sm font-medium ${
+                                product.quantity === 0 
+                                    ? 'text-red-500' 
+                                    : product.quantity < 10 
+                                        ? 'text-yellow-500' 
+                                        : 'text-green-500'
+                            }`}>
+                                {product.quantity === 0 
+                                    ? 'Out of Stock' 
+                                    : product.quantity < 10 
+                                        ? `Low Stock: ${product.quantity} left` 
+                                        : `In Stock: ${product.quantity} available`}
+                            </span>
+                        </div>
+
                         <div className="flex items-center mb-4">
                             <div className="flex">
                                 {renderStars(product.rating || 0)}
@@ -233,12 +299,12 @@ export default function ProductDetails() {
                                     <Oval
                                         height={30}
                                         width={30}
-                                        color="#EC4899"
+                                        color="#fda4af"
                                         wrapperStyle={{}}
                                         wrapperClass=""
                                         visible={true}
                                         ariaLabel='oval-loading'
-                                        secondaryColor="#EC4899"
+                                        secondaryColor="#fb7185"
                                         strokeWidth={4}
                                         strokeWidthSecondary={4}
                                     />
@@ -247,22 +313,25 @@ export default function ProductDetails() {
                                 <div className="flex items-center justify-center gap-2">
                                     <button 
                                         onClick={(e) => handleQuantityUpdate(e, product._id, -1)}
-                                        className="bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
+                                        className="bg-rose-300 hover:bg-rose-350 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
                                     >
                                         -
                                     </button>
-                                    <span className="bg-pink-400 text-white font-medium px-3 py-1 rounded-full">
+                                    <span className="bg-rose-300 text-white font-medium px-3 py-1 rounded-full">
                                         {currentQuantity}
                                     </span>
                                     <button 
                                         onClick={(e) => handleQuantityUpdate(e, product._id, 1)}
-                                        className="bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
+                                        disabled={product.quantity <= currentQuantity}
+                                        className={`bg-rose-300 hover:bg-rose-350 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center ${
+                                            product.quantity <= currentQuantity ? 'opacity-50 cursor-not-allowed' : ''
+                                        }`}
                                     >
                                         +
                                     </button>
                                     <button 
                                         onClick={(e) => handleDeleteProductWithUpdate(e, product._id)}
-                                        className="bg-pink-400 hover:bg-pink-500 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
+                                        className="bg-rose-300 hover:bg-rose-350 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
                                     >
                                         <Trash size={16} />
                                     </button>
@@ -270,9 +339,12 @@ export default function ProductDetails() {
                             ) : (
                                 <button 
                                     onClick={(e) => handleAddToCartWithUpdate(e, product._id)}
-                                    className="bg-pink-400 hover:bg-pink-500 text-white font-medium py-2 px-4 rounded-full cursor-pointer"
+                                    disabled={product.quantity === 0}
+                                    className={`bg-rose-300 hover:bg-rose-350 text-white font-medium py-2 px-4 rounded-full cursor-pointer ${
+                                        product.quantity === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
                                 >
-                                    Add to Cart
+                                    {product.quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
                                 </button>
                             )}
                         </div>
@@ -296,17 +368,19 @@ export default function ProductDetails() {
                         </div>
 
                         {/* Features */}
-                        <div className="bg-white rounded-xl p-6 shadow-sm">
-                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Features</h3>
-                            <ul className="list-disc list-inside text-gray-700 space-y-2">
-                                {product.features?.map((feature, index) => (
-                                    <li key={index} className="flex items-center">
-                                        <span className="w-2 h-2 bg-pink-500 rounded-full mr-2"></span>
-                                        {feature}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                        {product.features && product.features.length > 0 && (
+                            <div className="bg-white rounded-xl p-6 shadow-sm">
+                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Features</h3>
+                                <ul className="list-disc list-inside text-gray-700 space-y-2">
+                                    {product.features.map((feature, index) => (
+                                        <li key={index} className="flex items-center">
+                                            <span className="w-2 h-2 bg-rose-300 rounded-full mr-2"></span>
+                                            {feature}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
 
                         {/* Product Details */}
                         <div className="bg-white rounded-xl p-6 shadow-sm">
@@ -331,61 +405,62 @@ export default function ProductDetails() {
                         </div>
 
                         {/* Reviews */}
-                        <div className="bg-white rounded-xl p-6 shadow-sm">
-                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Customer Reviews</h3>
-                            <div className="space-y-6">
-                                {product.reviews.map((review) => (
-                                    <div key={review._id} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex">
-                                                    {renderStars(review.rating)}
+                        {product.reviews && product.reviews.length > 0 && (
+                            <div className="bg-white rounded-xl p-6 shadow-sm">
+                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Customer Reviews</h3>
+                                <div className="space-y-6">
+                                    {product.reviews.map((review) => (
+                                        <div key={review._id} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex">
+                                                        {renderStars(review.rating)}
+                                                    </div>
+                                                    <span className="font-medium text-gray-900">{review.user?.name || 'Anonymous'}</span>
                                                 </div>
-                                                <span className="font-medium text-gray-900">{review.user.name}</span>
-                                            </div>
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-sm text-gray-500">
-                                                    {new Date(review.createdAt).toLocaleDateString('en-US', {
-                                                        year: 'numeric',
-                                                        month: 'long',
-                                                        day: 'numeric'
-                                                    })}
-                                                </span>
-                                                {isAdmin && (
-                                                    <button
-                                                        onClick={async () => {
-                                                            if (window.confirm('Are you sure you want to delete this review?')) {
-                                                                try {
-                                                                    const token = localStorage.getItem('token');
-                                                                    await axios.delete(
-                                                                        `http://localhost:8000/api/products-reviews/${review._id}`,
-                                                                        {
-                                                                            headers: {
-                                                                                Authorization: `Bearer ${token}`
+                                                <div className="flex items-center gap-4">
+                                                    <span className="text-sm text-gray-500">
+                                                        {new Date(review.createdAt).toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric'
+                                                        })}
+                                                    </span>
+                                                    {isAdmin && (
+                                                        <button
+                                                            onClick={async () => {
+                                                                if (window.confirm('Are you sure you want to delete this review?')) {
+                                                                    try {
+                                                                        const token = localStorage.getItem('token');
+                                                                        await axios.delete(
+                                                                            `http://localhost:8000/api/products-reviews/${review._id}`,
+                                                                            {
+                                                                                headers: {
+                                                                                    Authorization: `Bearer ${token}`
+                                                                                }
                                                                             }
-                                                                        }
-                                                                    );
-                                                                    toast.success('Review deleted successfully!');
-                                                                    // Refresh the page to update reviews
-                                                                    window.location.reload();
-                                                                } catch (error) {
-                                                                    console.error('Error deleting review:', error);
-                                                                    toast.error('Failed to delete review');
+                                                                        );
+                                                                        toast.success('Review deleted successfully!');
+                                                                        window.location.reload();
+                                                                    } catch (error) {
+                                                                        console.error('Error deleting review:', error);
+                                                                        toast.error('Failed to delete review');
+                                                                    }
                                                                 }
-                                                            }
-                                                        }}
-                                                        className="text-red-500 hover:text-red-600 transition-colors duration-200"
-                                                    >
-                                                        <Trash size={16} />
-                                                    </button>
-                                                )}
+                                                            }}
+                                                            className="text-red-500 hover:text-red-600 transition-colors duration-200"
+                                                        >
+                                                            <Trash size={16} />
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
+                                            <p className="text-gray-700 mt-2">{review.message}</p>
                                         </div>
-                                        <p className="text-gray-700 mt-2">{review.message}</p>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
 
                     {/* Related Products */}

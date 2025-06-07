@@ -76,7 +76,9 @@ const AdminDashboardLayout = () => {
               <Route path="product-store/add" element={<AddProductPage />} />
               <Route path="tips-articles" element={<TipsArticles />} />
               <Route path="complaints" element={<Complaints />} />
-              <Route path="providers" element={<AddProvider />} />
+              <Route path="manage-providers" element={<ManageProviders/>}/>
+              <Route path="manage-providers/add-providers" element={<AddProvider />} />
+              <Route path="manage-providers/edit-provider/:providerId" element={<EditProviderById/>} />
               <Route path="cart-status" element={<ManageCartStatus />} />
               <Route path='manage-carts' element={<ManageCarts/> }/>
               <Route path='cart-details/:userId' element={<CartDetails/> }/>

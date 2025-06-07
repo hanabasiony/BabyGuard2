@@ -49,12 +49,12 @@ export default function Vacciens() {
                 <Oval
                     height={80}
                     width={80}
-                    color="#ec4899"
+                    color="#fda4af"
                     wrapperStyle={{}}
                     wrapperClass=""
                     visible={true}
                     ariaLabel='oval-loading'
-                    secondaryColor="#f9a8d4"
+                    secondaryColor="#fb7185"
                     strokeWidth={2}
                     strokeWidthSecondary={2}
                 />
@@ -78,7 +78,7 @@ export default function Vacciens() {
                             placeholder="Search vaccines..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-300 focus:border-transparent"
                         />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mx-auto justify-items-center">
@@ -101,8 +101,15 @@ export default function Vacciens() {
                                 <p className='mt-2 text-gray-600'>Required Age: {vaccine.requiredAge} months</p>
                                 <div className='w-full flex justify-end'>
                                     <button 
-                                        onClick={() => navigate(`/VaccineReservation/${vaccine._id}`)} 
-                                        className="bg-pink-400 mt-7 hover:bg-pink-500 text-white font-medium py-2 px-4 rounded-full cursor-pointer w-[100%]"
+                                        onClick={() => {
+                                            const token = localStorage.getItem('token');
+                                            if (!token) {
+                                                toast.error('Please login first to book vaccine appointments');
+                                                return;
+                                            }
+                                            navigate(`/VaccineReservation/${vaccine._id}`);
+                                        }} 
+                                        className="bg-rose-300 mt-7 hover:bg-rose-350 text-white font-medium py-2 px-4 rounded-full cursor-pointer w-[100%]"
                                     >
                                         Book now
                                     </button>

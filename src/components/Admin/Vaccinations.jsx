@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
-import AddVaccine from './AddVaccine';
 
 function Vaccinations() {
   // State for vaccines data
@@ -11,18 +10,8 @@ function Vaccinations() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [editingVaccine, setEditingVaccine] = useState(null);
-  const [showAddModal, setShowAddModal] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-
-  // Check if we should show the add modal from location state
-  useEffect(() => {
-    if (location.state?.showAddModal) {
-      setShowAddModal(true);
-      // Clear the state to prevent showing modal on refresh
-      navigate(location.pathname, { replace: true });
-    }
-  }, [location, navigate]);
 
   // Fetch vaccines data from API
   useEffect(() => {
@@ -55,64 +44,31 @@ function Vaccinations() {
 
   // Handle deleting a vaccine
   const handleDeleteVaccine = async (vaccineId) => {
-    // Show confirmation toast
-    const confirmDelete = await new Promise((resolve) => {
-      toast.custom((t) => (
-        <div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center">
-          <p className="mb-4 text-gray-800">Are you sure you want to delete this vaccine?</p>
-          <div className="flex gap-2">
-            <button
-              className="px-4 py-2 bg-pink-400 text-white rounded hover:bg-pink-500"
-              onClick={async () => {
-                toast.dismiss(t.id);
-                resolve(true);
-              }}
-            >
-              Yes, Delete
-            </button>
-            <button
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-              onClick={() => {
-                toast.dismiss(t.id);
-                resolve(false);
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      ), {
-        duration: Infinity,
-        position: 'top-center',
-      });
-    });
-
-    if (!confirmDelete) {
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error('Authentication token is missing. Please log in.');
-        return;
-      }
-      const response = await axios.delete(`http://localhost:8000/api/vaccines/admin/${vaccineId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+    if (window.confirm('Are you sure you want to delete this vaccine?')) {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          toast.error('Authentication token is missing. Please log in.');
+          return;
         }
-      });
+        const response = await axios.delete(`http://localhost:8000/api/vaccines/admin/${vaccineId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
-      if (response.status === 200) {
-        toast.success('Vaccine deleted successfully');
-        // Update the state by removing the deleted vaccine
-        setVaccines(prevVaccines => prevVaccines.filter(vaccine => vaccine._id !== vaccineId));
-        setFilteredVaccines(prevFilteredVaccines => prevFilteredVaccines.filter(vaccine => vaccine._id !== vaccineId));
-        console.log(response.data);
+        if (response.status === 200) {
+          toast.success('Vaccine deleted successfully');
+          // Update the state by removing the deleted vaccine
+          setVaccines(prevVaccines => prevVaccines.filter(vaccine => vaccine._id !== vaccineId));
+          setFilteredVaccines(prevFilteredVaccines => prevFilteredVaccines.filter(vaccine => vaccine._id !== vaccineId));
+          console.log(response.data);
+          
+        }
+      } catch (error) {
+        console.error('Error deleting vaccine:', error);
+        toast.error(error.response?.data?.message || 'Failed to delete vaccine');
       }
-    } catch (error) {
-      console.error('Error deleting vaccine:', error);
-      toast.error(error.response?.data?.message || 'Failed to delete vaccine');
     }
   };
 
@@ -142,7 +98,7 @@ function Vaccinations() {
             <div className="flex flex-wrap gap-2">
               <button 
                 className="px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 flex items-center justify-center w-full sm:w-auto"
-                onClick={() => setShowAddModal(true)}
+                onClick={() => navigate('/admin/vaccinations/add')}
               >
                 <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -250,29 +206,6 @@ function Vaccinations() {
           </div>
         </div>
       </div>
-
-      {/* Add Vaccine Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Add New Vaccine</h2>
-              <button 
-                onClick={() => setShowAddModal(false)} 
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <AddVaccine onSuccess={() => {
-              setShowAddModal(false);
-              fetchVaccines();
-            }} />
-          </div>
-        </div>
-      )}
 
       {/* Edit Vaccine Modal */}
       {editingVaccine && (

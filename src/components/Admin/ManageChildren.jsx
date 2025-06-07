@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from "react-hot-toast";
+import { PlusCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
 
 function ManageChildren() {
   // State for children data
@@ -103,6 +105,13 @@ function ManageChildren() {
     }
   }, [searchTerm, children]);
 
+  // Handle edit child (Placeholder)
+  // const handleEditChild = async (childId, updatedData) => {
+  //   console.log('Editing child:', childId, updatedData);
+  //   // Implement API call to edit child
+  //   toast.error('Edit functionality not yet implemented');
+  // };
+
   // Handle delete child
   const handleDeleteChild = async (childId) => {
     // Show confirmation toast
@@ -112,7 +121,7 @@ function ManageChildren() {
           <p className="mb-4 text-gray-800">Are you sure you want to delete this child?</p>
           <div className="flex gap-2">
             <button
-              className="px-4 py-2 bg-rose-300 text-white rounded hover:bg-rose-400"
+              className="px-4 py-2 bg-pink-400 text-white rounded hover:bg-pink-500"
               onClick={async () => {
                 toast.dismiss(t.id);
                 // Immediately remove from UI
@@ -212,6 +221,8 @@ function ManageChildren() {
               <h2 className="text-2xl font-medium text-gray-800">Manage Children</h2>
               <p className="mt-1 text-sm text-gray-500">View and manage registered children</p>
             </div>
+             {/* Button to open Add Child modal */}
+            
           </div>
         </div>
 
@@ -224,7 +235,7 @@ function ManageChildren() {
 
         {/* Search and Filters */}
         <div className="mb-6 flex flex-col sm:flex-row justify-between gap-4">
-          <div className="relative flex-grow max-w-3xl">
+          <div className="relative flex-grow ">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -241,7 +252,7 @@ function ManageChildren() {
         </div>
 
         {/* Children Table */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-md mb-4">
+        <div className="bg-white shadow overflow-hidden sm:rounded-md">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -362,31 +373,7 @@ function ManageChildren() {
           </div>
         </div>
 
-        {/* Pagination */}
-        <div className="flex justify-end space-x-2 pr-4">
-          <button
-            onClick={handlePrevPage}
-            disabled={currentPage === 1}
-            className={`px-4 py-2 rounded-md text-sm font-medium ${
-              currentPage === 1
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-            }`}
-          >
-            Previous
-          </button>
-          <button
-            onClick={handleNextPage}
-            disabled={!nextPageToken}
-            className={`px-4 py-2 rounded-md text-sm font-medium ${
-              !nextPageToken
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-            }`}
-          >
-            Next
-          </button>
-        </div>
+        
       </div>
     </div>
   );

@@ -146,7 +146,7 @@ export default function CartContextProvider({ children }) {
             const token = localStorage.getItem('token');
             const cartId = await getOrCreateCart();
             
-            await axios.post(
+            const response = await axios.post(
                 `http://localhost:8000/api/carts/${cartId}/products`,
                 {
                     productId: productId,
@@ -162,9 +162,15 @@ export default function CartContextProvider({ children }) {
             // Immediately fetch and update cart data
             await fetchAndUpdateCartData();
             toast.success('Product added to cart successfully!');
+            return response;
         } catch (error) {
             console.error('Error adding product to cart:', error);
-            toast.error('Failed to add product to cart');
+            if (error.response?.data?.errors?.productId?.msg === 'Product is out of stock') {
+                toast.error('Sorry, this product is out of stock');
+            } else {
+                toast.error('Failed to add product to cart');
+            }
+            throw error; // Re-throw the error to be handled by the component
         } finally {
             setLoadingProducts(prev => ({ ...prev, [productId]: false }));
         }
@@ -192,7 +198,7 @@ export default function CartContextProvider({ children }) {
                 );
                 toast.success('Product removed from cart');
             } else if (currentQuantity > 0) {
-                await axios.patch(
+                const response = await axios.patch(
                     `http://localhost:8000/api/carts/${cartId}/products/${productId}`,
                     {
                         quantity: newQuantity
@@ -203,8 +209,15 @@ export default function CartContextProvider({ children }) {
                         }
                     }
                 );
+                if (response.status === 200) {
+                    if (change > 0) {
+                        toast.success(`Quantity increased to ${newQuantity}`);
+                    } else {
+                        toast.success(`Quantity decreased to ${newQuantity}`);
+                    }
+                }
             } else {
-                await axios.post(
+                const response = await axios.post(
                     `http://localhost:8000/api/carts/${cartId}/products`,
                     {
                         productId: productId,
@@ -216,20 +229,21 @@ export default function CartContextProvider({ children }) {
                         }
                     }
                 );
+                if (response.status === 201) {
+                    toast.success('Product added to cart successfully!');
+                }
             }
 
             // Immediately fetch and update cart data
             await fetchAndUpdateCartData();
-
-            // Show appropriate toast message based on the change
-            if (change > 0) {
-                toast.success(`Quantity increased to ${newQuantity}`);
-            } else if (newQuantity > 0) {
-                toast.success(`Quantity decreased to ${newQuantity}`);
-            }
         } catch (error) {
             console.error('Error updating cart:', error);
-            toast.error('Failed to update cart quantity');
+            if (error.response?.data?.errors?.productId?.msg === 'Product is out of stock') {
+                toast.error('Sorry, this product is out of stock');
+            } else {
+                toast.error('Failed to update cart quantity');
+            }
+            throw error;
         } finally {
             setLoadingProducts(prev => ({ ...prev, [productId]: false }));
         }

@@ -2,9 +2,6 @@ import React from 'react'
 import img1 from '../../assets/images/IMG_3224.JPG'
 import img2 from '../../assets/images/IMG_3225.JPG'
 import img3 from '../../assets/images/IMG_3223.JPG'
-import img12 from "../../assets/images/photo_2025-06-03_16-34-08.jpg"
-import img13 from "../../assets/images/photo_2025-06-03_16-34-09.jpg"
-import img14 from "../../assets/images/photo_2025-06-03_16-34-09 (2).jpg"
 
 export default function AboutUs() {
     return (
@@ -13,7 +10,7 @@ export default function AboutUs() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-lg shadow-lg overflow-hidden">
                     <img
-                        src={img12}
+                        src={img1}
                         alt="Our Mission"
                         className="w-full h-48 object-cover"
                     />
@@ -27,7 +24,7 @@ export default function AboutUs() {
 
                 <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-lg shadow-lg overflow-hidden">
                     <img
-                        src={img14}
+                        src={img2}
                         alt="Our Vision"
                         className="w-full h-48 object-cover"
                     />
@@ -41,7 +38,7 @@ export default function AboutUs() {
 
                 <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-lg shadow-lg overflow-hidden">
                     <img
-                        src={img13}
+                        src={img3}
                         alt="Our Values"
                         className="w-full h-48 object-cover"
                     />

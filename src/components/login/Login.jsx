@@ -21,7 +21,9 @@ export default function Login() {
     }
 
     const validationSchema = yup.object().shape({
-        email: yup.string().email('Invalid email'),
+        email: yup.string()
+            .email('Invalid email')
+            .required('Email is required'),
         password: yup.string()
             .required('Password is required')
             .min(6, 'Minimum length is 6 characters')
@@ -169,7 +171,7 @@ export default function Login() {
 
     return (
         <div className="min-h-screen bg-white-50 pt-35 pb-1">
-            <form className="max-w-md mx-auto px-4 sm:px-8" onSubmit={formik.handleSubmit}autoComplete="on">
+            <form className="max-w-md mx-auto px-4 sm:px-8" onSubmit={formik.handleSubmit} autoComplete="on">
                 {successMsg && (
                     <div className="fixed top-24 left-1/2 transform -translate-x-1/2 p-4 mb-4 text-green-800 rounded-lg text-center bg-green-50 z-50">
                         Welcome back
@@ -191,12 +193,12 @@ export default function Login() {
                             value={formik.values.email}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-sky-400 peer"
                             placeholder=" "
                             required
                             autoComplete="email"
                         />
-                        <label htmlFor="email" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                        <label htmlFor="email" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-sky-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                             Email address
                         </label>
                         {formik.errors.email && formik.touched.email && (
@@ -214,13 +216,12 @@ export default function Login() {
                             value={formik.values.password}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-sky-400 peer"
                             placeholder=" "
                             required
                             autoComplete="current-password"
-                            // autocomplete="on"
                         />
-                        <label htmlFor="password" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                        <label htmlFor="password" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-sky-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                             Password
                         </label>
                         {formik.errors.password && formik.touched.password && (
@@ -232,15 +233,15 @@ export default function Login() {
                     <div className="flex justify-center items-center">
                         <button
                             type="submit"
-                            className="text-white bg-pink-400 cursor-pointer hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-pink-500 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                            className="text-white bg-rose-300 cursor-pointer hover:bg-rose-350 focus:ring-4 focus:outline-none focus:ring-rose-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
                             disabled={loading}
                         >
                             {loading ? 'Logging in...' : 'Login'}
                         </button>
                     </div>
                     <div className="flex flex-col w-full gap-2 mt-4">
-                        <Link to='/PassSend' className='text-sm text-center text-pink-500 hover:underline'>Forgot password?</Link>
-                        <Link to='/reg' className='text-sm text-center text-pink-500 hover:underline'>Don't have an account?</Link>
+                        <Link to='/PassSend' className='text-sm text-center text-rose-300 hover:underline'>Forgot password?</Link>
+                        <Link to='/reg' className='text-sm text-center text-rose-300 hover:underline'>Don't have an account?</Link>
                     </div>
                 </div>
             </form>

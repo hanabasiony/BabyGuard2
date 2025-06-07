@@ -13,6 +13,7 @@ import { ShoppingCart, Settings } from 'lucide-react'
 import { CartContext } from '../../context/CartContext';
 import axios from 'axios';
 
+import newLogo from '../../assets/images/new-logo.png'
 
 
 
@@ -141,42 +142,42 @@ export default function Navbar() {
     <>
 
 
-      <nav className="bg-white shadow pe-7  shadow-pink-300 px-2 fixed  py-1 w-full">
+      <nav className="bg-white shadow pe-7 shadow-rose-300 px-2 fixed py-1 w-full">
         <div className="container mx-auto flex items-center justify-between max-w-[1200px]">
           {/* Left Side: Logo & Links */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <img src={logobaby} alt="fresh cart" className="w-50" />
+              <img src={newLogo} alt="Baby Guard" className="w-30" />
               {/* <h1 className="text-pink-300 text-xl font-bold">Baby Guard</h1> */}
             </Link>
           </div>
 
           {/* Desktop Nav Links */}
           <ul className="hidden md:flex items-center space-x-6">
-            <li>
-              <NavLink to="/childProfile" className=" hover:text-pink-600     text-pink-400 font-semibold">
+            {userToken ? <li>
+              <NavLink to="/childProfile" className="hover:text-rose-300 text-rose-300 font-semibold">
                 Child profile
               </NavLink>
-            </li>
+            </li> : ''}
             <li>
-              <NavLink to="/products" className=" hover:text-pink-600    text-pink-400 font-semibold ">
+              <NavLink to="/products" className="hover:text-rose-300 text-rose-300 font-semibold">
                 Products
               </NavLink>
             </li>
             <li>
-              <NavLink to="/vacciens" className=" hover:text-pink-600    text-pink-400 font-semibold">
+              <NavLink to="/vacciens" className="hover:text-rose-300 text-rose-300 font-semibold">
                 Vacciens
               </NavLink>
             </li>
             <li>
-              <NavLink to="/pregnancyTips" className=" hover:text-pink-600     text-pink-400 font-semibold">
+              <NavLink to="/pregnancyTips" className="hover:text-rose-300 text-rose-300 font-semibold">
                 Pregnancy tips
               </NavLink>
             </li>
 
             {isAdmin &&
               <li>
-                <NavLink to="/admin" className=" hover:text-pink-600     text-pink-400 font-semibold">
+                <NavLink to="/admin" className="hover:text-rose-300 text-rose-300 font-semibold">
                   Admin dashboard
                 </NavLink>
               </li>}
@@ -198,56 +199,48 @@ export default function Navbar() {
               {userToken ? (
                 <>
                   <span className="text-rose-300 font-medium">
-                    Hello, {userData.user.fName || (isAdmin ? 'Admin' : 'User')} !
-                 <span className="text-gray-700 font-medium">
-                    Hello, {userData?.user?.fName || (isAdmin ? 'Admin' : 'User')}!
+                    Hello, {userData?.user?.fName || (isAdmin ? 'Admin' : 'User')} !
                   </span>
-                  <li>
-                    <NavLink to="/settings" className="text-gray-700 hover:text-gray-700">
+                  {isAdmin ? '' : <li>
+                    <NavLink to="/settings" className="text-rose-300 hover:text-rose-300">
                       <Settings className="w-6 h-6" />
                     </NavLink>
-                  </li>
+                  </li>}
                   <li>
                     <NavLink to="/cart" className="relative">
-                      <ShoppingCart className="w-6 h-6 text-gray-700" />
+                      <ShoppingCart className="w-6 h-6 text-rose-300" />
                       {cartCount > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-gray-700 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                        <span className="absolute -top-2 -right-2 bg-rose-300 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                           {cartCount}
                         </span>
                       )}
                     </NavLink>
-
                   </li>
                   <li>
                     <NavLink to="/myOrders" className="relative">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-rose-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                       </svg>
                     </NavLink>
-
                   </li>
                   <li>
                     <NavLink to="/user-page" className="relative">
-                      <i class="fa-solid fa-user text-gray-700"></i>
+                      <i className="fa-solid fa-user text-rose-300"></i>
                     </NavLink>
-
                   </li>
-
                 </>
               ) : (
                 <li>
-                  <NavLink to="/settings" className="text-gray-700 hover:text-gray-700">
-                    <i class="fa-solid fa-user"></i>
+                  <NavLink to="/settings" className="text-rose-300 hover:text-rose-300">
+                    <i className="fa-solid fa-user"></i>
                   </NavLink>
                 </li>
-
-
               )}
             </ul>
           </div>
 
           {/* Mobile Menu Button */}
-          <button className="md:hidden text-gray-600" onClick={() => setIsOpen(!isOpen)}>
+          <button className="md:hidden text-rose-300" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
         </div>
@@ -256,39 +249,39 @@ export default function Navbar() {
         {isOpen && (
           <div className="md:hidden bg-white py-4">
             <ul className="flex flex-col items-center space-y-4">
-              <li><NavLink to="/products" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Products</NavLink></li>
-              <li><NavLink to="/categories" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Categories</NavLink></li>
-              <li><NavLink to="/" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Pergnancy tips</NavLink></li>
+              <li><NavLink to="/products" className="text-gray-600 hover:text-rose-300" onClick={() => setIsOpen(false)}>Products</NavLink></li>
+              <li><NavLink to="/categories" className="text-gray-600 hover:text-rose-300" onClick={() => setIsOpen(false)}>Categories</NavLink></li>
+              <li><NavLink to="/" className="text-gray-600 hover:text-rose-300" onClick={() => setIsOpen(false)}>Pergnancy tips</NavLink></li>
               {/* <li><NavLink to="/" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Contant us</NavLink></li> */}
               {/* <li><NavLink to="/aboutUs" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>About us</NavLink></li> */}
               
 
               {userToken && <ul>
                 <li>
-                <NavLink to="/cart" className="text-gray-600 hover:text-pink-400 relative" onClick={() => setIsOpen(false)}>
-                  <ShoppingCart className="w-6 h-6 text-pink-700" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-                      {cartCount}
-                    </span>
-                  )}
-                </NavLink>
-              </li>
-              <li><NavLink to="/settings" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>
-                <Settings className="w-6 h-6" />
-              </NavLink></li>
-              <li>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-pink-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-              </li>
+                  <NavLink to="/cart" className="text-gray-600 hover:text-rose-300 relative" onClick={() => setIsOpen(false)}>
+                    <ShoppingCart className="w-6 h-6 text-rose-300" />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-rose-300 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                        {cartCount}
+                      </span>
+                    )}
+                  </NavLink>
+                </li>
+                <li><NavLink to="/settings" className="text-gray-600 hover:text-rose-300" onClick={() => setIsOpen(false)}>
+                  <Settings className="w-6 h-6 text-rose-300" />
+                </NavLink></li>
+                <li>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-rose-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                </li>
                 </ul>}
 
               <li>
-                  <NavLink to="/settings" className="text-gray-700 hover:text-gray-700">
-                    <i class="fa-solid fa-user"></i>
-                  </NavLink>
-                </li>
+                <NavLink to="/settings" className="text-rose-300 hover:text-rose-300">
+                  <i className="fa-solid fa-user"></i>
+                </NavLink>
+              </li>
             </ul>
           </div>
         )}

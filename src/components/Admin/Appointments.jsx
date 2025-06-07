@@ -41,7 +41,7 @@ function Appointments() {
         id: request._id,
         childId: request.childId,
         vaccineId: request.vaccine?._id,
-        parentName: request.parentName || 'Parent Name Not Available',
+        parentName: request.parent?.name,
         childName: request.child?.name || 'Child Name Not Available',
         vaccine: request.vaccine?.name || 'Vaccine Name Not Available',
         location: `${request.street || ''}, ${request.city || ''}, ${request.governorate || ''}`.replace(/, ,/g, ', ').replace(/^, /,'').replace(/, $/, '') || 'Location not specified',
@@ -431,7 +431,7 @@ function Appointments() {
                   
                   {/* Child and Vaccine Info */}
                   <div className="mb-4 bg-gray-50 p-3 rounded-lg">
-                    {/* Parent Name 
+                    Parent Name 
                     <div className="flex items-center mb-2">
                       <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -440,7 +440,7 @@ function Appointments() {
                         <span className="text-sm font-semibold text-gray-900">Parent Name: </span>
                         <span className="text-sm text-gray-700">{appointment.parentName}</span>
                       </div>
-                    </div> */}
+                    </div>
 
                     {/* Child Name */}
                     <div className="flex items-center mb-2">

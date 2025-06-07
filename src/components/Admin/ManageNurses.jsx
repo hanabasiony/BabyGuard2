@@ -53,7 +53,7 @@ function ManageNurses() {
         return;
       }
 
-      const apiUrl = new URL('http://localhost:8000/api/nurse');
+      const apiUrl = new URL('http://localhost:8000/api/nurse?limit=100')
       if (cursor) {
         apiUrl.searchParams.append('cursor', cursor);
       }

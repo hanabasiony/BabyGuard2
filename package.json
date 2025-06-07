@@ -29,6 +29,7 @@
     "react-router-dom": "^7.1.4",
     "react-slick": "^0.30.3",
     "slick-carousel": "^1.8.1",
+    "slugify": "^1.6.6",
     "tailwindcss": "^4.0.1",
     "yup": "^1.6.1"
   },

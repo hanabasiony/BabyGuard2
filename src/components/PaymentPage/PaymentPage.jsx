@@ -119,18 +119,6 @@ export default function PaymentPage(){
                 <span className="text-xl font-bold text-blue-800">Total</span>
                 <span className="text-xl font-bold text-blue-800">EGP {cartData.cart.totalPrice}</span>
               </div>
-
-              {/* OTP Note */}
-              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <div className="flex items-start">
-                  <svg className="w-5 h-5 text-blue-500 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <p className="text-sm text-blue-700">
-                    For your security, an OTP (One-Time Password) will be sent to your WhatsApp number for verification when you proceed with this payment.
-                  </p>
-                </div>
-              </div>
   
               <div className="flex justify-center">
                 <button 
@@ -138,7 +126,7 @@ export default function PaymentPage(){
                   disabled={isSubmitting}
                   className={`w-96 bg-pink-500 hover:bg-pink-600 text-white font-medium py-4 px-6 rounded-full transition duration-300 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  {isSubmitting ? 'Processing...' : 'Pay with Visa '}
+                  {isSubmitting ? 'Processing...' : 'Place Order'}
                 </button>
               </div>
             </div>

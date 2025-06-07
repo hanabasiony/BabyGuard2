@@ -1,41 +1,45 @@
-import React from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
+import React from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 const AddTrimester = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   const validationSchema = Yup.object({
     number: Yup.number()
-      .required('Trimester number is required')
-      .oneOf([1, 2, 3], 'Trimester number must be 1, 2, or 3'),
+      .required("Trimester number is required")
+      .oneOf([1, 2, 3], "Trimester number must be 1, 2, or 3"),
     content: Yup.string()
-      .required('Content is required')
-      .min(5, 'Content must be at least 5 characters long')
-      .max(500, 'Content must be at most 500 characters long'),
+      .required("Content is required")
+      .min(5, "Content must be at least 5 characters long")
+      .max(500, "Content must be at most 500 characters long"),
   });
 
   const initialValues = {
-    number: '',
-    content: '',
+    number: "",
+    content: "",
   };
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/tips/trimester', values, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.post(
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/tips/trimester",
+        values,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
-      toast.success('Trimester information added successfully!');
+      );
+      toast.success("Trimester information added successfully!");
       resetForm();
-      navigate('/admin/tips-articles');
+      navigate("/admin/tips-articles");
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Something went wrong');
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setSubmitting(false);
     }
@@ -51,8 +55,10 @@ const AddTrimester = () => {
         {({ isSubmitting }) => (
           <Form className="max-w-md mx-auto px-4 sm:px-8">
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Add Trimester Information</h2>
-              
+              <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+                Add Trimester Information
+              </h2>
+
               {/* Trimester Number Field */}
               <div className="relative z-0 w-full mb-5 group">
                 <Field
@@ -62,7 +68,10 @@ const AddTrimester = () => {
                   className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-sky-400 peer"
                   placeholder=" "
                 />
-                <label htmlFor="number" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-sky-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                <label
+                  htmlFor="number"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-sky-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
                   Trimester Number (1, 2, or 3)
                 </label>
                 <ErrorMessage
@@ -82,7 +91,10 @@ const AddTrimester = () => {
                   className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-sky-400 peer"
                   placeholder=" "
                 />
-                <label htmlFor="content" className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-sky-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                <label
+                  htmlFor="content"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-sky-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
                   Content
                 </label>
                 <ErrorMessage
@@ -98,7 +110,7 @@ const AddTrimester = () => {
                   disabled={isSubmitting}
                   className="text-white bg-rose-300 cursor-pointer hover:bg-rose-350 focus:ring-4 focus:outline-none focus:ring-rose-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
                 >
-                  {isSubmitting ? 'Adding...' : 'Add Trimester'}
+                  {isSubmitting ? "Adding..." : "Add Trimester"}
                 </button>
               </div>
             </div>
@@ -109,4 +121,4 @@ const AddTrimester = () => {
   );
 };
 
-export default AddTrimester; 
+export default AddTrimester;

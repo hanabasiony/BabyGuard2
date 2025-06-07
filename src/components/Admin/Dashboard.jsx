@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "preact/hooks";
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 
 function Dashboard() {
   // This would be replaced with API data
@@ -8,7 +8,7 @@ function Dashboard() {
     totalUsers: { count: 2459, change: "+12.5%" },
     newAppointments: { count: 182, change: "+8.2%" },
     activeComplaints: { count: 48, change: "-2.4%" },
-  }
+  };
   const [appointmentsNumber, setAppointmentsNumber] = useState([]);
   const [complaintsNumber, setComplaintsNumber] = useState([]);
   const [usersNumber, setUsersNumber] = useState([]);
@@ -22,37 +22,53 @@ function Dashboard() {
       time: "2 hours ago",
       avatar: "/placeholder.svg",
     },
-    { id: 2, name: "Dr. Mike", action: "added new vaccine schedule", time: "4 hours ago", avatar: "/placeholder.svg" },
-    { id: 3, name: "Emma", action: "submitted a new complaint", time: "6 hours ago", avatar: "/placeholder.svg" },
-  ]
-  const token = localStorage.getItem('token');
+    {
+      id: 2,
+      name: "Dr. Mike",
+      action: "added new vaccine schedule",
+      time: "4 hours ago",
+      avatar: "/placeholder.svg",
+    },
+    {
+      id: 3,
+      name: "Emma",
+      action: "submitted a new complaint",
+      time: "6 hours ago",
+      avatar: "/placeholder.svg",
+    },
+  ];
+  const token = localStorage.getItem("token");
   const fetchAppointments = async () => {
     // setIsLoading(true);
     try {
       // Assuming token is needed for admin API
       if (!token) {
-          console.error('Authentication token not found for admin API');
-          // setIsLoading(false);
-          // Optionally navigate to login or show an error message
-          return;
+        console.error("Authentication token not found for admin API");
+        // setIsLoading(false);
+        // Optionally navigate to login or show an error message
+        return;
       }
-      
-      const response = await axios.get('http://localhost:8000/api/vaccine-requests/admin', {
+
+      const response = await axios.get(
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/vaccine-requests/admin",
+        {
           headers: {
-              Authorization: `Bearer ${token}`
-          }
-      });
-      
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       if (response.data && response.data.data) {
         setAppointmentsNumber(response.data.data.length);
         console.log(response.data.data.length);
       } else {
-        console.error('API returned unexpected data structure:', response.data);
-        
+        console.error("API returned unexpected data structure:", response.data);
       }
-      
     } catch (error) {
-      console.error('Error fetching appointments:', error.response?.data || error.message);
+      console.error(
+        "Error fetching appointments:",
+        error.response?.data || error.message
+      );
       // setRawAppointments([]); // Set empty array on error
     } finally {
       setIsLoading(false);
@@ -62,30 +78,34 @@ function Dashboard() {
   const fetchComplains = async () => {
     // setIsLoading(true);
     try {
-      const token = localStorage.getItem('token'); // Assuming token is needed for admin API
+      const token = localStorage.getItem("token"); // Assuming token is needed for admin API
       if (!token) {
-          console.error('Authentication token not found for admin API');
-          // setIsLoading(false);
-          // Optionally navigate to login or show an error message
-          return;
+        console.error("Authentication token not found for admin API");
+        // setIsLoading(false);
+        // Optionally navigate to login or show an error message
+        return;
       }
-      
-      const response = await axios.get('http://localhost:8000/api/complaints/admin', {
+
+      const response = await axios.get(
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/complaints/admin",
+        {
           headers: {
-              Authorization: `Bearer ${token}`
-          }
-      });
-      
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       if (response.data && response.data.data) {
         setComplaintsNumber(response.data.data.length);
         console.log(response.data.data.length);
       } else {
-        console.error('API returned unexpected data structure:', response.data);
-        
+        console.error("API returned unexpected data structure:", response.data);
       }
-      
     } catch (error) {
-      console.error('Error fetching appointments:', error.response?.data || error.message);
+      console.error(
+        "Error fetching appointments:",
+        error.response?.data || error.message
+      );
       // setRawAppointments([]); // Set empty array on error
     } finally {
       setIsLoading(false);
@@ -93,32 +113,37 @@ function Dashboard() {
   };
 
   const fetchUsersNumbers = () => {
-    const res = axios.get('http://localhost:8000/api/user',{
-      headers:{
-        Authorization: `Bearer ${token}`
-      }
-    }).then((res)=>{
-      // console.log();
-      setUsersNumber(res.data.users.length)
-    })
-    .catch((err)=>{
-      console.log(err);
-      
-    })
-  }
+    const res = axios
+      .get(
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        // console.log();
+        setUsersNumber(res.data.users.length);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   useEffect(() => {
     fetchAppointments();
     fetchComplains();
-    fetchUsersNumbers()
+    fetchUsersNumbers();
   }, []);
-
 
   return (
     <div className="p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800">Dashboard Overview</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">
+            Dashboard Overview
+          </h1>
           <p className="text-gray-500">Welcome back, Admin!</p>
         </div>
         <div className="flex items-center mt-4 sm:mt-0">
@@ -129,9 +154,7 @@ function Dashboard() {
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-            >
-             
-            </svg>
+            ></svg>
           </button>
         </div>
       </div>
@@ -158,7 +181,9 @@ function Dashboard() {
             </div>
             {/* <span className="text-green-500 font-medium">{stats.totalUsers.change}</span> */}
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{usersNumber}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            {usersNumber}
+          </h2>
           <p className="text-gray-500">Total Users</p>
         </div>
 
@@ -182,7 +207,9 @@ function Dashboard() {
             </div>
             <span className="text-green-500 font-medium"></span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{appointmentsNumber ? appointmentsNumber : 'Loading...'}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            {appointmentsNumber ? appointmentsNumber : "Loading..."}
+          </h2>
           <p className="text-gray-500">Total Appointments</p>
         </div>
 
@@ -206,14 +233,18 @@ function Dashboard() {
             </div>
             {/* <span className="text-red-500 font-medium">{stats.activeComplaints.change}</span> */}
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{complaintsNumber}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            {complaintsNumber}
+          </h2>
           <p className="text-gray-500">Active Complaints</p>
         </div>
       </div>
 
       {/* Quick Actions */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          Quick Actions
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link
             to="/manage-nurses"
@@ -282,7 +313,7 @@ function Dashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;

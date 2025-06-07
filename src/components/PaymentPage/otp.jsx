@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import axios from "axios";
@@ -10,18 +10,18 @@ import { CartContext } from "../../context/CartContext";
 export default function OTPInput() {
   const navigate = useNavigate();
   const { resetCart } = useContext(CartContext);
-  const [otp, setOtp] = useState(["", "", "", "", "", ""])
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [timer, setTimer] = useState(30)
-  const [isResendDisabled, setIsResendDisabled] = useState(true)
-  const inputRefs = useRef([])
-  const timerRef = useRef(null)
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [timer, setTimer] = useState(30);
+  const [isResendDisabled, setIsResendDisabled] = useState(true);
+  const inputRefs = useRef([]);
+  const timerRef = useRef(null);
 
   useEffect(() => {
     if (inputRefs.current[0]) {
-      inputRefs.current[0].focus()
+      inputRefs.current[0].focus();
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     // Start timer when component mounts
@@ -38,7 +38,7 @@ export default function OTPInput() {
   const startTimer = () => {
     setIsResendDisabled(true);
     setTimer(30);
-    
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
@@ -56,77 +56,78 @@ export default function OTPInput() {
   };
 
   const handleChange = (index, value) => {
-    if (value.length > 1) return
+    if (value.length > 1) return;
 
-    const newOtp = [...otp]
-    newOtp[index] = value
-    setOtp(newOtp)
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
 
     // Move to next input if value is entered
     if (value && index < 5) {
-      setActiveIndex(index + 1)
-      inputRefs.current[index + 1]?.focus()
+      setActiveIndex(index + 1);
+      inputRefs.current[index + 1]?.focus();
     }
-  }
+  };
 
   const handleKeyDown = (index, e) => {
     // Move to previous input on backspace if current input is empty
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      setActiveIndex(index - 1)
-      inputRefs.current[index - 1]?.focus()
+      setActiveIndex(index - 1);
+      inputRefs.current[index - 1]?.focus();
     }
 
     // Move to next input on arrow right
     if (e.key === "ArrowRight" && index < 5) {
-      setActiveIndex(index + 1)
-      inputRefs.current[index + 1]?.focus()
+      setActiveIndex(index + 1);
+      inputRefs.current[index + 1]?.focus();
     }
 
     // Move to previous input on arrow left
     if (e.key === "ArrowLeft" && index > 0) {
-      setActiveIndex(index - 1)
-      inputRefs.current[index - 1]?.focus()
+      setActiveIndex(index - 1);
+      inputRefs.current[index - 1]?.focus();
     }
-  }
+  };
 
   const handleFocus = (index) => {
-    setActiveIndex(index)
-  }
+    setActiveIndex(index);
+  };
 
   const handleSubmit = async () => {
-    const otpValue = otp.join("")
+    const otpValue = otp.join("");
     if (otpValue.length === 6) {
       try {
-        const token = localStorage.getItem('token');
-        const cartId = localStorage.getItem('cartId');
+        const token = localStorage.getItem("token");
+        const cartId = localStorage.getItem("cartId");
 
         if (!cartId) {
           toast.error("Cart ID not found. Please try again.");
           return;
         }
 
-        const response = await axios.post("http://localhost:8000/api/payment/verify-otp", 
+        const response = await axios.post(
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/payment/verify-otp",
           {
             cartId: cartId,
-            code: otpValue
+            code: otpValue,
           },
           {
             headers: {
-              'Authorization': `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
         if (response.status === 200) {
           toast.success("OTP verified successfully!");
-          
+
           // Reset the current cart state
           resetCart();
-          
+
           // Create a new cart
           try {
             const newCartResponse = await axios.post(
-              'http://localhost:8000/api/carts',
+              "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts",
               {
                 cart: {
                   governorate: "Cairo",
@@ -134,32 +135,30 @@ export default function OTPInput() {
                   street: "Main Street",
                   buildingNumber: 123,
                   apartmentNumber: 45,
-                  paymentType: "Cash"
-                }
+                  paymentType: "Cash",
+                },
               },
               {
                 headers: {
-                  'Authorization': `Bearer ${token}`
-                }
+                  Authorization: `Bearer ${token}`,
+                },
               }
             );
 
             // Store the new cart ID
             if (newCartResponse.data?.data?._id) {
-              localStorage.setItem('cartId', newCartResponse.data.data._id);
+              localStorage.setItem("cartId", newCartResponse.data.data._id);
               toast.success("New cart initialized successfully!");
-              console.log('create new cart',newCartResponse);
-              
+              console.log("create new cart", newCartResponse);
             }
             // console.log(newCartResponse);
-            
 
             // Navigate to success page or home
-            navigate('/');
+            navigate("/");
           } catch (error) {
             console.error("Error creating new cart:", error);
             toast.error("Payment successful but failed to initialize new cart");
-            navigate('/');
+            navigate("/");
           }
         }
       } catch (error) {
@@ -173,12 +172,12 @@ export default function OTPInput() {
     } else {
       toast.error("Please enter all 6 digits");
     }
-  }
+  };
 
   const handleResendOTP = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const cartId = localStorage.getItem('cartId');
+      const token = localStorage.getItem("token");
+      const cartId = localStorage.getItem("cartId");
 
       if (!cartId) {
         toast.error("Cart ID not found. Please try again.");
@@ -186,12 +185,12 @@ export default function OTPInput() {
       }
 
       const response = await axios.patch(
-        `http://localhost:8000/api/payment/resend-otp/${cartId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/payment/resend-otp/${cartId}`,
         {},
         {
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -202,13 +201,13 @@ export default function OTPInput() {
         setActiveIndex(0);
         inputRefs.current[0]?.focus();
         // Start the timer again after successful resend
-        console.log('resend otp', response);
-        
+        console.log("resend otp", response);
+
         startTimer();
       }
     } catch (error) {
       console.error("Error resending OTP:", error);
-      
+
       if (error.response?.status === 401) {
         toast.error("Unauthorized. Please login again.");
         // Optionally redirect to login page
@@ -216,7 +215,9 @@ export default function OTPInput() {
       } else if (error.response?.status === 429) {
         toast.error("Too many requests. Please wait before trying again.");
       } else if (error.response?.status === 400) {
-        toast.error("Please wait at least 30 seconds before requesting a new OTP.");
+        toast.error(
+          "Please wait at least 30 seconds before requesting a new OTP."
+        );
       } else {
         toast.error(error.response?.data?.message || "Failed to resend OTP");
       }
@@ -225,8 +226,8 @@ export default function OTPInput() {
 
   const handleDeleteOTP = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const cartId = localStorage.getItem('cartId');
+      const token = localStorage.getItem("token");
+      const cartId = localStorage.getItem("cartId");
 
       if (!cartId) {
         toast.error("Cart ID not found. Please try again.");
@@ -234,25 +235,25 @@ export default function OTPInput() {
       }
 
       const response = await axios.delete(
-        `http://localhost:8000/api/payment/cancel/${cartId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/payment/cancel/${cartId}`,
         {
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
       if (response.status === 200) {
         toast.success("Payment cancelled successfully!");
-        console.log('delete otp and cart',response);
-        
+        console.log("delete otp and cart", response);
+
         // Clear cartId from localStorage
-        localStorage.removeItem('cartId');
+        localStorage.removeItem("cartId");
 
         // Create a new cart
         try {
           const newCartResponse = await axios.post(
-            'http://localhost:8000/api/carts',
+            "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts",
             {
               cart: {
                 governorate: "Cairo",
@@ -260,20 +261,20 @@ export default function OTPInput() {
                 street: "Main Street",
                 buildingNumber: 123,
                 apartmentNumber: 45,
-                paymentType: "Cash"
-              }
+                paymentType: "Cash",
+              },
             },
             {
               headers: {
-                'Authorization': `Bearer ${token}`
-              }
+                Authorization: `Bearer ${token}`,
+              },
             }
           );
 
           if (newCartResponse.data?.data?._id) {
-            localStorage.setItem('cartId', newCartResponse.data.data._id);
+            localStorage.setItem("cartId", newCartResponse.data.data._id);
             toast.success("New cart initialized successfully!");
-            console.log('New cart created after deletion:', newCartResponse);
+            console.log("New cart created after deletion:", newCartResponse);
           }
         } catch (error) {
           console.error("Error creating new cart:", error);
@@ -281,11 +282,11 @@ export default function OTPInput() {
         }
 
         // Navigate back to home or previous page
-        navigate('/');
+        navigate("/");
       }
     } catch (error) {
       console.error("Error cancelling payment:", error);
-      
+
       if (error.response?.status === 401) {
         toast.error("Unauthorized. Please login again.");
       } else if (error.response?.status === 429) {
@@ -295,7 +296,9 @@ export default function OTPInput() {
       } else if (error.response?.status === 404) {
         toast.error("Cart not found.");
       } else {
-        toast.error(error.response?.data?.message || "Failed to cancel payment");
+        toast.error(
+          error.response?.data?.message || "Failed to cancel payment"
+        );
       }
     }
   };
@@ -304,8 +307,12 @@ export default function OTPInput() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">OTP Verification</h1>
-          <p className="text-gray-500 text-lg">Enter the one-time password sent to your phone.</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            OTP Verification
+          </h1>
+          <p className="text-gray-500 text-lg">
+            Enter the one-time password sent to your phone.
+          </p>
         </div>
 
         <div className="flex justify-center gap-3 mb-6">
@@ -342,26 +349,25 @@ export default function OTPInput() {
         </button>
 
         <div className="flex justify-between items-center text-sm text-gray-600">
-            <button 
-                onClick={handleResendOTP} 
-                disabled={isResendDisabled}
-                className={`font-medium ${
-                  isResendDisabled 
-                    ? 'text-gray-400 cursor-not-allowed' 
-                    : 'text-blue-600 hover:underline'
-                }`}
-            >
-                {isResendDisabled ? `Resend OTP (${timer}s)` : 'Resend OTP'}
-            </button>
-            <button 
-                onClick={handleDeleteOTP} 
-                className="font-medium text-red-600 hover:underline"
-            >
-                Cancel
-            </button>
+          <button
+            onClick={handleResendOTP}
+            disabled={isResendDisabled}
+            className={`font-medium ${
+              isResendDisabled
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-blue-600 hover:underline"
+            }`}
+          >
+            {isResendDisabled ? `Resend OTP (${timer}s)` : "Resend OTP"}
+          </button>
+          <button
+            onClick={handleDeleteOTP}
+            className="font-medium text-red-600 hover:underline"
+          >
+            Cancel
+          </button>
         </div>
-
       </div>
     </div>
-  )
+  );
 }

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../context/AuthContext';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const ChooseFromFour = () => {
   const navigate = useNavigate();
@@ -20,17 +20,20 @@ const ChooseFromFour = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/questions', {
-          headers: {
-            'Authorization': `Bearer ${userToken}`
+        const response = await axios.get(
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/questions",
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
           }
-        });
+        );
         setQuestions(response.data.data);
         setLoading(false);
       } catch (err) {
-        setError('Failed to fetch questions');
+        setError("Failed to fetch questions");
         setLoading(false);
-        console.error('Error fetching questions:', err);
+        console.error("Error fetching questions:", err);
       }
     };
 
@@ -62,11 +65,19 @@ const ChooseFromFour = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
+    return (
+      <div className="flex justify-center items-center h-screen text-red-500">
+        {error}
+      </div>
+    );
   }
 
   if (showResult) {
@@ -107,8 +118,8 @@ const ChooseFromFour = () => {
               onClick={() => handleAnswerSelect(option)}
               className={`w-full p-4 text-left rounded-lg border transition-colors ${
                 selectedAnswer === option
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-blue-300'
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-200 hover:border-blue-300"
               }`}
             >
               {option}
@@ -122,11 +133,11 @@ const ChooseFromFour = () => {
             disabled={!selectedAnswer}
             className={`px-6 py-2 rounded ${
               selectedAnswer
-                ? 'bg-blue-500 text-white hover:bg-blue-600'
-                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                ? "bg-blue-500 text-white hover:bg-blue-600"
+                : "bg-gray-200 text-gray-500 cursor-not-allowed"
             } transition-colors`}
           >
-            {currentQuestionIndex === questions.length - 1 ? 'Finish' : 'Next'}
+            {currentQuestionIndex === questions.length - 1 ? "Finish" : "Next"}
           </button>
         </div>
       </div>
@@ -134,4 +145,4 @@ const ChooseFromFour = () => {
   );
 };
 
-export default ChooseFromFour; 
+export default ChooseFromFour;

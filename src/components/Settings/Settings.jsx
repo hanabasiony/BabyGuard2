@@ -76,13 +76,13 @@ export default function Settings() {
                     <div className="space-y-4">
                         <NavLink 
                             to="/login" 
-                            className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
+                            className="block w-full cursor-pointer text-left px-4 py-3 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-rose-100"
                         >
                             Login
                         </NavLink>
                         <NavLink 
                             to="/Reg" 
-                            className="block w-full cursor-pointer text-left px-4 py-3 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors border border-pink-100"
+                            className="block w-full cursor-pointer text-left px-4 py-3 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-rose-100"
                         >
                             Register
                         </NavLink>
@@ -98,12 +98,12 @@ export default function Settings() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* User Details Section */}
                     <div className="space-y-6">
-                        <h3 className="text-xl font-medium text-pink-600">Personal Information</h3>
+                        <h3 className="text-xl font-medium text-rose-400">Personal Information</h3>
                         {userData ? (
-                            <div className="bg-white rounded-lg shadow-sm border border-pink-100 p-6">
+                            <div className="bg-white rounded-lg shadow-sm border border-rose-100 p-6">
                                 <div className="flex items-center space-x-4 mb-6">
-                                    <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center">
-                                        <span className="text-2xl text-pink-600">
+                                    <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center">
+                                        <span className="text-2xl text-rose-400">
                                             {userData.fName ? userData.fName.charAt(0).toUpperCase() : 'U'}
                                         </span>
                                     </div>
@@ -114,8 +114,8 @@ export default function Settings() {
                                 </div>
                                 
                                 <div className="grid grid-cols-1 gap-4">
-                                    <div className="flex items-center space-x-3 p-3 bg-pink-50 rounded-lg">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="flex items-center space-x-3 p-3 bg-rose-50 rounded-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                         </svg>
                                         <div>
@@ -124,8 +124,8 @@ export default function Settings() {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center space-x-3 p-3 bg-pink-50 rounded-lg">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="flex items-center space-x-3 p-3 bg-rose-50 rounded-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
                                         <div>
@@ -135,8 +135,8 @@ export default function Settings() {
                                     </div>
 
                                     {userData.phoneNumber && (
-                                        <div className="flex items-center space-x-3 p-3 bg-pink-50 rounded-lg">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <div className="flex items-center space-x-3 p-3 bg-rose-50 rounded-lg">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                             </svg>
                                             <div>
@@ -149,7 +149,7 @@ export default function Settings() {
                             </div>
                         ) : (
                             <div className="text-center py-8">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-400 mx-auto"></div>
                                 <p className="mt-4 text-gray-500">Loading user information...</p>
                             </div>
                         )}
@@ -157,13 +157,13 @@ export default function Settings() {
 
                     {/* Right Side Section */}
                     <div className="space-y-6">
-                        <h3 className="text-xl font-medium text-pink-600">Additional Information</h3>
+                        <h3 className="text-xl font-medium text-rose-400">Additional Information</h3>
                         {userData && (
-                            <div className="bg-white rounded-lg shadow-sm border border-pink-100 p-6">
+                            <div className="bg-white rounded-lg shadow-sm border border-rose-100 p-6">
                                 <div className="grid grid-cols-1 gap-4">
                                     {userData.birthDate && (
-                                        <div className="flex items-center space-x-3 p-3 bg-pink-50 rounded-lg">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <div className="flex items-center space-x-3 p-3 bg-rose-50 rounded-lg">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                             <div>
@@ -179,8 +179,8 @@ export default function Settings() {
                                         </div>
                                     )}
 
-                                    <div className="flex items-center space-x-3 p-3 bg-pink-50 rounded-lg">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="flex items-center space-x-3 p-3 bg-rose-50 rounded-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
@@ -192,8 +192,8 @@ export default function Settings() {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center space-x-3 p-3 bg-pink-50 rounded-lg">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="flex items-center space-x-3 p-3 bg-rose-50 rounded-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                         </svg>
                                         <div>
@@ -206,7 +206,7 @@ export default function Settings() {
 
                                     <button
                                         onClick={() => navigate('/edit-user')}
-                                        className="w-full mt-4 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors flex items-center justify-center space-x-2"
+                                        className="w-full mt-4 px-4 py-2 cursor-pointer bg-rose-400 text-white rounded-lg hover:bg-rose-700 transition-colors flex items-center justify-center space-x-2"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

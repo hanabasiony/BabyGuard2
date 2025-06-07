@@ -70,7 +70,7 @@ export default function Vacciens() {
             <div className="wrapper py-40 px-25 mx-auto">
             
                 <div className='container mx-auto'>
-                <h2 className='text-4xl mb-4 text-gray-700'>Our Featured Vaccines:</h2>
+                <h2 className='text-4xl mb-4  text-rose-300'>Our Featured Vaccines:</h2>
                     {/* Search Bar */}
                     <div className="mb-8  mx-auto">
                         <input

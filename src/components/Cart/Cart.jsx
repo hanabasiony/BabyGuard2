@@ -39,12 +39,20 @@ const Cart = () => {
     const updateCartStatus = async () => {
         try {
             const token = localStorage.getItem('token');
-            const cartId = localStorage.getItem('cartId');
             const userDataString = localStorage.getItem('userData');
             const userData = userDataString ? JSON.parse(userDataString) : null;
 
+            // Debug logging
+            console.log('Current cart data:', cartData);
+            console.log('Cart ID from data:', cartData?.cart?._id);
+            console.log('Cart ID from localStorage:', localStorage.getItem('cartId'));
+
+            // Try to get cart ID from both sources
+            const cartId = cartData?.cart?._id || localStorage.getItem('cartId');
+            
             if (!cartId) {
-                console.error('No cart ID found');
+                console.error('No valid cart ID found');
+                toast.error('No active cart found');
                 return false;
             }
 
@@ -52,6 +60,8 @@ const Cart = () => {
                 console.error('No user data found');
                 return false;
             }
+
+            console.log('Using cart ID for status update:', cartId);
 
             const response = await axios.patch(
                 `http://localhost:8000/api/carts/status/${cartId}`,
@@ -206,8 +216,10 @@ const Cart = () => {
 
         try {
             setLoadingPayment(true);
-            // Save cart data to localStorage before navigating
-            localStorage.setItem('cartData', JSON.stringify(cartData));
+            
+            // Debug logging
+            console.log('Before status update - Cart data:', cartData);
+            console.log('Before status update - Cart ID:', cartData?.cart?._id);
             
             // Update cart status
             const statusUpdated = await updateCartStatus();
@@ -234,7 +246,7 @@ const Cart = () => {
                     'http://localhost:8000/api/carts',
                     {
                         cart: {
-                            governorate: userData.user.governorate ,
+                            governorate: userData.user.governorate,
                             city: userData.user.city,
                             street: userData.user.street,
                             buildingNumber: userData.user.buildingNumber,
@@ -252,6 +264,7 @@ const Cart = () => {
                 // Store new cart data
                 if (newCartResponse.data.data) {
                     const newCartData = newCartResponse.data.data;
+                    console.log('New cart created:', newCartData);
                     localStorage.setItem('cartId', newCartData._id);
                     localStorage.setItem('cartDetails', JSON.stringify({
                         governorate: newCartData.governorate,
@@ -324,7 +337,7 @@ const Cart = () => {
                     <p className="text-gray-500 mb-6">Looks like you haven't added any products to your cart yet.</p>
                     <button
                         onClick={() => navigate('/')}
-                        className="bg-pink-400 hover:bg-pink-500 text-white font-medium py-2 px-6 rounded-full cursor-pointer transition-colors duration-200"
+                        className="bg-rose-400 hover:bg-rose-400 text-white font-medium py-2 px-6 rounded-full cursor-pointer transition-colors duration-200"
                     >
                         Continue Shopping
                     </button>
@@ -338,8 +351,8 @@ const Cart = () => {
     return (
         <div className="max-w-5xl py-30 mx-auto p-6 bg-whitw min-h-screen">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-semibold text-gray-700">Cart items:</h1>
-                <p className="text-pink-500 text-lg font-medium">
+                <h1 className="text-2xl text-rose-400 font-semibold ">Cart items:</h1>
+                <p className="text-rose-400 text-lg font-medium">
                     Total: {cart.totalPrice} EGP
                 </p>
             </div>
@@ -353,14 +366,14 @@ const Cart = () => {
                         <img
                             src={product.image}
                             alt={product.name}
-                            className="w-20 h-20 rounded-xl object-cover border-2 border-pink-200"
+                            className="w-20 h-20 rounded-xl object-cover border-2 border-rose-200"
                         />
                         <div>
                             <h3 className="text-lg font-semibold text-gray-700">{product.name}</h3>
-                            <p className="text-pink-500 font-medium text-sm">Price: {product.price} EGP</p>
+                            <p className="text-rose-400 font-medium text-sm">Price: {product.price} EGP</p>
                             <p className="text-gray-500 text-sm">Required Age: {product.requiredAge}</p>
                             <button
-                                className="mt-2 flex items-center text-xs text-pink-400 cursor-pointer hover:underline"
+                                className="mt-2 flex items-center text-xs text-rose-400 cursor-pointer hover:underline"
                                 onClick={(e) => handleDeleteProductWithUpdate(e, product.productId)}
                             >
                                 <Trash className="w-4 h-4 mr-1" /> Remove
@@ -388,14 +401,14 @@ const Cart = () => {
                             <>
                                 <button
                                     onClick={(e) => handleQuantityChange(e, product, -1)}
-                                    className="bg-pink-200 text-pink-800 px-2 py-1 cursor-pointer rounded-full hover:bg-pink-300"
+                                    className="bg-rose-200 text-rose-500 px-2 py-1 cursor-pointer rounded-full hover:bg-rose-300"
                                 >
                                     <Minus size={16} />
                                 </button>
                                 <span className="text-md font-semibold text-gray-700">{product.quantity}</span>
                                 <button
                                     onClick={(e) => handleQuantityChange(e, product, 1)}
-                                    className="bg-pink-200 cursor-pointer text-pink-800 px-2 py-1 rounded-full hover:bg-pink-300"
+                                    className="bg-rose-200 cursor-pointer text-rose-500 px-2 py-1 rounded-full hover:bg-rose-300"
                                 >
                                     <Plus size={16} />
                                 </button>
@@ -405,7 +418,7 @@ const Cart = () => {
                 </div>
             ))}
 
-           { isAdmin ? '' : <>
+           {/* { isAdmin ? "" : <> */}
             {/* Address Section */}
             <div className="bg-white rounded-2xl shadow p-6 mb-6">
                 <h2 className="text-xl font-semibold text-gray-700 mb-4">Delivery Address</h2>
@@ -444,13 +457,19 @@ const Cart = () => {
                             type="checkbox"
                             checked={isAddressConfirmed}
                             onChange={(e) => setIsAddressConfirmed(e.target.checked)}
-                            className="w-4 h-4 text-pink-500 rounded focus:ring-pink-500"
+                            className="w-4 h-4 text-rose-300 rounded focus:ring-rose-300"
                         />
+                        <div className="flex gap-1">
                         <span className="text-gray-700">I confirm this is my correct delivery address</span>
+                        <span className="text-rose-400 " onClick={(e)=>{ 
+                            e.preventDefault;
+                            navigate('/edit-user')
+                         }}> Change address</span>
+                        </div>
                     </label>
                     {/* <button
                         onClick={() => navigate('/profile')}
-                        className="text-pink-500 hover:text-pink-600 font-medium"
+                        className="text-rose-300 hover:text-rose-600 font-medium"
                     >
                         Change Addr
                     </button> */}
@@ -461,7 +480,7 @@ const Cart = () => {
             <div className="mt-6 text-center flex flex-col gap-4 justify-between w-[60%] mx-auto">
                 <button
                     onClick={handleOrderPlacement}
-                    className="bg-white-500 text-pink-500 px-6 py-3 rounded-full shadow hover:text-white hover:bg-pink-500 cursor-pointer text-lg font-semibold transition-colors duration-200"
+                    className="bg-white-500 text-rose-300 px-6 py-3 bg-rose rounded-full shadow hover:text-white hover:bg-rose-400 cursor-pointer text-lg font-semibold transition-colors duration-200"
                 >
                     Place Order ( Cash )
                 </button>
@@ -504,7 +523,7 @@ const Cart = () => {
                             toast.error('Failed to update payment type. Please try again.');
                         }
                     }}
-                    className="bg-pink-500 text-white px-6 py-3 rounded-full shadow hover:bg-pink-600 cursor-pointer text-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 w-full"
+                    className="bg-rose-300 text-white px-6 py-3 rounded-full shadow hover:bg-rose-400 cursor-pointer text-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 w-full"
                 >
                     <span>Proceed to Payment ( Visa )</span>
                     <svg
@@ -522,7 +541,7 @@ const Cart = () => {
                     </svg>
                 </button>
             </div>
-           </> }
+           {/* </> } */}
         </div>
     );
 };

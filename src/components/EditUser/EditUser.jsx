@@ -185,7 +185,7 @@ function EditUser() {
             </div>
             <button
               onClick={() => navigate('/settings')}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
             >
               Back to Settings
             </button>
@@ -209,26 +209,26 @@ function EditUser() {
                               <Field
                                 type="text"
                                 name={key}
-                                className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-colors duration-200 sm:text-sm"
+                                className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-200 transition-colors duration-200 sm:text-sm"
                                 placeholder={`Enter ${label.toLowerCase()}`}
                               />
                               <ErrorMessage
                                 name={key}
                                 component="div"
-                                className="text-red-500 text-sm mt-1"
+                                className="text-re4-500 text-sm mt-1"
                               />
                               <div className="flex space-x-2">
                                 <button
                                   type="submit"
                                   disabled={isSubmitting || !dirty}
-                                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50"
+                                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-rose-400 hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 disabled:opacity-50"
                                 >
                                   {isSubmitting ? 'Saving...' : 'Save'}
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleCancelEdit(key)}
-                                  className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                                  className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
                                 >
                                   Cancel
                                 </button>
@@ -240,7 +240,7 @@ function EditUser() {
                               <button
                                 type="button"
                                 onClick={() => handleEditClick(key)}
-                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-pink-700 bg-pink-100 hover:bg-pink-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-rose-700 bg-rose-100 hover:bg-rose-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
                               >
                                 Edit
                               </button>

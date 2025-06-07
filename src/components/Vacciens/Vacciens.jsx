@@ -6,7 +6,9 @@ import SimpleSlider from '../homeSlider/homeSlider'
 import CategoriesSlider from '../categoriesSlider/categoriesSlider'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'react-hot-toast'
-import img from '../../assets/images/a nurse.jpg'
+import img from '../../assets/images/photo_2025-06-07_14-32-19.jpg'
+
+
 
 export default function Vacciens() {
     const [vaccines, setVaccines] = useState([]);
@@ -98,7 +100,7 @@ export default function Vacciens() {
                                     <i class="fa-solid fa-star text-amber-300">  </i>
                                 </div> */}
                                 <p className='mt-2'>{vaccine.description}</p>
-                                <p className='mt-2 text-gray-600'>Required Age: {vaccine.requiredAge} months</p>
+                                <p className='mt-2 text-gray-600'>Required Age: {vaccine.requiredAge}</p>
                                 <div className='w-full flex justify-end'>
                                     <button 
                                         onClick={() => {
@@ -109,7 +111,7 @@ export default function Vacciens() {
                                             }
                                             navigate(`/VaccineReservation/${vaccine._id}`);
                                         }} 
-                                        className="bg-rose-300 mt-7 hover:bg-rose-350 text-white font-medium py-2 px-4 rounded-full cursor-pointer w-[100%]"
+                                        className="bg-rose-300 mt-7 hover:bg-rose-400 text-white font-medium py-2 px-4 rounded-full cursor-pointer w-[100%]"
                                     >
                                         Book now
                                     </button>

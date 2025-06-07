@@ -327,7 +327,7 @@ export default function ChildDashboard() {
                                     <h3 className="font-semibold text-lg">Vaccine Requests for {selectedChild?.name}</h3>
                                     <button 
                                         onClick={() => navigate('/vacciens')}
-                                        className="inline-flex cursor-pointer items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-600"
+                                        className="inline-flex cursor-pointer items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-rose-300 hover:bg-rose-400"
                                     >
                                         <Plus className="w-4 h-4 mr-1" />
                                         New Request

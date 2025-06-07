@@ -72,7 +72,7 @@ export default function ContactUs() {
             <div className="max-w-5xl w-full grid md:grid-cols-2 gap-10 items-center">
                 {/* Left Content */}
                 <div className="space-y-6">
-                    <h2 className="text-3xl font-bold text-blue-700">
+                    <h2 className="text-3xl font-bold text-blue-400">
                         We're Here for You <br /> & Your Baby!
                     </h2>
                     <p className="text-gray-600">
@@ -83,7 +83,7 @@ export default function ContactUs() {
                         <div>
                             <label className="block text-sm text-gray-700">Message</label>
                             <textarea
-                                rows="4" value={message} onChange={handleMessageChange} className={`w-full mt-1 px-4 py-2 border rounded-md ${messageError ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-pink-500`}
+                                rows="4" value={message} onChange={handleMessageChange} className={`w-full mt-1 px-4 py-2 border rounded-md ${messageError ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-rose-300`}
                             />
                             {messageError && (
                                 <p className="text-red-500 text-xs mt-1">{messageError}</p>
@@ -98,7 +98,7 @@ export default function ContactUs() {
                                 id="feedbackType"
                                 value={selected}
                                 onChange={(e) => setSelected(e.target.value)}
-                                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-rose-300 focus:border-rose-300"
                             >
                                 <option value="" disabled>Select one</option>
                                 <option value="Suggestion">Suggestion</option>
@@ -107,7 +107,7 @@ export default function ContactUs() {
                             </select>
                         </div>
 
-                        <button type="submit" className="w-full bg-pink-400 text-white font-semibold py-2 rounded-md hover:bg-pink-500 transition" disabled={loading}>
+                        <button type="submit" className="w-full bg-rose-300 text-white font-semibold py-2 rounded-md hover:bg-rose-400 transition" disabled={loading}>
                             {loading ? 'Sending...' : 'Send Message'}
                         </button>
                     </form>
@@ -131,7 +131,7 @@ export default function ContactUs() {
                         </div>
                         <div className="flex items-center gap-2 text-gray-600">
                             <i className="fa-solid fa-envelope text-blue-400"></i>
-                            <span>support@babyguard.com</span>
+                            <span>info@babyguard.com</span>
                         </div>
                         <div className="flex gap-7 pt-4 text-blue-600 text-xl">
                             <a href="#"><i className="fab fa-facebook-f text-blue-400"></i></a>

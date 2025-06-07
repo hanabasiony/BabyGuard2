@@ -306,7 +306,7 @@ export default function VaccinationForm() {
               <button
                 type="submit"
                 disabled={isSubmitting || submissionStatus.isSubmitting}
-                className={`w-full md:w-auto px-6 py-4 bg-pink-500 hover:bg-pink-600 text-white font-medium rounded-md transition duration-200 text-lg ${
+                className={`w-full md:w-auto px-6 py-4 bg-rose-300 hover:bg-rose-400 text-white font-medium rounded-md transition duration-200 text-lg ${
                   isSubmitting || submissionStatus.isSubmitting ? "opacity-70 cursor-not-allowed" : ""
                 }`}
               >

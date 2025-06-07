@@ -44,7 +44,7 @@ export default function Home() {
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="bg-rose-300 hover:bg-rose-350 text-white px-6 py-2 rounded-full flex items-center">
+            className="bg-rose-300 hover:bg-rose-400 text-white px-6 py-2 rounded-full flex items-center">
             Get Started <span className="ml-2">→</span>
           </button>
         </div>
@@ -74,7 +74,7 @@ export default function Home() {
       </section>
 
       {/* Vaccine Reminder Banner */}
-      <div className="bg-rose-200 py-4">
+      <div className="bg-rose-100 py-4">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center">
             <div className="flex items-center space-x-2">
@@ -91,8 +91,8 @@ export default function Home() {
       <section className="mx-auto px-12 py-12">
         <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12 mt-10">Core Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-pink-50 border-none rounded-lg shadow-sm p-6">
-            <div className="bg-pink-200 w-10 h-10 rounded-full flex items-center justify-center mb-4">
+          <div className="bg-rose-50 border-none rounded-lg shadow-sm p-6">
+            <div className="bg-rose-200 w-10 h-10 rounded-full flex items-center justify-center mb-4">
               <span className="text-rose-600">💉</span>
             </div>
             <h3 className="font-semibold text-lg mb-2">Vaccination Appointments</h3>

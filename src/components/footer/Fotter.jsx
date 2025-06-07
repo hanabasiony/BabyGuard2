@@ -114,38 +114,11 @@ export default function Fotter() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-rose-100">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="flex flex-col items-center">
             <p className="text-sm text-gray-600">
               © 2025 Baby Guard. All rights reserved.
             </p>
-            <div className="mt-4 md:mt-0">
-              <ul className="flex space-x-6">
-                <li>
-                  <button 
-                    // onClick={() => handleNavigation('/privacy')}
-                    className="text-sm text-gray-600 hover:text-rose-300 transition-colors"
-                  >
-                    Privacy Policy
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    // onClick={() => handleNavigation('/terms')}
-                    className="text-sm text-gray-600 hover:text-rose-300 transition-colors"
-                  >
-                    Terms of Service
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    // onClick={() => handleNavigation('/cookies')}
-                    className="text-sm text-gray-600 hover:text-rose-300 transition-colors"
-                  >
-                    Cookie Policy
-                  </button>
-                </li>
-              </ul>
-            </div>
+
           </div>
         </div>
       </div>

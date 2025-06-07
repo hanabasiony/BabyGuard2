@@ -47,11 +47,9 @@ export default function PregnancyTips() {
         <div className="bg-white p-6 rounded-2xl shadow flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-semibold">Pregnancy Tips</h2>
-            <p className="text-sm text-gray-500">Helpful advice for a healthy and happy pregnancy</p>
+            <p className="text-sm text-gray-500 pt-2">Helpful advice for a healthy and happy pregnancy</p>
           </div>
-          <div className="text-rose-300">
-            <Info className="w-6 h-6" />
-          </div>
+
         </div>
 
         {/* Tips Section */}

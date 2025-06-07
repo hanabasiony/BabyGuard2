@@ -139,7 +139,7 @@ const Sidebar = () => {
           </div>
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-pink-500"
+            className="p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-rose-300"
           >
             <svg
               className="h-6 w-6"
@@ -176,11 +176,11 @@ const Sidebar = () => {
         <div className="h-full w-full flex flex-col">
           <div className="p-4 flex w-full items-center justify-between border-b lg:border-b-0">
             <div className="flex w-full items-center justify-between space-x-2">
-              <h1 className="text-xl font-semibold text-pink-500">Baby Guard</h1>
-              <Link onClick={handleLogout} to="/login"><i className="fa-solid text-2xl text-pink-500 fa-right-from-bracket"></i></Link>
+              <h1 className="text-xl font-semibold text-rose-300">Baby Guard</h1>
+              <Link onClick={handleLogout} to="/login"><i className="fa-solid text-2xl text-rose-300 fa-right-from-bracket"></i></Link>
             </div>
             <button
-              className="lg:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-pink-500"
+              className="lg:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-rose-300"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <svg
@@ -201,7 +201,7 @@ const Sidebar = () => {
                 <li key={item.path}>
                   <Link
                     to={item.path}
-                    className={`flex items-center px-4 py-3 text-gray-600 hover:bg-pink-50 hover:text-pink-500 transition-colors duration-200 ${location.pathname === item.path ? "bg-pink-50 text-pink-500 border-r-4 border-pink-500" : ""
+                    className={`flex items-center px-4 py-3 text-gray-600 hover:bg-rose-50 hover:text-rose-400 transition-colors duration-200 ${location.pathname === item.path ? "bg-rose-50 text-rose-300 border-r-4 border-rose-300" : ""
                       }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

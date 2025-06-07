@@ -217,7 +217,7 @@ function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link
             to="/manage-nurses"
-            className="bg-gradient-to-r from-pink-500 to-pink-600 text-white py-3 px-4 rounded-md flex items-center justify-center hover:from-pink-600 hover:to-pink-700 transition duration-200"
+            className="bg-rose-300 text-white py-3 px-4 rounded-md flex items-center justify-center hover:bg-rose-400 transition duration-200"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -239,7 +239,7 @@ function Dashboard() {
           <Link
             to="/admin/vaccinations/add"
             state={{ showAddModal: true }}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-md flex items-center justify-center hover:from-blue-600 hover:to-blue-700 transition duration-200"
+            className="bg-gradient-to-r from-blue-400 to-blue-400 text-white py-3 px-4 rounded-md flex items-center justify-center hover:from-blue-500 hover:to-blue-500 transition duration-200"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -261,7 +261,7 @@ function Dashboard() {
           <Link
             to="product-store/add"
             state={{ showAddModal: true }}
-            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 px-4 rounded-md flex items-center justify-center hover:from-purple-600 hover:to-purple-700 transition duration-200"
+            className="bg-gradient-to-r from-gray-500 to-gray-600 text-white py-3 px-4 rounded-md flex items-center justify-center hover:from-gray-600 hover:to-gray-700 transition duration-200"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

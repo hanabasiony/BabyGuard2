@@ -141,7 +141,7 @@ const ManageCarts = () => {
                     <Oval
                         height={80}
                         width={80}
-                        color="#ec4899"
+                        color="#fda4af"
                         wrapperStyle={{}}
                         wrapperClass=""
                         visible={true}
@@ -171,7 +171,7 @@ const ManageCarts = () => {
                         placeholder="Search by name or email..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-rose-400 focus:border-rose-400 sm:text-sm"
                     />
                 </div>
 
@@ -185,7 +185,7 @@ const ManageCarts = () => {
                     <select
                         value={orderCountFilter}
                         onChange={(e) => setOrderCountFilter(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-rose-400 focus:border-rose-400 sm:text-sm"
                     >
                         <option value="all">All Orders</option>
                         <option value="1-2">1-2 Orders</option>
@@ -208,7 +208,7 @@ const ManageCarts = () => {
                             setItemsPerPage(Number(e.target.value));
                             setCurrentPage(1);
                         }}
-                        className="block w-20 pl-3 pr-8 py-1 text-sm border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                        className="block w-20 pl-3 pr-8 py-1 text-sm border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-rose-400 focus:border-rose-400"
                     >
                         <option value="6">6</option>
                         <option value="12">12</option>
@@ -226,8 +226,8 @@ const ManageCarts = () => {
                         onClick={() => handleUserClick(userData.user._id)}
                     >
                         <div className="flex items-center space-x-3 mb-4">
-                            <div className="bg-pink-100 p-2 rounded-full">
-                                <User className="w-6 h-6 text-pink-500" />
+                            <div className="bg-rose-100 p-2 rounded-full">
+                                <User className="w-6 h-6 text-rose-400" />
                             </div>
                             <div>
                                 <h2 className="text-lg font-semibold">
@@ -269,7 +269,7 @@ const ManageCarts = () => {
                             </div>
                         </div>
 
-                        <div className="mt-4 pt-4 border-t flex items-center justify-end text-pink-500 hover:text-pink-600">
+                        <div className="mt-4 pt-4 border-t flex items-center justify-end text-rose-400 hover:text-rose-400">
                             <span className="text-sm font-medium">View Details</span>
                             <ArrowRight className="w-4 h-4 ml-1" />
                         </div>
@@ -312,7 +312,7 @@ const ManageCarts = () => {
                                 onClick={() => handlePageChange(number)}
                                 className={`px-3 py-1 rounded-md ${
                                     currentPage === number
-                                        ? 'bg-pink-500 text-white'
+                                        ? 'bg-rose-400 text-white'
                                         : 'hover:bg-gray-100 text-gray-600'
                                 }`}
                             >

@@ -239,7 +239,7 @@ const AddProductPage = () => {
                             <button
                                 type="button"
                                 onClick={addDescription}
-                                className="mt-2 text-blue-600 hover:text-blue-800"
+                                className="mt-2 text-rose-500 hover:text-rose-600"
                             >
                                 Add Description
                             </button>
@@ -342,7 +342,7 @@ const AddProductPage = () => {
                             <button
                                 type="button"
                                 onClick={addFeature}
-                                className="mt-2 text-blue-600 hover:text-blue-800"
+                                className="mt-2 text-rose-500 hover:text-rose-600"
                             >
                                 Add Feature
                             </button>
@@ -354,7 +354,7 @@ const AddProductPage = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                            className="bg-rose-300 text-white px-6 py-2 rounded-lg hover:bg-rose-400 transition-colors disabled:opacity-50"
                         >
                             {loading ? 'Adding Product...' : 'Add Product'}
                         </button>

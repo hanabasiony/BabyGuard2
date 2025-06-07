@@ -97,7 +97,7 @@ function Vaccinations() {
             </div>
             <div className="flex flex-wrap gap-2">
               <button 
-                className="px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 flex items-center justify-center w-full sm:w-auto"
+                className="px-4 py-2 bg-rose-300 text-white rounded-md hover:bg-rose-400 flex items-center justify-center w-full sm:w-auto"
                 onClick={() => navigate('/admin/vaccinations/add')}
               >
                 <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -243,7 +243,7 @@ function Vaccinations() {
                   name="name"
                   defaultValue={editingVaccine.name}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
                 />
               </div>
               
@@ -257,7 +257,7 @@ function Vaccinations() {
                   name="requiredAge"
                   defaultValue={editingVaccine.requiredAge}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
                 />
               </div>
               
@@ -271,7 +271,7 @@ function Vaccinations() {
                   rows="3"
                   defaultValue={editingVaccine.description}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
                 ></textarea>
               </div>
 
@@ -286,7 +286,7 @@ function Vaccinations() {
                   step="0.01"
                   defaultValue={editingVaccine.price}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
                 />
               </div>
               
@@ -300,7 +300,7 @@ function Vaccinations() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-rose-300 hover:bg-rose-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-300"
                 >
                   Save Changes
                 </button>

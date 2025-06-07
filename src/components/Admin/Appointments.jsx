@@ -19,6 +19,47 @@ function Appointments() {
   const [nurseSlots, setNurseSlots] = useState({}); // Add state for nurse slots
   const [selectedSlot, setSelectedSlot] = useState(null); // Add state for selected slot
 
+  // Add status update handler
+  const handleStatusChange = async (appointmentId, newStatus) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Authentication token is missing. Please log in again.');
+        return;
+      }
+
+      const response = await axios.patch(
+        `http://localhost:8000/api/vaccine-requests/status/admin/${appointmentId}`,
+        { status: newStatus },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        // Update the local state
+        const updatedRawAppointments = rawAppointments.map(request => {
+          if (request._id === appointmentId) {
+            return { ...request, status: newStatus };
+          }
+          return request;
+        });
+        setRawAppointments(updatedRawAppointments);
+        toast.success('Status updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      if (error.response) {
+        toast.error(error.response.data.message || 'Failed to update status. Please try again.');
+      } else {
+        toast.error('Error connecting to server. Please try again.');
+      }
+    }
+  };
+
   // Fetch data when the component mounts
   useEffect(() => {
     fetchAppointments();
@@ -413,15 +454,40 @@ function Appointments() {
                 <div className="p-4">
                   {/* Status Header */}
                   <div className="flex justify-between items-center mb-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      // Use status directly from the processed data
-                      appointment.status === 'Pending' 
-                        ? 'bg-yellow-100 text-yellow-800' 
-                        : 'bg-green-100 text-green-800'
-                    }`}>
-                      {appointment.status}
-                    </span>
-                    {/* More options button - keeping as is */}
+                    {appointment.status === 'Pending' ? (
+                      <select
+                        className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border-0 focus:ring-2 focus:ring-yellow-500"
+                        value={appointment.status}
+                        onChange={(e) => handleStatusChange(appointment.id, e.target.value)}
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Delivered">Delivered</option>
+                      </select>
+                    ) : appointment.status === 'Confirmed' ? (
+                      <select
+                        className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border-0 focus:ring-2 focus:ring-green-500"
+                        value={appointment.status}
+                        onChange={(e) => handleStatusChange(appointment.id, e.target.value)}
+                      >
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Delivered">Delivered</option>
+                      </select>
+                    ) : (
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        appointment.status === 'Pending' 
+                          ? 'bg-yellow-100 text-yellow-800' 
+                          : appointment.status === 'Confirmed'
+                          ? 'bg-green-100 text-green-800'
+                          : appointment.status === 'Rejected'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {appointment.status}
+                      </span>
+                    )}
+                    {/* More options button */}
                     <button className="text-gray-400 hover:text-gray-500">
                       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
@@ -430,8 +496,7 @@ function Appointments() {
                   </div>
                   
                   {/* Child and Vaccine Info */}
-                  <div className="mb-4 bg-gray-50 p-3 rounded-lg">
-                    Parent Name 
+                  <div className="mb-4 bg-gray-50 p-3 rounded-lg"> 
                     <div className="flex items-center mb-2">
                       <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -444,7 +509,7 @@ function Appointments() {
 
                     {/* Child Name */}
                     <div className="flex items-center mb-2">
-                      <svg className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                       <div>
@@ -455,7 +520,7 @@ function Appointments() {
 
                     {/* Vaccine */}
                     <div className="flex items-center mb-2">
-                      <svg className="h-5 w-5 text-purple-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                       </svg>
                       <div>

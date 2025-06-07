@@ -20,10 +20,37 @@ function ManageNurses() {
   const [limit, setLimit] = useState(10);
   const [prevPageToken, setPrevPageToken] = useState(null);
   const [pageHistory, setPageHistory] = useState([]);
+  const [providers, setProviders] = useState([]);
+  const [selectedProvider, setSelectedProvider] = useState('');
+
+  // Fetch providers data
+  const fetchProviders = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Authentication token is missing. Please log in again.');
+        return;
+      }
+
+      const response = await axios.get('http://localhost:8000/api/provider', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data && response.data.data) {
+        setProviders(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching providers:', error);
+      toast.error('Failed to fetch providers');
+    }
+  };
 
   // Fetch nurses data from API
   useEffect(() => {
     fetchNurses(null, limit);
+    fetchProviders();
 
     // Add event listener for nurses updates
     const handleNursesUpdate = (event) => {
@@ -587,16 +614,23 @@ function ManageNurses() {
 
                 <div className="mb-4">
                   <label htmlFor="hospital" className="block text-sm font-medium text-gray-700 mb-1">
-                    Hospital Name
+                    Provider Name
                   </label>
-                  <input
-                    type="text"
+                  <select
                     id="hospital"
                     name="hospital"
                     required
+                    value={selectedProvider}
+                    onChange={(e) => setSelectedProvider(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
-                    placeholder="Enter hospital name"
-                  />
+                  >
+                    <option value="">Select a provider</option>
+                    {providers.map((provider) => (
+                      <option key={provider._id} value={provider.name}>
+                        {provider.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="mt-6 flex justify-end">

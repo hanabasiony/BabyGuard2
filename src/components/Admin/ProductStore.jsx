@@ -136,15 +136,21 @@ function ProductStore() {
   }
 
   const filteredProducts = products.filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    (product) => {
+      const searchTermLower = searchTerm.toLowerCase();
+      const nameMatch = product.name.toLowerCase().includes(searchTermLower);
+      const descriptionMatch = Array.isArray(product.description) 
+        ? product.description.some(desc => desc.toLowerCase().includes(searchTermLower))
+        : false;
+      
+      return nameMatch || descriptionMatch;
+    }
   )
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-300"></div>
       </div>
     )
   }
@@ -232,7 +238,7 @@ function ProductStore() {
                 <button
                   onClick={handleQuantitySubmit}
                   disabled={!!quantityError || !newQuantity}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-rose-300 text-white rounded-md hover:bg-rose-400 focus:outline-none focus:ring-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Update
                 </button>
@@ -246,7 +252,7 @@ function ProductStore() {
         <h1 className="text-2xl font-bold text-gray-800">Product Store</h1>
         <Link
           to="/admin/product-store/add"
-          className="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition-colors"
+          className="bg-rose-300 text-white px-4 py-2 rounded-lg hover:bg-rose-400 transition-colors"
         >
           Add New Product
         </Link>
@@ -257,7 +263,7 @@ function ProductStore() {
           <input
             type="text"
             placeholder="Search products..."
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-300"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -314,7 +320,7 @@ function ProductStore() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button 
                       onClick={() => handleEditQuantityClick(product)}
-                      className="text-indigo-600 hover:text-indigo-900 mr-3"
+                      className="text-indigo-800 hover:text-indigo-950 mr-3"
                     >
                       Edit Quantity
                     </button>

@@ -38,7 +38,7 @@ const AddRecommendedFoods = () => {
       formData.append("image", values.image);
 
       const response = await axios.post(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/tips/recommended-food",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/tips/recommended-food",
         formData,
         {
           headers: {

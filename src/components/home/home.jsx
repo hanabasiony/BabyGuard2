@@ -42,7 +42,7 @@ const Home = () => {
         // Fetch pending cart data
         try {
           const cartResponse = await axios.get(
-            "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/pending",
+            "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/pending",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -91,7 +91,7 @@ const Home = () => {
 
         // Fetch all products
         const response = await axios.get(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/products",
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/products",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -131,7 +131,7 @@ const Home = () => {
 
       // Update the quantity in the cart
       const response = await axios.patch(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/${cartId}/products/${productId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/${cartId}/products/${productId}`,
         { quantity: newQuantity },
         {
           headers: {

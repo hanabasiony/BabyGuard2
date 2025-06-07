@@ -18,7 +18,7 @@ const TipsArticles = () => {
   const fetchTips = async () => {
     try {
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/tips"
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/tips"
       );
       setData(response.data.data);
       console.log(response.data.data);
@@ -44,7 +44,7 @@ const TipsArticles = () => {
   const handleDeleteTips = async (id) => {
     try {
       const res = await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/tips/pregnancy-tip/${id}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/tips/pregnancy-tip/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -65,7 +65,7 @@ const TipsArticles = () => {
   const handleDeleteTrimester = async (id) => {
     try {
       const res = await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/tips/trimester/${id}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/tips/trimester/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ const TipsArticles = () => {
   const handleDeleteFood = async (id) => {
     try {
       const res = await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/tips/recommended-food/${id}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/tips/recommended-food/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -107,7 +107,7 @@ const TipsArticles = () => {
   const handleDeleteMilestone = async (id) => {
     try {
       const res = await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/tips/milestone/${id}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/tips/milestone/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

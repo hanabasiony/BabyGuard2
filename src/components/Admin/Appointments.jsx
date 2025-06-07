@@ -29,7 +29,7 @@ function Appointments() {
       }
 
       const response = await axios.patch(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/vaccine-requests/status/admin/${appointmentId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccine-requests/status/admin/${appointmentId}`,
         { status: newStatus },
         {
           headers: {
@@ -168,7 +168,7 @@ function Appointments() {
       }
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/vaccine-requests/admin",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccine-requests/admin",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -203,7 +203,7 @@ function Appointments() {
       }
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/nurse",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/nurse",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -241,7 +241,7 @@ function Appointments() {
       }
 
       const response = await axios.get(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/nurse/${nurseId}/free-slots`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/nurse/${nurseId}/free-slots`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -395,7 +395,7 @@ function Appointments() {
 
       // Make the API call to assign the nurse
       const response = await axios.post(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/nurse/${selectedNurseId}/assign`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/nurse/${selectedNurseId}/assign`,
         {
           slotId: selectedSlot.slot._id,
           vaccineId: appointment.id,

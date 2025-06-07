@@ -23,7 +23,7 @@ export default function MyOrders() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/my-orders",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/my-orders",
         {
           headers: {
             Authorization: `Bearer ${token}`,

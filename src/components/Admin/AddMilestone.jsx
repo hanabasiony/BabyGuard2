@@ -21,7 +21,7 @@ const AddMilestone = () => {
           if (!value) return true;
           try {
             const response = await axios.get(
-              `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/tips/milestone/check/${value}`,
+              `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/tips/milestone/check/${value}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -48,7 +48,7 @@ const AddMilestone = () => {
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       const response = await axios.post(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/tips/milestone",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/tips/milestone",
         values,
         {
           headers: {

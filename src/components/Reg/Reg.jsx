@@ -23,8 +23,6 @@ export default function Reg() {
     fName: "",
     lName: "",
     email: "",
-    nationalIdNumer: "",
-    birthDate: "",
     password: "",
     passwordConfirm: "",
     phoneNumber: "",
@@ -49,7 +47,7 @@ export default function Reg() {
 
     const data = await axios
       .post(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/auth/signup",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/auth/signup",
         formattedValues
       )
       .then(function (succ) {
@@ -103,11 +101,7 @@ export default function Reg() {
         .min(3, "minimum must be 3 characters")
         .max(12, "maximum must be 12 values"),
       email: yup.string().email("invalid email").required("Email is required"),
-      nationalIdNumer: yup
-        .string()
-        .required("national id is req")
-        .min(14)
-        .max(14),
+    
       birthDate: yup
         .date()
         .required("Birth date is required")
@@ -121,7 +115,7 @@ export default function Reg() {
       phoneNumber: yup
         .string()
         .required("phone number is req")
-        .matches(/^01[0-2,5]{1}[0-9]{8}$/, "must be EGP number"),
+        .matches(/^\+201[0-2,5][0-9]{8}$/, "Phone number must be in format: +201XXXXXXXX"),
       governorate: yup.string().required("governorate is required"),
       city: yup.string().required("city is required"),
       street: yup.string().required("street is required"),
@@ -253,36 +247,7 @@ export default function Reg() {
                 )}
               </div>
 
-              <div className="relative z-0 w-full group">
-                <input
-                  value={regFormik.values.nationalIdNumer}
-                  onBlur={regFormik.handleBlur}
-                  onChange={regFormik.handleChange}
-                  type="text"
-                  name="nationalIdNumer"
-                  id="nationalIdNumer"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                  placeholder=" "
-                  required
-                />
-                <label
-                  htmlFor="nationalIdNumer"
-                  className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                >
-                  National ID Number
-                </label>
-                {regFormik.errors.nationalIdNumer &&
-                regFormik.touched.nationalIdNumer ? (
-                  <div
-                    className="p-2 mt-1 text-sm text-red-800 rounded-lg bg-red-50"
-                    role="alert"
-                  >
-                    {regFormik.errors.nationalIdNumer}
-                  </div>
-                ) : (
-                  ""
-                )}
-              </div>
+              
 
               <div className="relative z-0 w-full group">
                 <input

@@ -21,7 +21,7 @@ export default function Home() {
     const fetchFeaturedProducts = async () => {
       try {
         const response = await axios.get(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/products"
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/products"
         );
         // Take only the first 4 products
         setFeaturedProducts(response.data.data.slice(0, 4));

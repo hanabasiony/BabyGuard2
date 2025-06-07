@@ -47,7 +47,7 @@ export default function Navbar() {
         if (!token) return;
 
         const response = await axios.get(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/pending",
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/pending",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -82,7 +82,7 @@ export default function Navbar() {
         setLoading(true);
         try {
           const response = await axios.delete(
-            `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/${cartId}`,
+            `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/${cartId}`,
             {
               headers: {
                 Authorization: `Bearer ${userToken}`,
@@ -221,8 +221,7 @@ export default function Navbar() {
               {userToken ? (
                 <>
                   <span className="text-rose-300 font-medium">
-                    Hello,{" "}
-                    {userData?.user?.fName || (isAdmin ? "Admin" : "User")} !
+                    Hello, {userData?.user?.fName || (isAdmin ? "Admin" : "User")}
                   </span>
                   {isAdmin ? (
                     ""

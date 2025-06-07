@@ -21,7 +21,7 @@ const ChooseFromFour = () => {
     const fetchQuestions = async () => {
       try {
         const response = await axios.get(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/questions",
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/questions",
           {
             headers: {
               Authorization: `Bearer ${userToken}`,

@@ -106,7 +106,7 @@ export default function OTPInput() {
         }
 
         const response = await axios.post(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/payment/verify-otp",
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/payment/verify-otp",
           {
             cartId: cartId,
             code: otpValue,
@@ -127,7 +127,7 @@ export default function OTPInput() {
           // Create a new cart
           try {
             const newCartResponse = await axios.post(
-              "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts",
+              "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts",
               {
                 cart: {
                   governorate: "Cairo",
@@ -185,7 +185,7 @@ export default function OTPInput() {
       }
 
       const response = await axios.patch(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/payment/resend-otp/${cartId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/payment/resend-otp/${cartId}`,
         {},
         {
           headers: {
@@ -235,7 +235,7 @@ export default function OTPInput() {
       }
 
       const response = await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/payment/cancel/${cartId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/payment/cancel/${cartId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -253,7 +253,7 @@ export default function OTPInput() {
         // Create a new cart
         try {
           const newCartResponse = await axios.post(
-            "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts",
+            "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts",
             {
               cart: {
                 governorate: "Cairo",

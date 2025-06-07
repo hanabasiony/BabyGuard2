@@ -42,7 +42,7 @@ export default function VaccinationForm() {
     // Fetch children from API
     axios
       .get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/child/me",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/child/me",
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
@@ -66,7 +66,7 @@ export default function VaccinationForm() {
     if (vaccineId) {
       axios
         .get(
-          `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/vaccines/${vaccineId}`,
+          `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccines/${vaccineId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -118,7 +118,7 @@ export default function VaccinationForm() {
     };
     axios
       .post(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/vaccine-requests",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccine-requests",
         requestBody,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

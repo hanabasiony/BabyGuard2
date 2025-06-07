@@ -50,7 +50,7 @@ function Dashboard() {
       }
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/vaccine-requests/admin",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccine-requests/admin",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -87,7 +87,7 @@ function Dashboard() {
       }
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/complaints/admin",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/complaints/admin",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -115,7 +115,7 @@ function Dashboard() {
   const fetchUsersNumbers = () => {
     const res = axios
       .get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user",
         {
           headers: {
             Authorization: `Bearer ${token}`,

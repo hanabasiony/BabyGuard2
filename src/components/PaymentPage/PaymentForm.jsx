@@ -140,7 +140,7 @@ export default function PaymentForm() {
 
         // Make API call to send OTP
         const response = await axios.get(
-          `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/payment/send-otp/${cartId}`,
+          `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/payment/send-otp/${cartId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

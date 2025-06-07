@@ -36,7 +36,7 @@ export default function ProductDetails() {
         setError(null);
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/products",
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/products",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -78,7 +78,7 @@ export default function ProductDetails() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/pending",
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/pending",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -122,7 +122,7 @@ export default function ProductDetails() {
       }
 
       const response = await axios.patch(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/${cartId}/products/${productId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/${cartId}/products/${productId}`,
         { quantity: newQuantity },
         {
           headers: {
@@ -490,7 +490,7 @@ export default function ProductDetails() {
                                   try {
                                     const token = localStorage.getItem("token");
                                     await axios.delete(
-                                      `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/products-reviews/${review._id}`,
+                                      `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/products-reviews/${review._id}`,
                                       {
                                         headers: {
                                           Authorization: `Bearer ${token}`,

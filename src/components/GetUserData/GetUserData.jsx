@@ -30,7 +30,7 @@ export const UserDataProvider = ({ children }) => {
       }
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user/me",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user/me",
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -18,7 +18,7 @@ const tabs = ["All", "Complaints", "Suggestions", "Questions"];
 const allStatuses = ["In Progress", "Responded", "New"];
 const allCategories = ["Complaint", "Suggestion", "Question"];
 
-export default function Complaints() {
+const Complaints = () => {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -35,7 +35,7 @@ export default function Complaints() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/complaints/admin",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/complaints/admin",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -64,7 +64,7 @@ export default function Complaints() {
 
       setComplaints(formattedComplaints);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error:", error.response.data.message);
       toast.error("Failed to fetch complaints");
       setComplaints([]);
     } finally {
@@ -265,4 +265,6 @@ export default function Complaints() {
       )}
     </div>
   );
-}
+};
+
+export default Complaints;

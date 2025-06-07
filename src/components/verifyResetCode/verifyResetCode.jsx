@@ -18,17 +18,20 @@ export default function VerifyResetCode() {
     const navigate = useNavigate()
 
     let user = {
-        resetCode: ''
+        email:'',
+        otp:''
     }
     async function verifyResetCode(values) {
         setLoading(true)
         // console.log(values);
         setIsClicked(true)
-        const data = await axios.post('https://ecommerce.routemisr.com/api/v1/auth/verifyResetCode', values)
+        const data = await axios.post('https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/auth/verify-otp', values)
             .then(function (succ) {
 
                 console.log(succ);
                 setLoading(false)
+                console.log(data);
+                
 
                 // setuserToken(succ.data.token)
 
@@ -70,8 +73,8 @@ export default function VerifyResetCode() {
         validationSchema:
             yup.object().shape(
                 {
-                    resetCode: yup.string().max(6, 'verification code is 6 numbers'),
-                    // password: yup.string().required('password is required').min(6).max(12),
+                    otp: yup.string().max(6, 'verification code is 6 numbers'),
+                    email: yup.string()
 
 
                 }
@@ -87,10 +90,19 @@ export default function VerifyResetCode() {
             <div className="wrapper w-full bg-pink-50 py-70 ">
                 <form className=' pb-20 max-w-md mx-auto px-10 bg-pink-50 ' onSubmit={regFormik.handleSubmit}>
                     <div className="relative z-0 w-full mb-5 group">
-                        <input value={regFormik.values.resetCode} onBlur={regFormik.handleBlur} onChange={regFormik.handleChange} type="text" name="resetCode" id="resetCode" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-                        <label htmlFor="resetCode" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">resetCode</label>
-                        {regFormik.errors.resetCode && regFormik.touched.resetCode ? <div class="p-4  mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                            {regFormik.errors.resetCode}
+                        <input value={regFormik.values.otp} onBlur={regFormik.handleBlur} onChange={regFormik.handleChange} type="text" name="otp" id="otp" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                        <label htmlFor="otp" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">otp</label>
+                        {regFormik.errors.otp && regFormik.touched.otp ? <div class="p-4  mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                            {regFormik.errors.otp}
+                        </div> : ''}
+
+                    </div>
+
+                    <div className="relative z-0 w-full mb-5 group">
+                        <input value={regFormik.values.email} onBlur={regFormik.handleBlur} onChange={regFormik.handleChange} type="text" name="email" id="email" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                        <label htmlFor="email" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">email</label>
+                        {regFormik.errors.email && regFormik.touched.email ? <div class="p-4  mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                            {regFormik.errors.email}
                         </div> : ''}
 
                     </div>

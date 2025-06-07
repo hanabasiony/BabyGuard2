@@ -75,7 +75,7 @@ const AddChild = () => {
           console.log(formData);
 
           const response = await axios.post(
-            "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/child",
+            "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/child",
             formData,
             {
               headers: {

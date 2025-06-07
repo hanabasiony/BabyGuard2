@@ -43,7 +43,7 @@ function ManageChildren() {
       }
 
       const apiUrl = new URL(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/child/admin"
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/child/admin"
       );
       if (cursor) {
         apiUrl.searchParams.append("cursor", cursor);
@@ -180,7 +180,7 @@ function ManageChildren() {
 
       // Make the API call in the background
       const response = await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/child/${childId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/child/${childId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

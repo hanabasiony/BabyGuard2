@@ -48,7 +48,7 @@ const ManageCarts = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/admin",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/admin",
         {
           headers: {
             Authorization: `Bearer ${token}`,

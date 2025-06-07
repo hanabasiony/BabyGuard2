@@ -25,7 +25,7 @@ function EditUsersById() {
       }
 
       const response = await axios.get(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -101,7 +101,7 @@ function EditUsersById() {
       };
 
       const response = await axios.put(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user/${userId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user/${userId}`,
         updateData,
         {
           headers: {
@@ -152,7 +152,7 @@ function EditUsersById() {
       }
 
       const response = await axios.put(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user/${userId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user/${userId}`,
         editedValues,
         {
           headers: {

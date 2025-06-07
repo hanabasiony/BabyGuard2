@@ -47,7 +47,7 @@ export default function ChildDashboard() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/child/me",
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/child/me",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -78,7 +78,7 @@ export default function ChildDashboard() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/vaccine-requests/",
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccine-requests/",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -100,7 +100,7 @@ export default function ChildDashboard() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/child/${selectedChild?._id}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/child/${selectedChild?._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -113,7 +113,7 @@ export default function ChildDashboard() {
       setShowRemoveModal(false);
       // Refresh the child list
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/child/me",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/child/me",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -136,7 +136,7 @@ export default function ChildDashboard() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/vaccine-requests/${selectedRequestId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccine-requests/${selectedRequestId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

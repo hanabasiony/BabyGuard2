@@ -75,12 +75,12 @@ export default function PaymentPage(){
     return (
       <div className="min-h-screen flex justify-center items-center py-35 bg-white">
         <div className="w-full max-w-2xl bg-white rounded-3xl shadow-sm p-8">
-          <h2 className="text-4xl font-bold text-blue-800 text-center mb-12">Checkout</h2>
+          <h2 className="text-4xl font-bold text-rose-300 text-center mb-12">Checkout</h2>
   
           <form onSubmit={handleSubmit}>
             {/* Order Summary */}
             <div>
-              <h3 className="text-2xl font-semibold text-blue-800 mb-6">Order Summary</h3>
+              <h3 className="text-2xl font-semibold text-rose-300 mb-6">Order Summary</h3>
   
               <div className="space-y-4 mb-8">
                 {cartData.products.map((product) => (
@@ -116,15 +116,15 @@ export default function PaymentPage(){
               </div>
   
               <div className="flex justify-between items-center mb-8">
-                <span className="text-xl font-bold text-blue-800">Total</span>
-                <span className="text-xl font-bold text-blue-800">EGP {cartData.cart.totalPrice}</span>
+                <span className="text-xl font-bold text-rose-300">Total</span>
+                <span className="text-xl font-bold text-rose-300">EGP {cartData.cart.totalPrice}</span>
               </div>
   
               <div className="flex justify-center">
                 <button 
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-96 bg-pink-500 hover:bg-pink-600 text-white font-medium py-4 px-6 rounded-full transition duration-300 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`w-96 bg-rose-300 hover:bg-rose-400 cursor-pointer text-white font-medium py-4 px-6 rounded-full transition duration-300 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {isSubmitting ? 'Processing...' : 'Place Order'}
                 </button>

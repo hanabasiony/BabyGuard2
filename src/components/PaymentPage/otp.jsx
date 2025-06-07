@@ -148,7 +148,11 @@ export default function OTPInput() {
             if (newCartResponse.data?.data?._id) {
               localStorage.setItem('cartId', newCartResponse.data.data._id);
               toast.success("New cart initialized successfully!");
+              console.log('create new cart',newCartResponse);
+              
             }
+            // console.log(newCartResponse);
+            
 
             // Navigate to success page or home
             navigate('/');
@@ -198,6 +202,8 @@ export default function OTPInput() {
         setActiveIndex(0);
         inputRefs.current[0]?.focus();
         // Start the timer again after successful resend
+        console.log('resend otp', response);
+        
         startTimer();
       }
     } catch (error) {
@@ -238,8 +244,42 @@ export default function OTPInput() {
 
       if (response.status === 200) {
         toast.success("Payment cancelled successfully!");
+        console.log('delete otp and cart',response);
+        
         // Clear cartId from localStorage
         localStorage.removeItem('cartId');
+
+        // Create a new cart
+        try {
+          const newCartResponse = await axios.post(
+            'http://localhost:8000/api/carts',
+            {
+              cart: {
+                governorate: "Cairo",
+                city: "1st Settlement",
+                street: "Main Street",
+                buildingNumber: 123,
+                apartmentNumber: 45,
+                paymentType: "Cash"
+              }
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            }
+          );
+
+          if (newCartResponse.data?.data?._id) {
+            localStorage.setItem('cartId', newCartResponse.data.data._id);
+            toast.success("New cart initialized successfully!");
+            console.log('New cart created after deletion:', newCartResponse);
+          }
+        } catch (error) {
+          console.error("Error creating new cart:", error);
+          toast.error("Failed to initialize new cart");
+        }
+
         // Navigate back to home or previous page
         navigate('/');
       }
@@ -248,8 +288,6 @@ export default function OTPInput() {
       
       if (error.response?.status === 401) {
         toast.error("Unauthorized. Please login again.");
-        // Optionally redirect to login page
-        // navigate('/login');
       } else if (error.response?.status === 429) {
         toast.error("Too many requests. Please wait before trying again.");
       } else if (error.response?.status === 400) {

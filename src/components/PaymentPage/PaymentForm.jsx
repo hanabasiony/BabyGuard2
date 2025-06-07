@@ -131,11 +131,13 @@ export default function PaymentForm() {
               if (response.status === 201) {
                   // Navigate to OTP page after successful API call
                   navigate('/otp');
+                  console.log('send otp res',response);
+                  
               } else {
                   alert('Unexpected response from server. Please try again.');
               }
           } catch (error) {
-              console.error('Error processing payment:', error);
+              console.error('Error processing payment(otp):', error);
               if (error.response) {
                   // Handle specific error responses
                   switch (error.response.status) {
@@ -180,7 +182,7 @@ export default function PaymentForm() {
                 id="cardholder-name"
                 value={formData.cardholderName}
                 onChange={(e) => handleInputChange("cardholderName", e.target.value)}
-                className={`mt-1 block w-full px-3 py-2 border ${errors.cardholderName ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm`}
+                className={`mt-1 block w-full px-3 py-2 border ${errors.cardholderName ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-rose-400 focus:border-rose-400 sm:text-sm`}
               />
               {errors.cardholderName && <p className="text-red-500 text-xs mt-1">{errors.cardholderName}</p>}
             </div>
@@ -194,7 +196,7 @@ export default function PaymentForm() {
                 value={formData.cardNumber}
                 onChange={handleCardNumberChange}
                 maxLength="19"
-                className={`mt-1 block w-full px-3 py-2 border ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm tracking-wide`}
+                className={`mt-1 block w-full px-3 py-2 border ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-rose-400 focus:border-rose-400 sm:text-sm tracking-wide`}
                 placeholder="e.g., 4111 2222 3333 4444"
               />
               {errors.cardNumber && <p className="text-red-500 text-xs mt-1">{errors.cardNumber}</p>}
@@ -208,7 +210,7 @@ export default function PaymentForm() {
                   id="expiry-month"
                   value={formData.expiryMonth}
                   onChange={(e) => handleInputChange("expiryMonth", e.target.value)}
-                  className={`mt-1 block w-full px-3 py-2 border ${errors.expiryMonth ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm appearance-none cursor-pointer`}
+                  className={`mt-1 block w-full px-3 py-2 border ${errors.expiryMonth ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-rose-400 focus:border-rose-400 sm:text-sm appearance-none cursor-pointer`}
                 >
                    <option value="" disabled>MM</option>
                   {months.map((month) => (
@@ -225,7 +227,7 @@ export default function PaymentForm() {
                    id="expiry-year"
                   value={formData.expiryYear}
                   onChange={(e) => handleInputChange("expiryYear", e.target.value)}
-                  className={`mt-1 block w-full px-3 py-2 border ${errors.expiryYear ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm appearance-none cursor-pointer`}
+                  className={`mt-1 block w-full px-3 py-2 border ${errors.expiryYear ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-rose-400 focus:border-rose-400 sm:text-sm appearance-none cursor-pointer`}
                 >
                   <option value="" disabled>YY</option>
                   {years.map((year) => (
@@ -244,7 +246,7 @@ export default function PaymentForm() {
                   value={formData.cvv}
                   onChange={(e) => handleInputChange("cvv", e.target.value.replace(/\D/g, "").slice(0, 4))}
                   maxLength="4"
-                  className={`mt-1 block w-full px-3 py-2 border ${errors.cvv ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm`}
+                  className={`mt-1 block w-full px-3 py-2 border ${errors.cvv ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-rose-400 focus:border-rose-400 sm:text-sm`}
                   placeholder="123"
                 />
                 {errors.cvv && <p className="text-red-500 text-xs mt-1">{errors.cvv}</p>}
@@ -256,10 +258,10 @@ export default function PaymentForm() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                className={`w-full flex  cursor-pointer justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
                   isLoading 
-                    ? 'bg-pink-400 cursor-not-allowed' 
-                    : 'bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500'
+                    ? 'bg-rose-300 cursor-not-allowed' 
+                    : 'bg-rose-300 hover:bg-rose-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-400'
                 }`}
               >
                 {isLoading ? (

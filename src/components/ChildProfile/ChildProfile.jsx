@@ -324,10 +324,10 @@ export default function ChildDashboard() {
 
                             <div className="bg-white p-4 rounded-2xl shadow space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <h3 className="font-semibold text-lg">Vaccine Requests</h3>
+                                    <h3 className="font-semibold text-lg">Vaccine Requests for {selectedChild?.name}</h3>
                                     <button 
                                         onClick={() => navigate('/vacciens')}
-                                        className="inline-flex cursor-pointer items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-rose-300 hover:bg-rose-350"
+                                        className="inline-flex cursor-pointer items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-600"
                                     >
                                         <Plus className="w-4 h-4 mr-1" />
                                         New Request
@@ -339,10 +339,17 @@ export default function ChildDashboard() {
                                     </div>
                                 ) : (
                                     <div className="space-y-3">
-                                        {vaccineRequests.map((request) => (
+                                        {vaccineRequests
+                                            .filter(request => request.child.name.toLowerCase() === selectedChild?.name.toLowerCase())
+                                            .map((request) => (
                                             <div key={request._id} className="flex items-center justify-between p-3 bg-gray-100 rounded-lg">
                                                 <div>
-                                                    <p className="text-sm font-medium">{request.vaccine.name}</p>
+                                                    <p className="text-sm font-medium">
+                                                        {request.vaccine ? request.vaccine.name : 'Vaccine not specified'}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        Child: {request.child.name}
+                                                    </p>
                                                     <p className="text-xs text-gray-500">
                                                         {new Date(request.vaccinationDate).toLocaleDateString('en-US', {
                                                             year: 'numeric',
@@ -355,12 +362,17 @@ export default function ChildDashboard() {
                                                     <p className="text-xs text-gray-500">
                                                         {request.street}, {request.city}, {request.governorate}
                                                     </p>
+                                                    {request.nurse && (
+                                                        <p className="text-xs text-gray-500">
+                                                            Nurse: {request.nurse.name} - {request.nurse.hospitalName}
+                                                        </p>
+                                                    )}
                                                 </div>
                                                 <div className="flex items-center space-x-2">
                                                     <span className={`px-2 py-1 text-xs rounded ${
                                                         request.status === 'Pending' 
                                                             ? 'bg-yellow-100 text-yellow-800'
-                                                            : request.status === 'Approved'
+                                                            : request.status === 'Confirmed'
                                                             ? 'bg-green-100 text-green-800'
                                                             : 'bg-red-100 text-red-800'
                                                     }`}>

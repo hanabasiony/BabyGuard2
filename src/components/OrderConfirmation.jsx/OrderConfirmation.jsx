@@ -76,7 +76,7 @@ const OrderConfirmation = () => {
             <div className="text-center">
                 <button
                     onClick={() => navigate('/products')}
-                    className="bg-pink-500 cursor-pointer  text-white px-8 py-3 rounded-full hover:bg-pink-600 transition-colors duration-200 font-medium"
+                    className="bg-rose-300 cursor-pointer  text-white px-8 py-3 rounded-full hover:bg-rose-400 transition-colors duration-200 font-medium"
                 >
                     Continue Shopping
                 </button>

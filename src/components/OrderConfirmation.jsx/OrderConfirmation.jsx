@@ -50,7 +50,7 @@ const OrderConfirmation = () => {
                 </div>
             </div>
 
-            <div className="bg-gray-50 rounded-2xl p-6 mb-8">
+            {/* <div className="bg-gray-50 rounded-2xl p-6 mb-8">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Ordered Products</h2>
                 <div className="space-y-4">
                     {cartData.products?.map((product) => (
@@ -71,7 +71,7 @@ const OrderConfirmation = () => {
                         </div>
                     ))}
                 </div>
-            </div>
+            </div> */}
 
             <div className="text-center">
                 <button

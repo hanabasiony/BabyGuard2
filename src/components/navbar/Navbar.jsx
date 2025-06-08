@@ -466,7 +466,7 @@ export default function Navbar() {
                   </li>
                   <li>
                     <NavLink
-                      to="/register"
+                      to="/reg"
                       className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg"
                       onClick={closeSidebar}
                     >

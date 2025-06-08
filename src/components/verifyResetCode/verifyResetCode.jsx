@@ -21,6 +21,8 @@ export default function VerifyResetCode() {
         email:'',
         otp:''
     }
+
+
     async function verifyResetCode(values) {
         setLoading(true)
         // console.log(values);
@@ -32,6 +34,8 @@ export default function VerifyResetCode() {
                 setLoading(false)
                 console.log(data);
                 
+
+                localStorage.setItem('resetToken', succ)
 
                 // setuserToken(succ.data.token)
 

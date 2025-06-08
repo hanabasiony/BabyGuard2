@@ -101,6 +101,7 @@ const EditProviderById = () => {
   const handleSaveEdit = async (values, { setSubmitting, setFieldError }) => {
     try {
       const token = localStorage.getItem("token");
+      
       if (!token) {
         toast.error("Please login to perform this action");
         navigate("/login");

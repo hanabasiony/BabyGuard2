@@ -9,7 +9,7 @@ import { Oval } from "react-loader-spinner";
 
 export default function ChildDashboard() {
   const navigate = useNavigate();
-  const [childData, setChildData] = useState(null);
+  const [childData, setChildData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedChild, setSelectedChild] = useState(null);
@@ -19,6 +19,8 @@ export default function ChildDashboard() {
   const [vaccineRequests, setVaccineRequests] = useState([]);
 
   const calculateAge = (birthDate) => {
+    if (!birthDate) return "N/A";
+    
     const birth = new Date(birthDate);
     const today = new Date();
 
@@ -46,6 +48,12 @@ export default function ChildDashboard() {
     const fetchChildData = async () => {
       try {
         const token = localStorage.getItem("token");
+        if (!token) {
+          setError("No authentication token found");
+          setLoading(false);
+          return;
+        }
+
         const response = await axios.get(
           "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/child/me",
           {
@@ -54,19 +62,29 @@ export default function ChildDashboard() {
             },
           }
         );
-        setLoading(false);
-        console.log(response.data.data);
-        setChildData(response.data.data);
-        // Set the first child as selected by default
-        if (response.data.data && response.data.data.length > 0) {
-          setSelectedChild(response.data.data[0]);
+
+        console.log("API Response:", response.data);
+        
+        const data = response.data?.data || [];
+        console.log("Processed child data:", data);
+        
+        setChildData(data);
+        
+        // Only set selected child if we have data
+        if (data && data.length > 0) {
+          console.log("Setting selected child:", data[0]);
+          setSelectedChild(data[0]);
+        } else {
+          console.log("No children data available");
+          setSelectedChild(null);
         }
-        console.log(childData);
+        
+        setLoading(false);
       } catch (err) {
-        setError(err.message);
+        console.error("Error fetching child data:", err);
+        setError(err.message || "Failed to fetch child data");
         setLoading(false);
         toast.error("Failed to fetch child data");
-        console.log(err);
       }
     };
 
@@ -77,6 +95,8 @@ export default function ChildDashboard() {
     const fetchVaccineRequests = async () => {
       try {
         const token = localStorage.getItem("token");
+        if (!token) return;
+
         const response = await axios.get(
           "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccine-requests/",
           {
@@ -85,32 +105,46 @@ export default function ChildDashboard() {
             },
           }
         );
-        setVaccineRequests(response.data.data);
-        console.log("vacc req", response.data.data);
+        
+        console.log("Vaccine requests response:", response.data);
+        const requests = response.data?.data || [];
+        setVaccineRequests(requests);
       } catch (err) {
         console.error("Error fetching vaccine requests:", err);
-        // toast.error("Failed to fetch vaccine requests");
+        toast.error("Failed to fetch vaccine requests");
       }
     };
 
-    fetchVaccineRequests();
-  }, []);
+    if (selectedChild) {
+      fetchVaccineRequests();
+    }
+  }, [selectedChild]);
 
   const handleRemoveChild = async () => {
+    if (!selectedChild?._id) {
+      toast.error("No child selected for removal");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Authentication token not found");
+        return;
+      }
+
       const res = await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/child/${selectedChild?._id}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/child/${selectedChild._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      toast.success("Child removed successfully");
-      console.log(res);
 
+      toast.success("Child removed successfully");
       setShowRemoveModal(false);
+
       // Refresh the child list
       const response = await axios.get(
         "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/child/me",
@@ -120,22 +154,35 @@ export default function ChildDashboard() {
           },
         }
       );
-      setChildData(response.data.data);
-      if (response.data.data && response.data.data.length > 0) {
-        setSelectedChild(response.data.data[0]);
+
+      const newData = response.data?.data || [];
+      setChildData(newData);
+      
+      if (newData.length > 0) {
+        setSelectedChild(newData[0]);
       } else {
         setSelectedChild(null);
       }
     } catch (err) {
+      console.error("Error removing child:", err);
       toast.error("Failed to remove child");
-      console.error(err);
     }
   };
 
   const handleDeleteRequest = async () => {
+    if (!selectedRequestId) {
+      toast.error("No request selected for deletion");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.delete(
+      if (!token) {
+        toast.error("Authentication token not found");
+        return;
+      }
+
+      await axios.delete(
         `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccine-requests/${selectedRequestId}`,
         {
           headers: {
@@ -144,19 +191,16 @@ export default function ChildDashboard() {
         }
       );
 
-      // Update the vaccine requests list
       setVaccineRequests((prevRequests) =>
         prevRequests.filter((request) => request._id !== selectedRequestId)
       );
 
       toast.success("Vaccine request deleted successfully");
       setShowDeleteRequestModal(false);
-      console.log(res.data);
-
       setSelectedRequestId(null);
     } catch (err) {
+      console.error("Error deleting vaccine request:", err);
       toast.error("Failed to delete vaccine request");
-      console.error(err);
     }
   };
 
@@ -193,12 +237,34 @@ export default function ChildDashboard() {
       </div>
     );
   }
-  console.log(selectedChild);
+
+  // Early return if no children data
+  if (!childData || childData.length === 0) {
+    return (
+      <div className="w-full bg-white">
+        <div className="p-4 py-40 md:p-8 max-w-7xl mx-auto space-y-6 md:py-40 sm:py-50">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-6 bg-white rounded-2xl shadow">
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
+              <span className="text-lg sm:text-xl text-black whitespace-nowrap">
+                You have no registered children
+              </span>
+              <button
+                onClick={() => navigate("/add-child")}
+                className="md:ms-auto m-auto cursor-pointer flex items-center justify-center px-4 py-2 bg-green-100 text-green-300 rounded hover:bg-green-200"
+              >
+                <Plus className="w-4 h-4 mr-2" /> Add Child
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-white">
       {/* Remove Child Modal */}
-      {showRemoveModal && (
+      {showRemoveModal && selectedChild && (
         <div
           className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
           onClick={() => setShowRemoveModal(false)}
@@ -218,7 +284,7 @@ export default function ChildDashboard() {
             </div>
             <p className="text-gray-600 mb-6">
               Are you sure you want to remove{" "}
-              <span className="font-bold">{selectedChild?.name}</span>? This
+              <span className="font-bold">{selectedChild.name}</span>? This
               action cannot be undone.
             </p>
             <div className="flex justify-end gap-4">
@@ -284,11 +350,11 @@ export default function ChildDashboard() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-6 bg-white rounded-2xl shadow">
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
             <span className="text-lg sm:text-xl text-black whitespace-nowrap ">
-              You have {childData?.length} Registered{" "}
-              {childData.length > 1 ? "children" : "child"}{" "}
-              {childData.length !== 0 ? ":" : ""}
+              You have {childData?.length || 0} Registered{" "}
+              {childData?.length > 1 ? "children" : "child"}{" "}
+              {childData?.length !== 0 ? ":" : ""}
             </span>
-            {childData.length === 0 ? (
+            {!childData?.length ? (
               <button
                 onClick={() => navigate("/add-child")}
                 className="md:ms-auto  m-auto cursor-pointer flex items-center justify-center px-4 py-2 bg-green-100 text-green-300 rounded hover:bg-green-200"
@@ -316,20 +382,20 @@ export default function ChildDashboard() {
           </div>
         </div>
 
-        {childData.length !== 0 && (
+        {childData?.length > 0 && selectedChild && (
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row items-center justify-between p-6 rounded-2xl shadow bg-white">
               <div className="flex items-center space-x-4">
                 <div>
                   <h2 className="text-xl font-semibold">
-                    {selectedChild?.name}
+                    {selectedChild.name}
                   </h2>
                   <p className="text-sm text-gray-500">
                     Age:{" "}
-                    {selectedChild?.birthDate
+                    {selectedChild.birthDate
                       ? calculateAge(selectedChild.birthDate)
                       : "N/A"}{" "}
-                    &bull; Gender: {selectedChild?.gender}
+                    &bull; Gender: {selectedChild.gender}
                   </p>
                 </div>
               </div>
@@ -353,7 +419,7 @@ export default function ChildDashboard() {
               <div className="bg-white p-4 rounded-2xl shadow space-y-4">
                 <div className="flex justify-between items-center">
                   <h3 className="font-semibold text-lg">
-                    Vaccine Requests for {selectedChild?.name}
+                    Vaccine Requests for {selectedChild.name}
                   </h3>
                   <button
                     onClick={() => navigate("/vacciens")}
@@ -374,8 +440,8 @@ export default function ChildDashboard() {
                     {vaccineRequests
                       .filter(
                         (request) =>
-                          request.child.name.toLowerCase() ===
-                          selectedChild?.name.toLowerCase()
+                          request.child?.name.toLowerCase() ===
+                          selectedChild.name.toLowerCase()
                       )
                       .map((request) => (
                         <div
@@ -389,7 +455,7 @@ export default function ChildDashboard() {
                                 : "Vaccine not specified"}
                             </p>
                             <p className="text-xs text-gray-500">
-                              Child: {request.child.name}
+                              Child: {request.child?.name}
                             </p>
                             <p className="text-xs text-gray-500">
                               {new Date(

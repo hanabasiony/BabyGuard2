@@ -312,7 +312,7 @@ export default function ProductDetails() {
                 ({product.rating || 0})
               </span>
             </div>
-            <p className="text-gray-700 mb-4">
+            <div className="text-gray-700 mb-4">
               {Array.isArray(product.description)
                 ? product.description.map((desc, index) => (
                     <p key={index} className="mb-2">
@@ -320,7 +320,7 @@ export default function ProductDetails() {
                     </p>
                   ))
                 : product.description}
-            </p>
+            </div>
 
             <div className="flex items-center space-x-3 mb-4">
               {loadingProducts[product._id] ? (

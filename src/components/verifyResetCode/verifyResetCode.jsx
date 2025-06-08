@@ -1,121 +1,173 @@
-import React, { useContext, useState } from 'react'
-import axios from 'axios'
+import React, { useState } from 'react';
+import axios from 'axios';
 import * as yup from 'yup';
-import { phone } from 'fontawesome';
-import { useFormik } from 'formik'
-// import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { FallingLines } from 'react-loader-spinner'
-import { authContext } from '../../context/AuthContext';
+import { useFormik } from 'formik';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 
-export default function VerifyResetCode() {
+const VerifyResetCode = () => {
+    console.log('VerifyResetCode component rendered');
+    const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState(null);
+    const [successMsg, setSuccessMsg] = useState(false);
+    const navigate = useNavigate();
+    const { email } = useParams();
+    console.log('Email from params:', email);
 
-    const [loading, setLoading] = useState(false)
-    const [erorrMsg, setErorrMsg] = useState(null)
-    const [succMsg, setSuccMsg] = useState(false)
-    const [isClicked, setIsClicked] = useState(false)
-    const navigate = useNavigate()
+    const initialValues = {
+        otp: ''
+    };
+    console.log('Initial form values:', initialValues);
 
-    let user = {
-        email:'',
-        otp:''
-    }
+    const validationSchema = yup.object().shape({
+        otp: yup
+            .string()
+            .required("OTP is required")
+            .matches(/^\d{6}$/, "OTP must be exactly 6 digits")
+    });
 
+    const formik = useFormik({
+        initialValues,
+        validationSchema,
+        onSubmit: handleVerifyResetCode
+    });
 
-    async function verifyResetCode(values) {
-        setLoading(true)
-        // console.log(values);
-        setIsClicked(true)
-        const data = await axios.post('https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/auth/verify-otp', values)
-            .then(function (succ) {
-
-                console.log(succ);
-                setLoading(false)
-                console.log(data);
-                
-
-                localStorage.setItem('resetToken', succ)
-
-                // setuserToken(succ.data.token)
-
-                // localStorage.setItem('tkn', succ.data.token)
-                // congratulations msg
-                setSuccMsg(true)
-
-                setTimeout(() => {
-                    navigate('./PassReset')
-                }, 2000)
-
-                // setIsClicked(false)
-
-
-            }).catch(function (err) {
-                console.log(err.response.data.message);
-                // err.response.data.message
-                // setErorrMsg(err.response.data.message)
-
-
-                // setTimeout(() => {
-                //     setErorrMsg(null)
-                // }, 2000)
-
-                // setIsClicked(false)
-
-            })
-
-    }
-
-    const regFormik = useFormik({
-
-
-        initialValues: user,
-
-
-        onSubmit: verifyResetCode,
-
-        validationSchema:
-            yup.object().shape(
+    async function handleVerifyResetCode(values) {
+        console.log('handleVerifyResetCode called with values:', values);
+        setLoading(true);
+        try {
+            console.log('Sending verification request with:', { email, otp: values.otp });
+            const response = await axios.post(
+                'https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/auth/verify-otp',
                 {
-                    otp: yup.string().max(6, 'verification code is 6 numbers'),
-                    email: yup.string()
-
-
+                    email,
+                    otp: values.otp
                 }
-            )
-        ,
+            );
+            console.log('Verification response:', response);
 
+            console.log('Setting reset token in localStorage:', response.data.data.resetToken);
+            localStorage.setItem('resetToken', response.data.data.resetToken);
+            setSuccessMsg(true);
+            toast.success("Code verified successfully!");
+            console.log('Redirecting to password change page...');
+            setTimeout(() => {
+                navigate('/email-forgot-pass/verify-OTP/ForgotPassChangePage');
+            }, 2000);
 
-    })
+        } catch (error) {
+            console.error("Verification error details:", {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            });
+            const errorMessage = error.response?.data?.message || "Failed to verify code";
+            setErrorMsg(errorMessage);
+            toast.error(errorMessage);
+        } finally {
+            setLoading(false);
+            console.log('Verification process completed');
+        }
+    }
 
+    console.log('Current form state:', {
+        values: formik.values,
+        errors: formik.errors,
+        touched: formik.touched,
+        loading,
+        errorMsg,
+        successMsg
+    });
 
     return (
-        <>
-            <div className="wrapper w-full bg-pink-50 py-70 ">
-                <form className=' pb-20 max-w-md mx-auto px-10 bg-pink-50 ' onSubmit={regFormik.handleSubmit}>
-                    <div className="relative z-0 w-full mb-5 group">
-                        <input value={regFormik.values.otp} onBlur={regFormik.handleBlur} onChange={regFormik.handleChange} type="text" name="otp" id="otp" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-                        <label htmlFor="otp" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">otp</label>
-                        {regFormik.errors.otp && regFormik.touched.otp ? <div class="p-4  mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                            {regFormik.errors.otp}
-                        </div> : ''}
+        <div className="min-h-screen bg-white-50 pt-35 pb-1">
+            <form
+                className="max-w-md mx-auto px-4 sm:px-8"
+                onSubmit={formik.handleSubmit}
+                autoComplete="off"
+            >
+                {successMsg && (
+                    <div className="fixed top-24 left-1/2 transform -translate-x-1/2 p-4 mb-4 text-green-800 rounded-lg text-center bg-green-50 z-50">
+                        Code verified successfully! Redirecting...
+                    </div>
+                )}
+                {errorMsg && (
+                    <div className="fixed top-24 left-1/2 transform -translate-x-1/2 p-4 mb-4 text-red-800 rounded-lg text-center bg-red-50 z-50">
+                        {errorMsg}
+                    </div>
+                )}
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+                        Verify Reset Code
+                    </h2>
 
+                    {/* Email */}
+                    {/* <div className="relative z-0 w-full mb-5 group">
+                        <input
+                            type="email"
+                            name="email"
+                            id="email"
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-sky-400 peer"
+                            placeholder=" "
+                            required
+                        />
+                        <label
+                            htmlFor="email"
+                            className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-sky-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                        >
+                            Email address
+                        </label>
+                        {formik.errors.email && formik.touched.email && (
+                            <div className="p-4 mt-2 mb-4 text-center text-sm text-red-800 rounded-lg bg-red-50">
+                                {formik.errors.email}
+                            </div>
+                        )}
+                    </div> */}
+
+                    {/* OTP */}
+                    <div className="relative z-0 w-full mb-5 group">
+                        <input
+                            type="text"
+                            name="otp"
+                            id="otp"
+                            value={formik.values.otp}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-sky-400 peer"
+                            placeholder=" "
+                            maxLength="6"
+                            required
+                        />
+                        <label
+                            htmlFor="otp"
+                            className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-sky-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                        >
+                            Verification Code
+                        </label>
+                        {formik.errors.otp && formik.touched.otp && (
+                            <div className="p-4 mt-2 mb-4 text-center text-sm text-red-800 rounded-lg bg-red-50">
+                                {formik.errors.otp}
+                            </div>
+                        )}
                     </div>
 
-                    <div className="relative z-0 w-full mb-5 group">
-                        <input value={regFormik.values.email} onBlur={regFormik.handleBlur} onChange={regFormik.handleChange} type="text" name="email" id="email" className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none  dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
-                        <label htmlFor="email" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">email</label>
-                        {regFormik.errors.email && regFormik.touched.email ? <div class="p-4  mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                            {regFormik.errors.email}
-                        </div> : ''}
-
+                    <div className="flex justify-center items-center">
+                        <button
+                            type="submit"
+                            className="text-white bg-rose-300 cursor-pointer hover:bg-rose-350 focus:ring-4 focus:outline-none focus:ring-rose-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                            disabled={loading}
+                        >
+                            {loading ? "Verifying..." : "Verify Code"}
+                        </button>
                     </div>
+                </div>
+            </form>
+        </div>
+    );
+};
 
-
-                    <button type="submit" className="text-white bg-pink-400 hover:bg-pink-500 focus:ring-4 focus:outline-none focus:ring-pink-500 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-pink-400 dark:hover:bg-pink-500 dark:focus:ring-pink-500">{loading ? 'Loading' : 'Send code'}</button>
-
-                </form>
-            </div>
-        </>
-    )
-}
+export default VerifyResetCode;

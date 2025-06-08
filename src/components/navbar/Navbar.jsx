@@ -449,6 +449,34 @@ export default function Navbar() {
                 </ul>
               </div>
             )}
+
+            {!userToken && (
+              <div className="mt-8 space-y-2">
+                <h3 className="text-gray-500 text-sm font-semibold px-4 mb-2">ACCOUNT</h3>
+                <ul className="space-y-1">
+                  <li>
+                    <NavLink
+                      to="/login"
+                      className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg"
+                      onClick={closeSidebar}
+                    >
+                      <i className="fa-solid fa-right-to-bracket mr-3"></i>
+                      Login
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/register"
+                      className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg"
+                      onClick={closeSidebar}
+                    >
+                      <i className="fa-solid fa-user-plus mr-3"></i>
+                      Register
+                    </NavLink>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
 

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-
 import { Info, Heart, Leaf, Smile, Trash2, Plus, Minus } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Oval } from "react-loader-spinner";
 
 const TipsArticles = () => {
   const navigate = useNavigate();
@@ -124,6 +124,25 @@ const TipsArticles = () => {
       setError("Failed to delete pregnancy tip");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-start bg-white pt-10">
+        <Oval
+          height={80}
+          width={80}
+          color="#fda4af"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+          ariaLabel="oval-loading"
+          secondaryColor="#fecdd3"
+          strokeWidth={2}
+          strokeWidthSecondary={2}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="py-10">

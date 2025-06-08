@@ -380,7 +380,7 @@ export default function AddVaccine() {
             <button
               type="submit"
               disabled={loading || loadingProviders}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-rose-300 text-white px-6 py-2 rounded-lg hover:bg-rose-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Adding Vaccine..." : "Add Vaccine"}
             </button>

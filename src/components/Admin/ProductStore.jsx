@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { Oval } from "react-loader-spinner";
 
 function ProductStore() {
   const [products, setProducts] = useState([]);
@@ -159,8 +160,19 @@ function ProductStore() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-300"></div>
+      <div className="min-h-screen flex flex-col items-center justify-start bg-white pt-10">
+        <Oval
+          height={80}
+          width={80}
+          color="#fda4af"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+          ariaLabel="oval-loading"
+          secondaryColor="#fecdd3"
+          strokeWidth={2}
+          strokeWidthSecondary={2}
+        />
       </div>
     );
   }

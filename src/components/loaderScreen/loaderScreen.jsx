@@ -15,7 +15,7 @@ export default function LoaderScreen() {
                 <Circles
                     height="80"
                     width="80"
-                    color="#fbcfe8"
+                    color="#fda4af"
                     ariaLabel="circles-loading"
                     wrapperStyle={{}}
                     wrapperClass=""

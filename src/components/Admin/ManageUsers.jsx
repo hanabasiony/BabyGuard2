@@ -437,7 +437,7 @@ function ManageUsers() {
                         <span
                           className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             user.role === "admin"
-                              ? "bg-purple-100 text-purple-800"
+                              ? "bg-[#C5E9D4] text-[#2C5E4A]"
                               : "bg-blue-100 text-blue-800"
                           }`}
                         >
@@ -470,8 +470,8 @@ function ManageUsers() {
                               </svg>
                             </button>
                           )}
-                          {/* {(!currentUser?.role === "admin" ||
-                            user.role !== "admin") && ( */}
+                          {(!currentUser?.role === "admin" ||
+                            user.role !== "admin") && (
                             <button
                               onClick={() => openDeleteModal(user)}
                               className="text-red-600 hover:text-red-900"
@@ -490,7 +490,7 @@ function ManageUsers() {
                                 />
                               </svg>
                             </button>
-                          {/* )}r */}
+                           )}
                         </div>
                       </td>
                     </tr>

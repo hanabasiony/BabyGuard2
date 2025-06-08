@@ -336,7 +336,7 @@ const Cart = () => {
           wrapperClass=""
           visible={true}
           ariaLabel="oval-loading"
-          secondaryColor="#f9a8d4"
+          secondaryColor="#fecdd3"
           strokeWidth={2}
           strokeWidthSecondary={2}
         />

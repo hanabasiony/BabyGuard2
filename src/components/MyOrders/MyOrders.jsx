@@ -10,6 +10,7 @@ import {
   Clock,
   ShoppingBag,
 } from "lucide-react";
+import { Oval } from "react-loader-spinner";
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
@@ -68,12 +69,19 @@ export default function MyOrders() {
 
   if (loading) {
     return (
-      <div className="min-h-screen pt-32 pb-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-400"></div>
-          </div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Oval
+          height={80}
+          width={80}
+          color="#fda4af"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+          ariaLabel="oval-loading"
+          secondaryColor="#fecdd3"
+          strokeWidth={2}
+          strokeWidthSecondary={2}
+        />
       </div>
     );
   }

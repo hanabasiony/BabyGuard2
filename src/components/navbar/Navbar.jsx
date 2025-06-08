@@ -182,7 +182,7 @@ export default function Navbar() {
                 to="/vacciens"
                 className="hover:text-rose-300 text-rose-300 font-semibold"
               >
-                Vacciens
+                Vaccines
               </NavLink>
             </li>
             <li>

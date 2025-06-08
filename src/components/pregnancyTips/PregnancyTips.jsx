@@ -51,7 +51,7 @@ export default function PregnancyTips() {
           wrapperClass=""
           visible={true}
           ariaLabel="oval-loading"
-          secondaryColor="#fb7185"
+          secondaryColor="#fecdd3"
           strokeWidth={2}
           strokeWidthSecondary={2}
         />

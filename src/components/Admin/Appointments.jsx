@@ -601,7 +601,8 @@ function Appointments() {
                   <div className="mb-4 bg-gray-50 p-3 rounded-lg">
                     <div className="flex items-center mb-2">
                       <svg
-                        className="h-5 w-5 text-blue-500 mr-2"
+                        className="h-5 w-5 mr-2"
+                        style={{ color: '#8BCFE0' }}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -626,7 +627,8 @@ function Appointments() {
                     {/* Child Name */}
                     <div className="flex items-center mb-2">
                       <svg
-                        className="h-5 w-5 text-blue-500 mr-2"
+                        className="h-5 w-5 mr-2"
+                        style={{ color: '#8BCFE0' }}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -651,7 +653,8 @@ function Appointments() {
                     {/* Vaccine */}
                     <div className="flex items-center mb-2">
                       <svg
-                        className="h-5 w-5 text-blue-500 mr-2"
+                        className="h-5 w-5 mr-2"
+                        style={{ color: '#8BCFE0' }}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -676,7 +679,8 @@ function Appointments() {
                     {/* Location Info */}
                     <div className="flex items-center">
                       <svg
-                        className="h-5 w-5 text-blue-500 mr-2"
+                        className="h-5 w-5 mr-2"
+                        style={{ color: '#8BCFE0' }}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -708,7 +712,8 @@ function Appointments() {
                   {/* Date/Time Info */}
                   <div className="mb-4 flex items-center">
                     <svg
-                      className="h-5 w-5 text-blue-500 mr-2"
+                      className="h-5 w-5 mr-2"
+                      style={{ color: '#8BCFE0' }}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"

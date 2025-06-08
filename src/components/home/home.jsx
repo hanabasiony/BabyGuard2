@@ -303,7 +303,7 @@ const Home = () => {
           wrapperClass=""
           visible={true}
           ariaLabel="oval-loading"
-          secondaryColor="#fb7185"
+          secondaryColor="#fecdd3"
           strokeWidth={2}
           strokeWidthSecondary={2}
         />
@@ -400,7 +400,7 @@ const Home = () => {
                           wrapperClass=""
                           visible={true}
                           ariaLabel="oval-loading"
-                          secondaryColor="#fb7185"
+                          secondaryColor="#fecdd3"
                           strokeWidth={4}
                           strokeWidthSecondary={4}
                         />

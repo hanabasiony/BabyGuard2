@@ -220,7 +220,7 @@ export default function ChildDashboard() {
           wrapperClass=""
           visible={true}
           ariaLabel="oval-loading"
-          secondaryColor="#fb7185"
+          secondaryColor="#fecdd3"
           strokeWidth={2}
           strokeWidthSecondary={2}
         />

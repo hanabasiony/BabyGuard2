@@ -166,7 +166,8 @@ function Dashboard() {
             <div className="bg-blue-100 p-3 rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-blue-500"
+                className="h-6 w-6"
+                style={{ color: '#8BCFE0' }}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -189,10 +190,11 @@ function Dashboard() {
 
         <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
           <div className="flex justify-between items-center mb-4">
-            <div className="bg-green-100 p-3 rounded-lg">
+            <div className="bg-rose-100 p-3 rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-green-500"
+                className="h-6 w-6"
+                style={{ color: '#F5C2C7' }}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -215,10 +217,10 @@ function Dashboard() {
 
         <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
           <div className="flex justify-between items-center mb-4">
-            <div className="bg-purple-100 p-3 rounded-lg">
+            <div className="bg-gray-100 p-3 rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-purple-500"
+                className="h-6 w-6 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -270,7 +272,7 @@ function Dashboard() {
           <Link
             to="/admin/vaccinations/add"
             state={{ showAddModal: true }}
-            className="bg-gradient-to-r from-blue-400 to-blue-400 text-white py-3 px-4 rounded-md flex items-center justify-center hover:from-blue-500 hover:to-blue-500 transition duration-200"
+            className="bg-[#8BCFE0] text-white py-3 px-4 rounded-md flex items-center justify-center hover:bg-[#7ABFD0] transition duration-200"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -292,7 +294,7 @@ function Dashboard() {
           <Link
             to="product-store/add"
             state={{ showAddModal: true }}
-            className="bg-gradient-to-r from-gray-500 to-gray-600 text-white py-3 px-4 rounded-md flex items-center justify-center hover:from-gray-600 hover:to-gray-700 transition duration-200"
+            className="bg-gradient-to-r from-gray-500 to-gray-500 text-white py-3 px-4 rounded-md flex items-center justify-center hover:from-gray-600 hover:to-gray-600 transition duration-200"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

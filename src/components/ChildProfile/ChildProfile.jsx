@@ -211,21 +211,19 @@ export default function ChildDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-start bg-white pt-10">
-        <div className="mt-40 shadow-lg rounded-full bg-white p-8">
-          <Oval
-            height={80}
-            width={80}
-            color="#fda4af"
-            wrapperStyle={{}}
-            wrapperClass=""
-            visible={true}
-            ariaLabel="oval-loading"
-            secondaryColor="#fb7185"
-            strokeWidth={2}
-            strokeWidthSecondary={2}
-          />
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Oval
+          height={80}
+          width={80}
+          color="#fda4af"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+          ariaLabel="oval-loading"
+          secondaryColor="#fb7185"
+          strokeWidth={2}
+          strokeWidthSecondary={2}
+        />
       </div>
     );
   }

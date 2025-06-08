@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-
 import { Info, Heart, Leaf, Smile } from "lucide-react";
 import axios from "axios";
+import { Oval } from "react-loader-spinner";
 
 export default function PregnancyTips() {
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [milestones, setMilestones] = useState([]);
   const [pregnancyTips, setPregnancyTips] = useState([]);
@@ -37,6 +39,34 @@ export default function PregnancyTips() {
 
     fetchTips();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Oval
+          height={80}
+          width={80}
+          color="#fda4af"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+          ariaLabel="oval-loading"
+          secondaryColor="#fb7185"
+          strokeWidth={2}
+          strokeWidthSecondary={2}
+        />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-rose-300 text-xl">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="py-30">
       <div className="p-4 max-w-5xl mx-auto space-y-6">

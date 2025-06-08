@@ -171,7 +171,7 @@ const CartDetails = () => {
         <Oval
           height={80}
           width={80}
-          color="#ec4899"
+          color="fda4af"
           wrapperStyle={{}}
           wrapperClass=""
           visible={true}
@@ -190,7 +190,7 @@ const CartDetails = () => {
         <h2 className="text-2xl font-semibold text-gray-800">User not found</h2>
         <button
           onClick={() => navigate("/admin/manage-carts")}
-          className="mt-4 text-pink-500 hover:text-pink-600"
+          className="mt-4 text-rose-400 hover:text-rose-400"
         >
           Go back to users list
         </button>
@@ -214,8 +214,8 @@ const CartDetails = () => {
       {/* User Information Card */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <div className="flex items-center space-x-4 mb-4">
-          <div className="bg-pink-100 p-3 rounded-full">
-            <User className="w-8 h-8 text-pink-500" />
+          <div className="bg-rose-100 p-3 rounded-full">
+            <User className="w-8 h-8 text-rose-400" />
           </div>
           <div>
             <h2 className="text-2xl font-semibold">
@@ -239,7 +239,7 @@ const CartDetails = () => {
             placeholder="Search by order ID or address..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
+            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-rose-400 focus:border-rose-400 sm:text-sm"
           />
         </div>
 
@@ -251,7 +251,7 @@ const CartDetails = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
+            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-rose-400 focus:border-rose-400 sm:text-sm"
           >
             <option value="all">All Status</option>
             <option value="Pending">Pending</option>
@@ -275,7 +275,7 @@ const CartDetails = () => {
             <div className="flex justify-between items-start mb-4">
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
-                  <Package className="w-5 h-5 text-pink-500" />
+                  <Package className="w-5 h-5 text-rose-400" />
                   <span className="font-medium">
                     Order #{cart._id.slice(-6)}
                   </span>
@@ -309,7 +309,7 @@ const CartDetails = () => {
                         onChange={(e) =>
                           handleStatusChange(cart._id, e.target.value)
                         }
-                        className={`appearance-none px-3 py-1 rounded-full text-sm pr-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-500 ${getStatusColor(
+                        className={`appearance-none px-3 py-1 rounded-full text-sm pr-8 cursor-pointer focus:outline-none focus:ring-2 focus:ring-rose-400 ${getStatusColor(
                           cart.status
                         )}`}
                       >
@@ -332,13 +332,13 @@ const CartDetails = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-4">
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
-                  <MapPin className="w-4 h-4 text-pink-500" />
+                  <MapPin className="w-4 h-4 text-rose-400" />
                   <span>
                     {cart.street}, {cart.city}, {cart.governorate}
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <CreditCard className="w-4 h-4 text-pink-500" />
+                  <CreditCard className="w-4 h-4 text-rose-400" />
                   <span>Payment: {cart.paymentType}</span>
                 </div>
               </div>

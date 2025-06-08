@@ -123,6 +123,14 @@ export default function PassSend() {
                                 {regFormik.errors.email}
                             </div>
                         )}
+                        <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-100 flex items-start gap-2">
+                            <svg className="w-5 h-5 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p className="text-sm text-blue-700">
+                                A verification code will be sent to this email address.
+                            </p>
+                        </div>
                     </div>
                     <div className="flex justify-center items-center">
                         <button
@@ -131,6 +139,18 @@ export default function PassSend() {
                             disabled={loading}
                         >
                             {loading ? "Sending..." : "Send Reset Code"}
+                        </button>
+                    </div>
+                    <div className="mt-6 text-center">
+                        <button
+                            type="button"
+                            onClick={() => navigate("/login")}
+                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-rose-500 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors duration-200"
+                        >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            Back to Login
                         </button>
                     </div>
                 </div>

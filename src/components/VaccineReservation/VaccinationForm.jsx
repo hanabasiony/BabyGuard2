@@ -401,7 +401,7 @@ export default function VaccinationForm() {
                   </div>
                   <button 
                     type="button"
-                    onClick={() => navigate("/profile")}
+                    onClick={() => navigate("/edit-user")}
                     className="text-rose-500 hover:text-rose-600 text-sm font-medium flex items-center"
                   >
                     Change Address <span className="ml-1">→</span>

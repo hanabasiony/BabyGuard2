@@ -1,8 +1,7 @@
-
 import React, { useState } from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-import motherPhoto from "../../assets/images/contactPhoto.png";
+import contactUs from "../../assets/images/contact us.jpg";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
@@ -76,7 +75,7 @@ export default function ContactUs() {
       <div className="max-w-5xl w-full grid md:grid-cols-2 gap-10 items-center">
         {/* Left Content */}
         <div className="space-y-6">
-          <h2 className="text-3xl font-bold text-blue-700">
+          <h2 className="text-3xl font-bold text-[#8BCFE0]">
             We're Here for You <br /> & Your Baby!
           </h2>
           <p className="text-gray-600">
@@ -128,7 +127,7 @@ export default function ContactUs() {
 
             <button
               type="submit"
-              className="w-full bg-pink-400 text-white font-semibold py-2 rounded-md hover:bg-pink-500 transition"
+              className="w-full bg-rose-300 text-white font-semibold py-2 rounded-md hover:bg-rose-400 transition"
               disabled={loading}
             >
               {loading ? "Sending..." : "Send Message"}
@@ -138,29 +137,29 @@ export default function ContactUs() {
 
         {/* Right Content */}
         <div className="flex flex-col items-center space-y-6">
-          <img src={motherPhoto} alt="Mother and Baby" className="w-56 h-56" />
+          <img src={contactUs} alt="contact us" className="w-56 h-56" />
           <div className="space-y-4 text-center md:text-left">
             <div className="flex items-center gap-2 text-gray-600">
-              <i className="fa-solid fa-phone text-blue-400"></i>
+              <i className="fa-solid fa-phone text-[#8BCFE0]"></i>
               <span>+20 123 456 789</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600">
-              <i className="fa-solid fa-location-dot text-blue-400"></i>
+              <i className="fa-solid fa-location-dot text-[#8BCFE0]"></i>
               <span>Cairo, Egypt</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600">
-              <i className="fa-solid fa-envelope text-blue-400"></i>
+              <i className="fa-solid fa-envelope text-[#8BCFE0]"></i>
               <span>support@babyguard.com</span>
             </div>
             <div className="flex gap-7 pt-4 text-blue-600 text-xl">
               <a href="#">
-                <i className="fab fa-facebook-f text-blue-400"></i>
+                <i className="fab fa-facebook-f text-[#8BCFE0]"></i>
               </a>
               <a href="#">
-                <i className="fab fa-twitter text-blue-400"></i>
+                <i className="fab fa-twitter text-[#8BCFE0]"></i>
               </a>
               <a href="#">
-                <i className="fab fa-instagram text-blue-400"></i>
+                <i className="fab fa-instagram text-[#8BCFE0]"></i>
               </a>
             </div>
           </div>

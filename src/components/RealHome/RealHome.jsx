@@ -38,7 +38,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-rose-50 to-blue-50 mx-auto px-4 py-12 md:py-20 flex flex-col md:flex-row items-center">
+      <section className="bg-gradient-to-r pt-40 from-rose-50 to-blue-50 mx-auto px-4 py-12 md:py-20 flex flex-col md:flex-row items-center">
         <div className="md:w-1/2 space-y-6 ml-8 mr-8">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800">
             Your Kid's Health is Your Wealth
@@ -49,7 +49,7 @@ export default function Home() {
           </p>
           <button
             onClick={() => navigate("/login")}
-            className="bg-rose-300 hover:bg-rose-400 text-white px-6 py-2 rounded-full flex items-center"
+            className="bg-rose-300 hover:bg-rose-400 cursor-pointer text-white px-6 py-2 rounded-full flex items-center"
           >
             Get Started <span className="ml-2">→</span>
           </button>
@@ -193,7 +193,7 @@ export default function Home() {
         <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12">
           Featured Products
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {loading ? (
             <div className="col-span-4 text-center">Loading products...</div>
           ) : (

@@ -9,7 +9,7 @@ import Reg from "../Reg/Reg";
 // import Btn from './btn';
 import { authContext } from "../../context/AuthContext";
 import Home from "./../home/home";
-import { ShoppingCart, Settings } from "lucide-react";
+import { ShoppingCart, Settings, X } from "lucide-react";
 import { CartContext } from "../../context/CartContext";
 import axios from "axios";
 
@@ -19,6 +19,7 @@ export default function Navbar() {
   const { userToken, setuserToken } = useContext(authContext);
   const { totalItems, productQuantities } = useContext(CartContext);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -143,9 +144,18 @@ export default function Navbar() {
     }
   }
   console.log(userData);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
   return (
     <>
-      <nav className="bg-white shadow pe-7 shadow-rose-300 px-2 fixed py-1 w-full">
+      <nav className="bg-white shadow pe-7 shadow-rose-300 px-2 fixed py-1 w-full z-50">
         <div className="container mx-auto flex items-center justify-between max-w-[1200px]">
           {/* Left Side: Logo & Links */}
           <div className="flex items-center">
@@ -286,57 +296,118 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button
             className="md:hidden text-rose-300"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={toggleSidebar}
           >
-            {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+            {isSidebarOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
         </div>
 
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="md:hidden bg-white py-4">
-            <ul className="flex flex-col items-center space-y-4">
-              <li>
-                <NavLink
-                  to="/products"
-                  className="text-gray-600 hover:text-rose-300"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Products
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/categories"
-                  className="text-gray-600 hover:text-rose-300"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Categories
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/"
-                  className="text-gray-600 hover:text-rose-300"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Pergnancy tips
-                </NavLink>
-              </li>
-              {/* <li><NavLink to="/" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>Contant us</NavLink></li> */}
-              {/* <li><NavLink to="/aboutUs" className="text-gray-600 hover:text-pink-400" onClick={() => setIsOpen(false)}>About us</NavLink></li> */}
+        {/* Sidebar */}
+        <div
+          className={`fixed top-0 right-0 h-full w-64 bg-white/80 backdrop-blur-sm transform transition-transform duration-300 ease-in-out z-50 ${
+            isSidebarOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          <div className="p-4">
+            <div className="flex justify-between items-center mb-8 border-b border-gray-200 pb-4">
+              <img src={newLogo} alt="Baby Guard" className="w-24" />
+              <button onClick={closeSidebar} className="text-gray-500 hover:text-gray-700">
+                <X size={24} />
+              </button>
+            </div>
 
-              {userToken && (
-                <ul>
+            {userToken && (
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                <p className="text-gray-700 font-medium">
+                  Hello, {userData?.user?.fName || (isAdmin ? "Admin" : "User")}
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <h3 className="text-gray-500 text-sm font-semibold px-4 mb-2">MAIN MENU</h3>
+              <ul className="space-y-1">
+                {userToken && (
+                  <li>
+                    <NavLink
+                      to="/childProfile"
+                      className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg"
+                      onClick={closeSidebar}
+                    >
+                      <i className="fa-solid fa-child mr-3"></i>
+                      Child profile
+                    </NavLink>
+                  </li>
+                )}
+                <li>
+                  <NavLink
+                    to="/products"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg"
+                    onClick={closeSidebar}
+                  >
+                    <i className="fa-solid fa-box mr-3"></i>
+                    Products
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/vacciens"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg"
+                    onClick={closeSidebar}
+                  >
+                    <i className="fa-solid fa-syringe mr-3"></i>
+                    Vacciens
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/pregnancyTips"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg"
+                    onClick={closeSidebar}
+                  >
+                    <i className="fa-solid fa-baby mr-3"></i>
+                    Pregnancy tips
+                  </NavLink>
+                </li>
+                {isAdmin && (
+                  <li>
+                    <NavLink
+                      to="/admin"
+                      className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg"
+                      onClick={closeSidebar}
+                    >
+                      <i className="fa-solid fa-gauge-high mr-3"></i>
+                      Admin dashboard
+                    </NavLink>
+                  </li>
+                )}
+              </ul>
+            </div>
+
+            {userToken && (
+              <div className="mt-8 space-y-2">
+                <h3 className="text-gray-500 text-sm font-semibold px-4 mb-2">USER MENU</h3>
+                <ul className="space-y-1">
+                  <li>
+                    <NavLink
+                      to="/settings"
+                      className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg"
+                      onClick={closeSidebar}
+                    >
+                      <Settings className="w-5 h-5 mr-3" />
+                      Settings
+                    </NavLink>
+                  </li>
                   <li>
                     <NavLink
                       to="/cart"
-                      className="text-gray-600 hover:text-rose-300 relative"
-                      onClick={() => setIsOpen(false)}
+                      className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg relative"
+                      onClick={closeSidebar}
                     >
-                      <ShoppingCart className="w-6 h-6 text-rose-300" />
+                      <ShoppingCart className="w-5 h-5 mr-3" />
+                      Cart
                       {cartCount > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-rose-300 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                        <span className="absolute right-4 bg-rose-300 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                           {cartCount}
                         </span>
                       )}
@@ -344,45 +415,53 @@ export default function Navbar() {
                   </li>
                   <li>
                     <NavLink
-                      to="/settings"
-                      className="text-gray-600 hover:text-rose-300"
-                      onClick={() => setIsOpen(false)}
+                      to="/myOrders"
+                      className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg"
+                      onClick={closeSidebar}
                     >
-                      <Settings className="w-6 h-6 text-rose-300" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 mr-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                        />
+                      </svg>
+                      My Orders
                     </NavLink>
                   </li>
                   <li>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6 text-rose-300"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                    <NavLink
+                      to="/user-page"
+                      className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg"
+                      onClick={closeSidebar}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                      />
-                    </svg>
+                      <i className="fa-solid fa-user mr-3"></i>
+                      Profile
+                    </NavLink>
                   </li>
                 </ul>
-              )}
-
-              <li>
-                <NavLink
-                  to="/settings"
-                  className="text-rose-300 hover:text-rose-300"
-                >
-                  <i className="fa-solid fa-user"></i>
-                </NavLink>
-              </li>
-            </ul>
+              </div>
+            )}
           </div>
+        </div>
+
+        {/* Overlay */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-40"
+            onClick={closeSidebar}
+          ></div>
         )}
       </nav>
       <Outlet />
     </>
   );
 }
+

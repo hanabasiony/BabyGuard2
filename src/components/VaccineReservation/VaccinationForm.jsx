@@ -168,6 +168,7 @@ export default function VaccinationForm() {
               <p className="text-lg text-gray-600">
                 Schedule a home nurse visit or clinic appointment with ease.
               </p>
+              
               {selectedVaccine && (
                 <div className="mt-4 p-4 bg-pink-50 rounded-lg">
                   <h3 className="font-semibold text-pink-700">
@@ -214,6 +215,13 @@ export default function VaccinationForm() {
       >
         {({ values, errors, touched, setFieldValue, isSubmitting }) => (
           <Form className="px-6 pb-8 md:px-10 md:pb-12">
+            {children.length === 0 && !loadingChildren && (
+              <div className="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <p className="text-yellow-800">
+                  <span className="font-semibold">Note:</span> You need to register a child before booking a vaccination appointment. You can do this from your child profile page.
+                </p>
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Baby's Name Field */}
               <div>
@@ -339,7 +347,7 @@ export default function VaccinationForm() {
 
             {/* Delivery Address and Phone Number Section */}
             {userData && (
-              <div className="mt-8 p-6 bg-white rounded-lg shadow-sm w-full">
+              <div className="mt-8 p-6 bg-white rounded-lg shadow-sm w-full ">
                 <h2 className="text-xl font-bold text-gray-800 mb-4">
                   Delivery Information
                 </h2>
@@ -363,32 +371,41 @@ export default function VaccinationForm() {
                     {userData.phoneNumber || "Not set"}
                   </p>
                 </div>
-                <div className="flex items-center mt-4">
-                  <input
-                    type="checkbox"
-                    id="confirmAddress"
-                    name="confirmAddress"
-                    checked={values.confirmAddress}
-                    onChange={(e) => {
-                      setFieldValue("confirmAddress", e.target.checked);
-                      if (e.target.checked) {
-                        setShowConfirmAddressError(false);
-                      }
-                    }}
-                    className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
-                  />
-                  <label
-                    htmlFor="confirmAddress"
-                    className="ml-2 block text-sm text-gray-900"
+                <div className="flex items-center gap-2 mt-4">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="confirmAddress"
+                      name="confirmAddress"
+                      checked={values.confirmAddress}
+                      onChange={(e) => {
+                        setFieldValue("confirmAddress", e.target.checked);
+                        if (e.target.checked) {
+                          setShowConfirmAddressError(false);
+                        }
+                      }}
+                      className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                    />
+                    <label
+                      htmlFor="confirmAddress"
+                      className="ml-2 block text-sm text-gray-900"
+                    >
+                      I confirm this is my correct delivery address and phone
+                      number.
+                    </label>
+                    {showConfirmAddressError && (
+                      <span className="text-red-500 text-sm ml-2 p-1">
+                        *delivery information must be confirmed*
+                      </span>
+                    )}
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => navigate("/profile")}
+                    className="text-rose-500 hover:text-rose-600 text-sm font-medium flex items-center"
                   >
-                    I confirm this is my correct delivery address and phone
-                    number.
-                  </label>
-                  {showConfirmAddressError && (
-                    <span className="text-red-500 text-sm ml-2 p-1">
-                      *delivery information must be confirmed*
-                    </span>
-                  )}
+                    Change Address <span className="ml-1">→</span>
+                  </button>
                 </div>
               </div>
             )}

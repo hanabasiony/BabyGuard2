@@ -20,30 +20,35 @@ const vaccineValidationSchema = yup.object().shape({
     .max(1000, "Description must be between 20 and 1000 characters"),
 
   requiredAge: yup
-    .string()
-    .required("Required age must be provided")
-    .oneOf(
-      [
-        "No specific age required",
-        "3 months",
-        "6 months",
-        "9 months",
-        "1 year",
-        "1 year and 3 months",
-        "1 year and 6 months",
-        "1 year and 9 months",
-        "2 years",
-        "2 years and 3 months",
-        "2 years and 6 months",
-        "2 years and 9 months",
-        "3 years",
-        "3 years and 3 months",
-        "3 years and 6 months",
-        "3 years and 9 months",
-        "4 years",
-      ],
-      "'{value}' is not a valid age requirement. Please choose from the predefined age options."
-    ),
+    .array()
+    .of(
+      yup
+        .string()
+        .required("Required age must be provided")
+        .oneOf(
+          [
+            "No specific age required",
+            "3 months",
+            "6 months",
+            "9 months",
+            "1 year",
+            "1 year and 3 months",
+            "1 year and 6 months",
+            "1 year and 9 months",
+            "2 years",
+            "2 years and 3 months",
+            "2 years and 6 months",
+            "2 years and 9 months",
+            "3 years",
+            "3 years and 3 months",
+            "3 years and 6 months",
+            "3 years and 9 months",
+            "4 years",
+          ],
+          "'{value}' is not a valid age requirement. Please choose from the predefined age options."
+        )
+    )
+    .min(1, "At least one age requirement must be selected"),
 
   price: yup
     .number()
@@ -75,7 +80,7 @@ export default function AddVaccine() {
       }
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/provider",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/provider",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -98,7 +103,7 @@ export default function AddVaccine() {
     initialValues: {
       name: "",
       description: "",
-      requiredAge: "",
+      requiredAge: [],
       price: "",
       provider: "",
     },
@@ -113,7 +118,7 @@ export default function AddVaccine() {
         }
 
         const response = await axios.post(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/vaccines/admin",
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccines/admin",
           values,
           {
             headers: {
@@ -297,14 +302,21 @@ export default function AddVaccine() {
               id="requiredAge"
               name="requiredAge"
               value={formik.values.requiredAge}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                const options = e.target.options;
+                const selectedValues = [];
+                for (let i = 0; i < options.length; i++) {
+                  if (options[i].selected) {
+                    selectedValues.push(options[i].value);
+                  }
+                }
+                formik.setFieldValue('requiredAge', selectedValues);
+              }}
               onBlur={formik.handleBlur}
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              multiple
             >
-              <option value="">Select Required Age</option>
-              <option value="No specific age required">
-                No specific age required
-              </option>
+              <option value="No specific age required">No specific age required</option>
               <option value="3 months">3 months</option>
               <option value="6 months">6 months</option>
               <option value="9 months">9 months</option>
@@ -326,11 +338,13 @@ export default function AddVaccine() {
               htmlFor="requiredAge"
               className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
-              Required Age
+              Required Age (Hold Ctrl/Cmd to select multiple)
             </label>
             {formik.errors.requiredAge && formik.touched.requiredAge && (
               <div className="p-4 mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
-                {formik.errors.requiredAge}
+                {Array.isArray(formik.errors.requiredAge) 
+                  ? formik.errors.requiredAge.join(', ')
+                  : formik.errors.requiredAge}
               </div>
             )}
           </div>

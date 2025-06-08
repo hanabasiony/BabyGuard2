@@ -39,7 +39,7 @@ export default function Login() {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/auth/login",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/auth/login",
         values
       );
       const { token, role } = response.data;
@@ -55,7 +55,7 @@ export default function Login() {
         // Fetch user data for parent
         try {
           const userResponse = await axios.get(
-            "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user/me",
+            "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user/me",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -70,7 +70,7 @@ export default function Login() {
         // Check for pending cart
         try {
           const pendingCartRes = await axios.get(
-            "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/pending",
+            "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/pending",
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -100,7 +100,7 @@ export default function Login() {
             if (userData && userData.user) {
               try {
                 const cartRes = await axios.post(
-                  "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts",
+                  "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts",
                   {
                     cart: {
                       governorate: userData.user.governorate || "Cairome",

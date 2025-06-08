@@ -33,7 +33,7 @@ function ManageNurses() {
       }
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/provider",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/provider",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -84,7 +84,7 @@ function ManageNurses() {
       }
 
       const apiUrl = new URL(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/nurse?limit=100"
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/nurse?limit=100"
       );
       if (cursor) {
         apiUrl.searchParams.append("cursor", cursor);
@@ -208,7 +208,7 @@ function ManageNurses() {
 
       // Make API call
       const response = await axios.post(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/nurse",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/nurse",
         requestBody,
         {
           headers: {
@@ -268,7 +268,7 @@ function ManageNurses() {
     try {
       const token = localStorage.getItem("token");
       /* Commented out edit API
-      const response = await axios.put(`https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/nurse/${nurseId}`, updatedData, {
+      const response = await axios.put(`https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/nurse/${nurseId}`, updatedData, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -344,7 +344,7 @@ function ManageNurses() {
 
       // Make the DELETE request to the API
       await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/nurse/${nurseId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/nurse/${nurseId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

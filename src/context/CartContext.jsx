@@ -18,7 +18,7 @@ export default function CartContextProvider({ children }) {
 
     try {
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/pending",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/pending",
         {
           headers: {
             Authorization: `Bearer ${userToken}`,
@@ -100,7 +100,7 @@ export default function CartContextProvider({ children }) {
       }
 
       const response = await axios.post(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts",
         {
           cart: {
             governorate: userData.user.governorate || "Cairome",
@@ -160,7 +160,7 @@ export default function CartContextProvider({ children }) {
       const cartId = await getOrCreateCart();
 
       const response = await axios.post(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/${cartId}/products`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/${cartId}/products`,
         {
           productId: productId,
           quantity: 1,
@@ -205,7 +205,7 @@ export default function CartContextProvider({ children }) {
 
       if (newQuantity === 0) {
         await axios.delete(
-          `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/${cartId}/products/${productId}`,
+          `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/${cartId}/products/${productId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -215,7 +215,7 @@ export default function CartContextProvider({ children }) {
         toast.success("Product removed from cart");
       } else if (currentQuantity > 0) {
         const response = await axios.patch(
-          `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/${cartId}/products/${productId}`,
+          `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/${cartId}/products/${productId}`,
           {
             quantity: newQuantity,
           },
@@ -234,7 +234,7 @@ export default function CartContextProvider({ children }) {
         }
       } else {
         const response = await axios.post(
-          `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/${cartId}/products`,
+          `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/${cartId}/products`,
           {
             productId: productId,
             quantity: newQuantity,
@@ -276,7 +276,7 @@ export default function CartContextProvider({ children }) {
       const cartId = await getOrCreateCart();
 
       await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/${cartId}/products/${productId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/${cartId}/products/${productId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

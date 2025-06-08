@@ -21,7 +21,7 @@ export default function Logout() {
         if (cartId && token) {
           try {
             await axios.delete(
-              `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/${cartId}`,
+              `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/${cartId}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,

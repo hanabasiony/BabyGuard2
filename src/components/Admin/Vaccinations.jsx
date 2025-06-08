@@ -28,7 +28,7 @@ function Vaccinations() {
         return;
       }
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/vaccines",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccines",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ function Vaccinations() {
           return;
         }
         const response = await axios.delete(
-          `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/vaccines/admin/${vaccineId}`,
+          `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccines/admin/${vaccineId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

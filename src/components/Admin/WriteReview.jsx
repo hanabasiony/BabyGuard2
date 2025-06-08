@@ -28,7 +28,7 @@ export default function WriteReview() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/products-reviews/${productId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/products-reviews/${productId}`,
         formData,
         {
           headers: {

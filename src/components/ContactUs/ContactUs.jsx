@@ -193,7 +193,7 @@ export default function ContactUs() {
       };
 
       const response = await axios.post(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/complaints",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/complaints",
         formData,
         {
           headers: {

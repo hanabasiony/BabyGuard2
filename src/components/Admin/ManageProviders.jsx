@@ -25,7 +25,7 @@ const ManageProviders = () => {
       }
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/provider",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/provider",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -101,7 +101,7 @@ const ManageProviders = () => {
       }
 
       const response = await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/provider/${providerId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/provider/${providerId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

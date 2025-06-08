@@ -14,17 +14,28 @@ const validationSchema = Yup.object().shape({
   lName: Yup.string()
     .min(3, "Last name is too short")
     .max(15, "Last name is too long"),
-  email: Yup.string().email("Email is invalid"),
-  nationalIdNumer: Yup.string()
-    .length(14, "SSN must be exactly 14 digits")
-    .matches(/^\d+$/, "SSN must be numeric"),
-  birthDate: Yup.date().nullable().typeError("Date of birth is invalid"),
-  password: Yup.string().min(6, "Password must be at least 6 characters"),
+  email: Yup.string()
+    .email("Email is invalid"),
+  phoneNumber: Yup.string()
+    .matches(/^\+20[0-9]{10}$/, "Phone number must be in format: +20XXXXXXXXXX")
+    .test('is-valid-egyptian', 'Invalid Egyptian phone number', value => {
+      if (!value) return true;
+      const number = value.replace('+20', '');
+      return /^01[0125][0-9]{8}$/.test(number);
+    }),
+  birthDate: Yup.date()
+    .max(new Date(), "Birth date cannot be in the future"),
   governorate: Yup.string(),
   city: Yup.string(),
   street: Yup.string(),
   buildingNumber: Yup.string(),
   apartmentNumber: Yup.string(),
+  gender: Yup.string()
+    .oneOf(["male", "female"], "Invalid gender"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters"),
+  passwordConfirm: Yup.string()
+    .oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
 
 function EditUser() {
@@ -47,7 +58,7 @@ function EditUser() {
       }
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user/me",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user/me",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -95,20 +106,31 @@ function EditUser() {
         return;
       }
 
+      // Only include changed fields in the request
+      const changedValues = {};
+      Object.keys(values).forEach(key => {
+        if (values[key] !== user[key]) {
+          changedValues[key] = values[key];
+        }
+      });
+
       // Generate slug if both fName and lName are being updated
-      if (values.fName && values.lName) {
-        values.slug = slugify(`${values.fName}-${values.lName}-${Date.now()}`, {
-          lower: true,
-          trim: true,
-          remove: /[^\w-]+/g,
-        })
+      if (changedValues.fName && changedValues.lName) {
+        changedValues.slug = slugify(
+          `${changedValues.fName}-${changedValues.lName}-${Date.now()}`,
+          {
+            lower: true,
+            trim: true,
+            remove: /[^\w-]+/g,
+          }
+        )
           .replace(/--+/g, "-")
           .replace(/^-+|-+$/g, "");
       }
 
       const response = await axios.put(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user/me",
-        values,
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user/me",
+        changedValues,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -128,7 +150,6 @@ function EditUser() {
         localStorage.removeItem("token");
         navigate("/login");
       } else if (error.response?.data?.errors) {
-        // Handle validation errors
         const errors = error.response.data.errors;
         Object.keys(errors).forEach((field) => {
           toast.error(`${field}: ${errors[field].msg}`);
@@ -163,15 +184,19 @@ function EditUser() {
   }
 
   const editableFields = [
-    { key: "fName", label: "First Name" },
-    { key: "lName", label: "Last Name" },
-    { key: "email", label: "Email" },
-    { key: "phoneNumber", label: "Phone Number" },
-    { key: "governorate", label: "Governorate" },
-    { key: "city", label: "City" },
-    { key: "street", label: "Street" },
-    { key: "buildingNumber", label: "Building Number" },
-    { key: "apartmentNumber", label: "Apartment Number" },
+    { key: "fName", label: "First Name", type: "text" },
+    { key: "lName", label: "Last Name", type: "text" },
+    { key: "email", label: "Email", type: "email" },
+    { key: "phoneNumber", label: "Phone Number", type: "tel" },
+    { key: "birthDate", label: "Birth Date", type: "date" },
+    { key: "gender", label: "Gender", type: "select", options: ["male", "female"] },
+    { key: "governorate", label: "Governorate", type: "text" },
+    { key: "city", label: "City", type: "text" },
+    { key: "street", label: "Street", type: "text" },
+    { key: "buildingNumber", label: "Building Number", type: "text" },
+    { key: "apartmentNumber", label: "Apartment Number", type: "text" },
+    // { key: "password", label: "Password", type: "password" },
+    // { key: "passwordConfirm", label: "Confirm Password", type: "password" },
   ];
 
   return (
@@ -204,7 +229,7 @@ function EditUser() {
               <Form>
                 <div className="border-t border-gray-200">
                   <dl>
-                    {editableFields.map(({ key, label }) => (
+                    {editableFields.map(({ key, label, type, options }) => (
                       <div
                         key={key}
                         className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
@@ -215,16 +240,31 @@ function EditUser() {
                         <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                           {editingFields[key] ? (
                             <div className="flex flex-col space-y-2">
-                              <Field
-                                type="text"
-                                name={key}
-                                className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-200 transition-colors duration-200 sm:text-sm"
-                                placeholder={`Enter ${label.toLowerCase()}`}
-                              />
+                              {type === "select" ? (
+                                <Field
+                                  as="select"
+                                  name={key}
+                                  className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-200 transition-colors duration-200 sm:text-sm"
+                                >
+                                  <option value="">Select {label}</option>
+                                  {options.map(option => (
+                                    <option key={option} value={option}>
+                                      {option.charAt(0).toUpperCase() + option.slice(1)}
+                                    </option>
+                                  ))}
+                                </Field>
+                              ) : (
+                                <Field
+                                  type={type}
+                                  name={key}
+                                  className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-200 transition-colors duration-200 sm:text-sm"
+                                  placeholder={`Enter ${label.toLowerCase()}`}
+                                />
+                              )}
                               <ErrorMessage
                                 name={key}
                                 component="div"
-                                className="text-re4-500 text-sm mt-1"
+                                className="text-red-500 text-sm mt-1"
                               />
                               <div className="flex space-x-2">
                                 <button

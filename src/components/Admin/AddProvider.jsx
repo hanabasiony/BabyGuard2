@@ -60,7 +60,7 @@ export default function AddProvider() {
         }
 
         const response = await axios.post(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/provider/admin/add",
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/provider/admin/add",
           values,
           {
             headers: {

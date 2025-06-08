@@ -54,7 +54,7 @@ const Cart = () => {
       console.log("Cart ID from localStorage:", localStorage.getItem("cartId"));
 
       // Try to get cart ID from both sources
-      const cartId = cartData?.cart?._id || localStorage.getItem("cartId");
+      const cartId = localStorage.getItem("cartId")|| cartData?.cart?._id ;
 
       if (!cartId) {
         console.error("No valid cart ID found");
@@ -70,7 +70,7 @@ const Cart = () => {
       console.log("Using cart ID for status update:", cartId);
 
       const response = await axios.patch(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/status/${cartId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/status/${cartId}`,
         {
           status: "waiting for payment",
           address: {
@@ -111,7 +111,7 @@ const Cart = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/pending",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/pending",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -158,7 +158,7 @@ const Cart = () => {
 
       // Update the quantity in the cart
       const response = await axios.patch(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/${cartId}/products/${product.productId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/${cartId}/products/${product.productId}`,
         { quantity: newQuantity },
         {
           headers: {
@@ -270,7 +270,7 @@ const Cart = () => {
 
       if (userData) {
         const newCartResponse = await axios.post(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts",
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts",
           {
             cart: {
               governorate: userData.user.governorate,
@@ -573,7 +573,7 @@ const Cart = () => {
 
               // Update payment type to Online
               await axios.patch(
-                `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/payment-type/${cartId}`,
+                `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/payment-type/${cartId}`,
                 { paymentType: "Online" },
                 {
                   headers: {

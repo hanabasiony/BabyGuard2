@@ -47,7 +47,7 @@ export default function UpdateLoggedUserPassword() {
 
       try {
         const response = await axios.put(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/auth/updatePassword",
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/auth/updatePassword",
           values,
           {
             headers: {

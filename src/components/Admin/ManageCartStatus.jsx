@@ -22,7 +22,7 @@ export default function ManageCartStatus() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.patch(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/status/admin/${cartId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/status/admin/${cartId}`,
         { status },
         {
           headers: {

@@ -25,7 +25,7 @@ export default function PaymentPage() {
       }
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/carts/pending",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/pending",
         {
           headers: {
             Authorization: `Bearer ${token}`,

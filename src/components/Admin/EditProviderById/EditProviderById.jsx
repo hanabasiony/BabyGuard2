@@ -48,7 +48,7 @@ const EditProviderById = () => {
       }
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/provider",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/provider",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -101,20 +101,36 @@ const EditProviderById = () => {
   const handleSaveEdit = async (values, { setSubmitting, setFieldError }) => {
     try {
       const token = localStorage.getItem("token");
+      
       if (!token) {
         toast.error("Please login to perform this action");
         navigate("/login");
         return;
       }
 
-      const updateData = { ...values };
-      if (values.name) {
-        updateData.slug = slugify(values.name, { lower: true });
+      // Compare current values with new values and only include changed fields
+      const changedValues = {};
+      Object.keys(values).forEach(key => {
+        if (values[key] !== provider[key]) {
+          changedValues[key] = values[key];
+        }
+      });
+
+      // Generate slug only if name is changed
+      if (changedValues.name) {
+        changedValues.slug = slugify(changedValues.name, { lower: true });
+      }
+
+      // Only proceed if there are actual changes
+      if (Object.keys(changedValues).length === 0) {
+        toast.info("No changes to save");
+        setEditingFields({});
+        return;
       }
 
       const response = await axios.put(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/provider/${providerId}`,
-        updateData,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/provider/${providerId}`,
+        changedValues,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -128,6 +144,8 @@ const EditProviderById = () => {
         setEditingFields({});
       }
     } catch (error) {
+      console.log(error);
+      
       if (error.response?.status === 401) {
         toast.error("Session expired. Please login again");
         localStorage.removeItem("token");

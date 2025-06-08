@@ -29,7 +29,7 @@ const AddPregnancyTips = () => {
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       const response = await axios.post(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/tips/pregnancy-tip",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/tips/pregnancy-tip",
         values,
         {
           headers: {

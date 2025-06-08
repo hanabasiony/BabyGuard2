@@ -15,7 +15,7 @@ export default function PregnancyTips() {
     const fetchTips = async () => {
       try {
         const response = await axios.get(
-          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/tips"
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/tips"
         );
         setData(response.data.data);
         console.log(response.data.data);

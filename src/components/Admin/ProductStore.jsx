@@ -23,7 +23,7 @@ function ProductStore() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/products",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/products",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -49,7 +49,7 @@ function ProductStore() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/products/admin/delete/${productToDelete._id}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/products/admin/delete/${productToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -98,7 +98,7 @@ function ProductStore() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.patch(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/products/admin/update-quantity/${productToEdit._id}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/products/admin/update-quantity/${productToEdit._id}`,
         { quantity: parseInt(newQuantity) },
         {
           headers: {

@@ -36,7 +36,7 @@ function ManageUsers() {
   const fetchCurrentUser = async (token) => {
     try {
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user/me",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user/me",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -54,7 +54,7 @@ function ManageUsers() {
   const fetchUsers = async (token) => {
     try {
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -148,7 +148,7 @@ function ManageUsers() {
 
     try {
       const response = await axios.delete(
-        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net//api/user/${userId}`,
+        `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -470,8 +470,8 @@ function ManageUsers() {
                               </svg>
                             </button>
                           )}
-                          {(!currentUser?.role === "admin" ||
-                            user.role !== "admin") && (
+                          {/* {(!currentUser?.role === "admin" ||
+                            user.role !== "admin") && ( */}
                             <button
                               onClick={() => openDeleteModal(user)}
                               className="text-red-600 hover:text-red-900"
@@ -490,7 +490,7 @@ function ManageUsers() {
                                 />
                               </svg>
                             </button>
-                          )}
+                          {/* )}r */}
                         </div>
                       </td>
                     </tr>

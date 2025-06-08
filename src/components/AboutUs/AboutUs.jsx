@@ -8,7 +8,7 @@ export default function AboutUs() {
         <section className="mx-auto px-14 py-12">
             <h2 className="text-2xl md:text-3xl font-semibold text-center text-gray-800 mb-12">About Us</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-lg shadow-lg overflow-hidden">
+                <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-lg shadow-lg overflow-hidden transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
                     <img
                         src={img1}
                         alt="Our Mission"
@@ -22,7 +22,7 @@ export default function AboutUs() {
                     </div>
                 </div>
 
-                <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-lg shadow-lg overflow-hidden">
+                <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-lg shadow-lg overflow-hidden transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
                     <img
                         src={img2}
                         alt="Our Vision"
@@ -36,7 +36,7 @@ export default function AboutUs() {
                     </div>
                 </div>
 
-                <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-lg shadow-lg overflow-hidden">
+                <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-lg shadow-lg overflow-hidden transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
                     <img
                         src={img3}
                         alt="Our Values"

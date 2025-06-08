@@ -100,7 +100,7 @@ export default function Home() {
           Core Features
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-rose-50 border-none rounded-lg shadow-sm p-6">
+          <div className="bg-rose-50 border-none rounded-lg shadow-sm p-6 transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <div className="bg-rose-200 w-10 h-10 rounded-full flex items-center justify-center mb-4">
               <span className="text-rose-600">💉</span>
             </div>
@@ -112,7 +112,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-blue-50 border-none rounded-lg shadow-sm p-6">
+          <div className="bg-blue-50 border-none rounded-lg shadow-sm p-6 transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <div className="bg-blue-200 w-10 h-10 rounded-full flex items-center justify-center">
               <span className="text-blue-600">🔔</span>
             </div>
@@ -122,7 +122,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-rose-50 border-none rounded-lg shadow-sm p-6">
+          <div className="bg-rose-50 border-none rounded-lg shadow-sm p-6 transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <div className="bg-rose-200 w-10 h-10 rounded-full flex items-center justify-center mb-4">
               <span className="text-rose-600">📚</span>
             </div>
@@ -140,7 +140,7 @@ export default function Home() {
           Pregnancy Tips
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="rounded-lg shadow-lg overflow-hidden">
+          <div className="rounded-lg shadow-lg overflow-hidden transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <img
               src={img4}
               alt="First Trimester Nutrition"
@@ -156,7 +156,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className=" rounded-lg shadow-lg overflow-hidden">
+          <div className="rounded-lg shadow-lg overflow-hidden transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <img
               src={img5}
               alt="Safe Exercises"
@@ -170,7 +170,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className=" rounded-lg shadow-lg overflow-hidden">
+          <div className="rounded-lg shadow-lg overflow-hidden transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <img
               src={img6}
               alt="Month by Month Guide"
@@ -200,7 +200,8 @@ export default function Home() {
             featuredProducts.map((product) => (
               <div
                 key={product._id}
-                className="bg-rose-50 border-none rounded-lg shadow-sm p-6"
+                className="bg-rose-50 border-none rounded-lg shadow-sm p-6 transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md cursor-pointer"
+                onClick={() => navigate('/products')}
               >
                 <div className="flex flex-col items-center">
                   <img
@@ -227,7 +228,7 @@ export default function Home() {
           What Parents Say
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="rounded-lg shadow-lg bg-white">
+          <div className="rounded-lg shadow-lg bg-white transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <div className="p-6 flex flex-col items-center text-center">
               <div className="w-16 h-16 rounded-full bg-rose-200 flex items-center justify-center mb-4">
                 <span className="text-rose-500 text-xl font-semibold">AM</span>
@@ -240,7 +241,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg">
+          <div className="bg-white rounded-lg shadow-lg transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <div className="p-6 flex flex-col items-center text-center">
               <div className="w-16 h-16 rounded-full bg-blue-200 flex items-center justify-center mb-4">
                 <span className="text-blue-400 text-xl font-semibold">AN</span>
@@ -253,7 +254,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg">
+          <div className="bg-white rounded-lg shadow-lg transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <div className="p-6 flex flex-col items-center text-center">
               <div className="w-16 h-16 rounded-full bg-pink-200 flex items-center justify-center mb-4">
                 <span className="text-pink-500 text-xl font-semibold">ME</span>

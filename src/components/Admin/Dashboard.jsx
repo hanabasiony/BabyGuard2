@@ -1,51 +1,21 @@
 import axios from "axios";
 import { useEffect, useState } from "preact/hooks";
 import { Link } from "react-router-dom";
+import { Oval } from "react-loader-spinner";
 
 function Dashboard() {
-  // This would be replaced with API data
-  const stats = {
-    totalUsers: { count: 2459, change: "+12.5%" },
-    newAppointments: { count: 182, change: "+8.2%" },
-    activeComplaints: { count: 48, change: "-2.4%" },
-  };
-  const [appointmentsNumber, setAppointmentsNumber] = useState([]);
-  const [complaintsNumber, setComplaintsNumber] = useState([]);
-  const [usersNumber, setUsersNumber] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [appointmentsNumber, setAppointmentsNumber] = useState(null);
+  const [complaintsNumber, setComplaintsNumber] = useState(null);
+  const [usersNumber, setUsersNumber] = useState(null);
 
-  // This would be replaced with API data
-  const recentActivity = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      action: "scheduled a vaccination",
-      time: "2 hours ago",
-      avatar: "/placeholder.svg",
-    },
-    {
-      id: 2,
-      name: "Dr. Mike",
-      action: "added new vaccine schedule",
-      time: "4 hours ago",
-      avatar: "/placeholder.svg",
-    },
-    {
-      id: 3,
-      name: "Emma",
-      action: "submitted a new complaint",
-      time: "6 hours ago",
-      avatar: "/placeholder.svg",
-    },
-  ];
   const token = localStorage.getItem("token");
+
   const fetchAppointments = async () => {
-    // setIsLoading(true);
     try {
-      // Assuming token is needed for admin API
       if (!token) {
         console.error("Authentication token not found for admin API");
-        // setIsLoading(false);
-        // Optionally navigate to login or show an error message
+        setAppointmentsNumber(0);
         return;
       }
 
@@ -60,29 +30,20 @@ function Dashboard() {
 
       if (response.data && response.data.data) {
         setAppointmentsNumber(response.data.data.length);
-        console.log(response.data.data.length);
       } else {
-        console.error("API returned unexpected data structure:", response.data);
+        setAppointmentsNumber(0);
       }
     } catch (error) {
-      console.error(
-        "Error fetching appointments:",
-        error.response?.data || error.message
-      );
-      // setRawAppointments([]); // Set empty array on error
-    } finally {
-      setIsLoading(false);
+      console.error("Error fetching appointments:", error.response?.data || error.message);
+      setAppointmentsNumber(0);
     }
   };
 
   const fetchComplains = async () => {
-    // setIsLoading(true);
     try {
-      const token = localStorage.getItem("token"); // Assuming token is needed for admin API
       if (!token) {
         console.error("Authentication token not found for admin API");
-        // setIsLoading(false);
-        // Optionally navigate to login or show an error message
+        setComplaintsNumber(0);
         return;
       }
 
@@ -97,45 +58,68 @@ function Dashboard() {
 
       if (response.data && response.data.data) {
         setComplaintsNumber(response.data.data.length);
-        console.log(response.data.data.length);
       } else {
-        console.error("API returned unexpected data structure:", response.data);
+        setComplaintsNumber(0);
       }
     } catch (error) {
-      console.error(
-        "Error fetching appointments:",
-        error.response?.data || error.message
-      );
-      // setRawAppointments([]); // Set empty array on error
-    } finally {
-      setIsLoading(false);
+      console.error("Error fetching complaints:", error.response?.data || error.message);
+      setComplaintsNumber(0);
     }
   };
 
-  const fetchUsersNumbers = () => {
-    const res = axios
-      .get(
+  const fetchUsersNumbers = async () => {
+    try {
+      const response = await axios.get(
         "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      .then((res) => {
-        // console.log();
-        setUsersNumber(res.data.users.length);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      );
+      if (response.data && response.data.users) {
+        setUsersNumber(response.data.users.length);
+      } else {
+        setUsersNumber(0);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error.response?.data || error.message);
+      setUsersNumber(0);
+    }
   };
 
   useEffect(() => {
-    fetchAppointments();
-    fetchComplains();
-    fetchUsersNumbers();
+    const fetchAllData = async () => {
+      try {
+        await Promise.all([
+          fetchAppointments(),
+          fetchComplains(),
+          fetchUsersNumbers()
+        ]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllData();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Oval
+          height={80}
+          width={80}
+          color="#fda4af"
+          secondaryColor="#fecdd3"
+          strokeWidth={2}
+          strokeWidthSecondary={2}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6">
@@ -180,10 +164,9 @@ function Dashboard() {
                 />
               </svg>
             </div>
-            {/* <span className="text-green-500 font-medium">{stats.totalUsers.change}</span> */}
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-            {usersNumber}
+            {usersNumber || 0}
           </h2>
           <p className="text-gray-500">Total Users</p>
         </div>
@@ -207,10 +190,9 @@ function Dashboard() {
                 />
               </svg>
             </div>
-            <span className="text-green-500 font-medium"></span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-            {appointmentsNumber ? appointmentsNumber : "Loading..."}
+            {appointmentsNumber || 0}
           </h2>
           <p className="text-gray-500">Total Appointments</p>
         </div>
@@ -233,10 +215,9 @@ function Dashboard() {
                 />
               </svg>
             </div>
-            {/* <span className="text-red-500 font-medium">{stats.activeComplaints.change}</span> */}
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-            {complaintsNumber}
+            {complaintsNumber || 0}
           </h2>
           <p className="text-gray-500">Active Complaints</p>
         </div>

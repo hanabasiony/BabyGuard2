@@ -5,7 +5,8 @@ import * as yup from "yup";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-export default function PassReset() {
+export default function ForgotPassChangePage() {
+  console.log('ForgotPassChangePage component rendered');
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -13,10 +14,12 @@ export default function PassReset() {
   const [resetToken, setResetToken] = useState("");
 
   useEffect(() => {
+    console.log('Checking for reset token in localStorage');
     const token = localStorage.getItem("resetToken");
+    console.log('Reset token found:', token ? 'Yes' : 'No');
     if (!token) {
       toast.error("Reset token not found. Please request a new one.");
-      navigate("/PassSend");
+      navigate("/email-forgot-pass");
     }
     setResetToken(token);
   }, [navigate]);
@@ -24,6 +27,7 @@ export default function PassReset() {
   const initialValues = {
     newPassword: "",
   };
+  console.log('Initial form values:', initialValues);
 
   const validationSchema = yup.object().shape({
     newPassword: yup
@@ -40,7 +44,9 @@ export default function PassReset() {
   });
 
   async function handleResetPassword(values) {
+    console.log('handleResetPassword called with values:', values);
     if (!resetToken) {
+      console.log('No reset token found, redirecting to password request page');
       toast.error("Reset token not found. Please request a new one.");
       navigate("/PassSend");
       return;
@@ -48,6 +54,7 @@ export default function PassReset() {
 
     setLoading(true);
     try {
+      console.log('Sending password reset request with token:', resetToken);
       const response = await axios.post(
         "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/auth/reset-password",
         {
@@ -56,16 +63,23 @@ export default function PassReset() {
         }
       );
 
+      console.log('Password reset response:', response);
       if (response.status === 200) {
         setSuccessMsg(true);
         toast.success("Password reset successfully!");
-        localStorage.removeItem("resetToken"); // Clean up the token
+        console.log('Removing reset token from localStorage');
+        localStorage.removeItem("resetToken");
+        console.log('Redirecting to login page...');
         setTimeout(() => {
           navigate("/login");
         }, 2000);
       }
     } catch (error) {
-      console.error("Reset password error:", error);
+      console.error("Reset password error details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
       if (error.response?.data?.message) {
         setErrorMsg(error.response.data.message);
         toast.error(error.response.data.message);
@@ -75,8 +89,19 @@ export default function PassReset() {
       }
     } finally {
       setLoading(false);
+      console.log('Password reset process completed');
     }
   }
+
+  console.log('Current form state:', {
+    values: formik.values,
+    errors: formik.errors,
+    touched: formik.touched,
+    loading,
+    errorMsg,
+    successMsg,
+    resetToken: resetToken ? 'Present' : 'Not present'
+  });
 
   return (
     <div className="min-h-screen bg-white-50 pt-35 pb-1">

@@ -13,7 +13,7 @@ import { ShoppingCart, Settings } from "lucide-react";
 import { CartContext } from "../../context/CartContext";
 import axios from "axios";
 
-import newLogo from "../../assets/images/new-logo.png";
+import newLogo from "../../assets/images/very-final-logo.png";
 
 export default function Navbar() {
   const { userToken, setuserToken } = useContext(authContext);
@@ -26,6 +26,7 @@ export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userData, setUserData] = useState(null);
+
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));

@@ -17,9 +17,9 @@ import AuthcontextProvider from './context/AuthContext'
 // import Test from './components/test/test'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import PassSend from './components/PassSend/PassSend'
+import EmailForForgotPass from './components/emailForForgotPass/EmailForForgotPass.jsx'
 import VerifyResetCode from './components/verifyResetCode/verifyResetCode'
-import PassReset from './components/PassReset/PassReset'
+import PassReset from './components/ForgotPassChangePage/ForgotPassChangePage.jsx'
 import UpdateLoggedUserPassword from './components/UpdateLoggedUserPassword/UpdateLoggedUserPassword'
 import Vacciens from './components/Vacciens/Vacciens'
 import PaymentPage from './components/PaymentPage/PaymentPage'
@@ -73,6 +73,7 @@ import AddPregnancyTips from './components/Admin/AddPregnancyTips'
 import AddTrimester from './components/Admin/AddTrimester'
 import AddRecommendedFoods from './components/Admin/AddRecommendedFoods.jsx'
 import AddMilestone from './components/Admin/AddMilestone'
+import ForgotPassChangePage from './components/ForgotPassChangePage/ForgotPassChangePage.jsx'
 
 const router = createBrowserRouter([
   {
@@ -97,9 +98,11 @@ const router = createBrowserRouter([
       },
       { path: 'categories', element: <Categories /> },
       { path: 'brands', element: <Brands /> },
-      { path: 'PassSend', element: <PassSend /> },
-      { path: 'PassSend/VerifyResetCode', element: <VerifyResetCode /> },
-      { path: 'PassSend/VerifyResetCode/PassReset', element: <PassReset /> },
+
+      { path: 'email-forgot-pass', element: <EmailForForgotPass /> },
+      { path: 'email-forgot-pass/verify-OTP/:email', element: <VerifyResetCode /> },
+      { path: 'email-forgot-pass/verify-OTP/ForgotPassChangePage', element: <ForgotPassChangePage /> },
+
       { path: 'vacciens', element: <Vacciens /> },
       { path: '/VaccineReservation/:vaccineId', element:<ProtectedRoute> <VaccinationForm /></ProtectedRoute> },
       { path: 'payment', element: <PaymentPage /> },

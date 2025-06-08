@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { authContext } from '../../context/AuthContext';
 
 export default function PassSend() {
+    console.log('PassSend component rendered');
     const [loading, setLoading] = useState(false);
     const [successMsg, setSuccessMsg] = useState(false);
     const navigate = useNavigate();
@@ -14,12 +15,13 @@ export default function PassSend() {
     let user = {
         email: ''
     }
-
-
+    console.log('Initial user state:', user);
 
     async function sendCode(values) {
+        console.log('sendCode called with values:', values);
         setLoading(true);
         try {
+            console.log('Sending reset code request for email:', values.email);
             const response = await axios.post(
                 'https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/auth/forgot-password',
                 {
@@ -30,13 +32,19 @@ export default function PassSend() {
             setSuccessMsg(true);
             toast.success("Reset code sent successfully!");
             
+            console.log('Redirecting to OTP verification page...');
             setTimeout(() => {
-                navigate('./VerifyResetCode');
+                navigate(`/email-forgot-pass/verify-OTP/${values.email}`);
             }, 2000);
         } catch (error) {
-            console.error("Error sending reset code:", error);
+            console.error("Error sending reset code details:", {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            });
             if (error.response?.data?.errors) {
                 const errors = error.response.data.errors;
+                console.log('API validation errors:', errors);
                 for (const field in errors) {
                     if (Array.isArray(errors[field])) {
                         errors[field].forEach((err) => {
@@ -55,6 +63,7 @@ export default function PassSend() {
             }
         } finally {
             setLoading(false);
+            console.log('Reset code sending process completed');
         }
     }
 
@@ -64,6 +73,14 @@ export default function PassSend() {
         validationSchema: yup.object().shape({
             email: yup.string().email('Invalid email').required('Email is required'),
         })
+    });
+
+    console.log('Current form state:', {
+        values: regFormik.values,
+        errors: regFormik.errors,
+        touched: regFormik.touched,
+        loading,
+        successMsg
     });
 
     return (

@@ -288,7 +288,7 @@ export default function Login() {
           </div>
           <div className="flex flex-col w-full gap-2 mt-4">
             <Link
-              to="/PassSend"
+              to="/email-forgot-pass"
               className="text-sm text-center text-rose-300 hover:underline"
             >
               Forgot password?

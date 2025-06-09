@@ -116,8 +116,14 @@ export default function Reg() {
         .string()
         .required("phone number is req")
         .matches(/^\+201[0-2,5][0-9]{8}$/, "Phone number must be in format: +201XXXXXXXX"),
-      governorate: yup.string().required("governorate is required"),
-      city: yup.string().required("city is required"),
+      governorate: yup
+        .string()
+        .required("governorate is required")
+        .min(2, "governorate must be at least 2 characters"),
+      city: yup
+        .string()
+        .required("city is required")
+        .min(2, "city must be at least 2 characters"),
       street: yup.string().required("street is required"),
       buildingNumber: yup
         .string()

@@ -23,6 +23,8 @@ function ManageChildren() {
   const [prevPageToken, setPrevPageToken] = useState(null);
   const [pageHistory, setPageHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const [selectedCertificate, setSelectedCertificate] = useState(null);
 
   const navigate = useNavigate();
 
@@ -133,7 +135,7 @@ function ManageChildren() {
             </p>
             <div className="flex gap-2">
               <button
-                className="px-4 py-2 bg-pink-400 text-white rounded hover:bg-pink-500"
+                className="px-4 py-2 bg-rose-300 text-white rounded hover:bg-rose-400"
                 onClick={async () => {
                   toast.dismiss(t.id);
                   // Immediately remove from UI
@@ -237,6 +239,48 @@ function ManageChildren() {
 
   return (
     <div className="min-h-screen bg-gray-50/35 p-4 sm:p-6">
+      {/* Certificate Modal */}
+      {showCertificateModal && selectedCertificate && (
+        <div
+          className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+          onClick={() => setShowCertificateModal(false)}
+        >
+          <div
+            className="bg-white/95 rounded-lg p-6 max-w-4xl w-full mx-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">Birth Certificate</h3>
+              <button
+                onClick={() => setShowCertificateModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="flex justify-center">
+              <img
+                src={selectedCertificate}
+                alt="Birth Certificate"
+                className="max-w-full max-h-[80vh] object-contain rounded-lg"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -399,7 +443,8 @@ function ManageChildren() {
                             className="text-blue-600 hover:text-blue-900"
                             onClick={() => {
                               if (child.birthCertificate) {
-                                window.open(child.birthCertificate, "_blank");
+                                setSelectedCertificate(child.birthCertificate);
+                                setShowCertificateModal(true);
                               } else {
                                 toast.error(
                                   "No birth certificate available for this child."

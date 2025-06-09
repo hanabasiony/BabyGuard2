@@ -449,8 +449,8 @@ function ManageUsers() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex space-x-2 justify-end">
-                          {(!currentUser?.role === "admin" ||
-                            user.role !== "admin") && (
+                          {/* {(!currentUser?.role === "admin" ||
+                            user.role !== "admin") && ( */}
                             <button
                               onClick={() => handleNavigateToEdit(user)}
                               className="text-blue-600 hover:text-blue-900"
@@ -469,9 +469,9 @@ function ManageUsers() {
                                 />
                               </svg>
                             </button>
-                          )}
-                          {(!currentUser?.role === "admin" ||
-                            user.role !== "admin") && (
+                          {/* )} */}
+                          {/* {(!currentUser?.role === "admin" ||
+                            user.role !== "admin") && ( */}
                             <button
                               onClick={() => openDeleteModal(user)}
                               className="text-red-600 hover:text-red-900"
@@ -490,7 +490,7 @@ function ManageUsers() {
                                 />
                               </svg>
                             </button>
-                           )}
+                           {/* )} */}
                         </div>
                       </td>
                     </tr>

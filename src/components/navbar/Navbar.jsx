@@ -167,6 +167,7 @@ export default function Navbar() {
 
           {/* Desktop Nav Links */}
           <ul className="hidden md:flex items-center space-x-6">
+            
             {userToken ? (
               <li>
                 <NavLink

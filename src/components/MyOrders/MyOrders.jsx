@@ -111,7 +111,7 @@ export default function MyOrders() {
             </p>
             <Link
               to="/"
-              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700"
+              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-rose-300 hover:bg-rose-400"
             >
               Start Shopping
             </Link>
@@ -127,7 +127,7 @@ export default function MyOrders() {
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-800">
-                        Order #{order._id}
+                        Order #{order._id?.slice(-5)}
                       </h3>
                       <p className="text-sm text-gray-500">
                         Placed on {formatDate(order.createdAt)}

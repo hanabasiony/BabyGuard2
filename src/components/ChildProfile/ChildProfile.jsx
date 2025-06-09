@@ -17,6 +17,26 @@ export default function ChildDashboard() {
   const [showDeleteRequestModal, setShowDeleteRequestModal] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState(null);
   const [vaccineRequests, setVaccineRequests] = useState([]);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
+  const [selectedCertificate, setSelectedCertificate] = useState(null);
+
+  const handleDownload = async (url) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `vaccine-certificate-${Date.now()}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error('Error downloading certificate:', error);
+      toast.error('Failed to download certificate');
+    }
+  };
 
   const calculateAge = (birthDate) => {
     if (!birthDate) return "N/A";
@@ -119,6 +139,9 @@ export default function ChildDashboard() {
       fetchVaccineRequests();
     }
   }, [selectedChild]);
+
+  // console.log(requests.certificate);
+  
 
   const handleRemoveChild = async () => {
     if (!selectedChild?._id) {
@@ -261,6 +284,36 @@ export default function ChildDashboard() {
 
   return (
     <div className="w-full bg-white">
+      {/* Certificate Modal */}
+      {showCertificateModal && selectedCertificate && (
+        <div
+          className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+          onClick={() => setShowCertificateModal(false)}
+        >
+          <div
+            className="bg-white/95 rounded-lg p-6 max-w-4xl w-full mx-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">Vaccination Certificate</h3>
+              <button
+                onClick={() => setShowCertificateModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex justify-center">
+              <img
+                src={selectedCertificate}
+                alt="Vaccination Certificate"
+                className="max-w-full max-h-[80vh] object-contain rounded-lg"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Remove Child Modal */}
       {showRemoveModal && selectedChild && (
         <div
@@ -442,11 +495,14 @@ export default function ChildDashboard() {
                           selectedChild.name.toLowerCase()
                       )
                       .map((request) => (
+                        
+                        
                         <div
                           key={request._id}
-                          className="flex items-center justify-between p-3 bg-gray-100 rounded-lg"
+                          className="flex items-center  justify-between p-3 bg-gray-100 rounded-lg"
                         >
                           <div>
+                            {/* {console.log(request)} */}
                             <p className="text-sm font-medium">
                               {request.vaccine
                                 ? request.vaccine.name
@@ -476,19 +532,48 @@ export default function ChildDashboard() {
                                 {request.nurse.hospitalName}
                               </p>
                             )}
+                            {/* {(
+                              <button
+                                onClick={() => window.open(request.certificate, '_blank')}
+                                className="mt-2 inline-flex items-center px-2 py-1 text-xs font-medium text-white bg-rose-300 rounded-md hover:bg-rose-400 transition-colors duration-200"
+                              >
+                                <Info className="w-3 h-3 mr-1" />
+                                View Certificate
+                              </button>
+                            )} */}
+
                           </div>
                           <div className="flex items-center space-x-2">
                             <span
                               className={`px-2 py-1 text-xs rounded ${
                                 request.status === "Pending"
                                   ? "bg-yellow-100 text-yellow-800"
-                                  : request.status === "Confirmed"
+                                  : request.status === "Delivered"
                                   ? "bg-green-100 text-green-800"
                                   : "bg-red-100 text-red-800"
                               }`}
                             >
                               {request.status}
                             </span>
+                            {request.status === "Delivered" && request.certificate && (
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => handleDownload(request.certificate)}
+                                  className="px-2 py-1 text-xs font-medium text-white bg-rose-300 rounded-md hover:bg-rose-400 transition-colors duration-200"
+                                >
+                                  Download certificate <i class="fa-solid fa-download"></i>
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setSelectedCertificate(request.certificate);
+                                    setShowCertificateModal(true);
+                                  }}
+                                  className="px-2 py-1 text-xs font-medium text-white bg-rose-300 rounded-md hover:bg-rose-400 transition-colors duration-200"
+                                >
+                                  View certificate <i class="fa-solid fa-eye"></i>
+                                </button>
+                              </div>
+                            )}
                             {request.status === "Pending" && (
                               <button
                                 onClick={() =>

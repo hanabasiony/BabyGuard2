@@ -29,17 +29,27 @@ const Cart = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   setIsAdmin(localStorage.getItem("role"));
 
-  // Get user data from localStorage
+  // Get user data from API
   useEffect(() => {
-    const storedUserData = localStorage.getItem("userData");
-    if (storedUserData) {
-      try {
-        const parsedUserData = JSON.parse(storedUserData);
-        setUserData(parsedUserData);
-      } catch (error) {
-        console.error("Error parsing user data:", error);
-      }
-    }
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    axios
+      .get(
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user/me",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        setUserData(res.data.user);
+      })
+      .catch((err) => {
+        console.error("Error fetching user data:", err);
+        toast.error("Failed to load user data");
+      });
   }, []);
 
   const updateCartStatus = async () => {
@@ -475,31 +485,31 @@ const Cart = () => {
             <div className="space-y-2">
               <p className="text-gray-600">
                 <span className="font-semibold">Name:</span>{" "}
-                {userData.user.fName} {userData.user.lName}
+                {userData.fName} {userData.lName}
               </p>
               <p className="text-gray-600">
                 <span className="font-semibold">Phone:</span>{" "}
-                {userData.user.phoneNumber}
+                {userData.phoneNumber}
               </p>
               <p className="text-gray-600">
                 <span className="font-semibold">Governorate:</span>{" "}
-                {userData.user.governorate}
+                {userData.governorate}
               </p>
               <p className="text-gray-600">
                 <span className="font-semibold">City:</span>{" "}
-                {userData.user.city}
+                {userData.city}
               </p>
               <p className="text-gray-600">
                 <span className="font-semibold">Street:</span>{" "}
-                {userData.user.street}
+                {userData.street}
               </p>
               <p className="text-gray-600">
                 <span className="font-semibold">Building:</span>{" "}
-                {userData.user.buildingNumber}
+                {userData.buildingNumber}
               </p>
               <p className="text-gray-600">
                 <span className="font-semibold">Apartment:</span>{" "}
-                {userData.user.apartmentNumber}
+                {userData.apartmentNumber}
               </p>
             </div>
           ) : (

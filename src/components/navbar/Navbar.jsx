@@ -167,14 +167,7 @@ export default function Navbar() {
 
           {/* Desktop Nav Links */}
           <ul className="hidden md:flex items-center space-x-6">
-            <li>
-              <NavLink
-                to="/"
-                className="hover:text-rose-300 text-rose-300 font-semibold"
-              >
-                Home
-              </NavLink>
-            </li>
+            
             {userToken ? (
               <li>
                 <NavLink

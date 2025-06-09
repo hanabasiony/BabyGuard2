@@ -444,7 +444,7 @@ const Cart = () => {
             ) : (
               <>
                 <button
-                  onClick={(e) => handleQuantityChange(e, product, -1)}
+                  onClick={(e) =>{ handleQuantityChange(e, product, -1); toast.loading('Updating quantity',{duration: 2000}) } }
                   className="bg-rose-200 text-rose-500 px-2 py-1 cursor-pointer rounded-full hover:bg-rose-300"
                 >
                   <Minus size={16} />
@@ -453,7 +453,7 @@ const Cart = () => {
                   {product.quantity}
                 </span>
                 <button
-                  onClick={(e) => handleQuantityChange(e, product, 1)}
+                  onClick={(e) => {handleQuantityChange(e, product, 1) ; toast.loading('Updating quantity',{duration: 2000}) }}
                   className="bg-rose-200 cursor-pointer text-rose-500 px-2 py-1 rounded-full hover:bg-rose-300"
                 >
                   <Plus size={16} />

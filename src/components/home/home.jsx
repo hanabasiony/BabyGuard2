@@ -410,7 +410,7 @@ const Home = () => {
                     <div className="flex items-center justify-center gap-2 absolute bottom-3">
                       <button
                         onClick={(e) =>
-                          handleQuantityUpdate(e, product._id, -1)
+                         { handleQuantityUpdate(e, product._id, -1) ;toast.loading('Updating quantity',{duration: 2000}) }
                         }
                         className="bg-rose-300 hover:bg-rose-350 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center"
                       >
@@ -420,7 +420,7 @@ const Home = () => {
                         {currentQuantity}
                       </span>
                       <button
-                        onClick={(e) => handleQuantityUpdate(e, product._id, 1)}
+                        onClick={(e) => {handleQuantityUpdate(e, product._id, 1); toast.loading('Updating quantity',{duration: 2000}) } }
                         disabled={product.quantity <= currentQuantity}
                         className={`bg-rose-300 hover:bg-rose-350 cursor-pointer text-white font-medium w-8 h-8 rounded-full flex items-center justify-center ${
                           product.quantity <= currentQuantity

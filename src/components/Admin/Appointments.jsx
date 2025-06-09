@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-function Appointments() {
+const Appointments = () => {
   // State for appointments data (raw data from API)
   const [rawAppointments, setRawAppointments] = useState([]);
   // State for processed and filtered appointments data
@@ -18,6 +18,8 @@ function Appointments() {
   const [selectedNurses, setSelectedNurses] = useState({});
   const [nurseSlots, setNurseSlots] = useState({}); // Add state for nurse slots
   const [selectedSlot, setSelectedSlot] = useState(null); // Add state for selected slot
+  const [showModal, setShowModal] = useState(false);
+  const [certificateImage, setCertificateImage] = useState(null);
 
   // Add status update handler
   const handleStatusChange = async (appointmentId, newStatus) => {
@@ -444,7 +446,40 @@ function Appointments() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 ">
+    <div className="min-h-screen bg-gray-50">
+      {/* Certificate Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/25 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg max-w-2xl w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Vaccine Certificate</h3>
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  setCertificateImage(null);
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            {certificateImage ? (
+              <img
+                src={certificateImage}
+                alt="Vaccine Certificate"
+                className="w-full h-auto rounded-lg"
+              />
+            ) : (
+              <div className="flex justify-center items-center h-64">
+                <p className="text-gray-500">Loading certificate...</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto py-10">
         {/* Appointment Requests Section */}
         <div className="mt-6">
@@ -540,61 +575,162 @@ function Appointments() {
                 <div className="p-4">
                   {/* Status Header */}
                   <div className="flex justify-between items-center mb-4">
-                    {appointment.status === "Pending" ? (
-                      <select
-                        className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border-0 focus:ring-2 focus:ring-yellow-500"
-                        value={appointment.status}
-                        onChange={(e) =>
-                          handleStatusChange(appointment.id, e.target.value)
-                        }
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Delivered">Delivered</option>
-                      </select>
-                    ) : appointment.status === "Confirmed" ? (
-                      <select
-                        className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border-0 focus:ring-2 focus:ring-green-500"
-                        value={appointment.status}
-                        onChange={(e) =>
-                          handleStatusChange(appointment.id, e.target.value)
-                        }
-                      >
-                        <option value="Confirmed">Confirmed</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Delivered">Delivered</option>
-                      </select>
-                    ) : (
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          appointment.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : appointment.status === "Confirmed"
-                            ? "bg-green-100 text-green-800"
-                            : appointment.status === "Rejected"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-blue-100 text-blue-800"
-                        }`}
-                      >
-                        {appointment.status}
-                      </span>
+                    {/* Always show the select dropdown for status */}                     <select
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${                       appointment.status === "Pending"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : appointment.status === "Confirmed"
+                          ? "bg-green-100 text-green-800"
+                          : appointment.status === "Rejected"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-blue-100 text-blue-800"
+                      } border-0 focus:ring-2 focus:ring-opacity-50`}
+                      value={appointment.status}
+                      onChange={(e) =>
+                        handleStatusChange(appointment.id, e.target.value)
+                      }
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Confirmed">Confirmed</option>
+                      <option value="Rejected">Rejected</option>
+                      <option value="Delivered">Delivered</option>
+                    </select>
+
+                    {appointment.status === "Delivered" && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={async () => {
+                            try {
+                              const rawAppointment = rawAppointments.find(
+                                (req) => req._id === appointment.id
+                              );
+                              if (rawAppointment) {
+                                const token = localStorage.getItem("token");
+                                if (!token) {
+                                  toast.error("Authentication token is missing");
+                                  return;
+                                }
+
+                                const response = await axios.get(
+                                  `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccine-requests/certificate/admin/${rawAppointment._id}`,
+                                  {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`,
+                                    },
+                                  }
+                                );
+
+                                if (response.status === 200) {
+                                  const imageUrl = response.data.data;
+                                  setCertificateImage(imageUrl);
+                                  setShowModal(true);
+                                } else {
+                                  toast.error(response.data?.message || "Failed to fetch certificate with status: " + response.status);
+                                }
+                                console.log(response);
+                                
+                              }
+                            } catch (error) {
+                              console.error("Error fetching certificate:", error);
+                              toast.error(error.response?.data?.error || error.response?.data?.message || "Failed to fetch certificate");
+                              setShowModal(false);
+                            }
+                          }}
+                          className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-500 hover:bg-blue-200 transition-colors duration-200 flex items-center gap-1"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
+                          </svg>
+                          View Certificate
+                        </button>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const rawAppointment = rawAppointments.find(
+                                (req) => req._id === appointment.id
+                              );
+                              if (rawAppointment) {
+                                const token = localStorage.getItem("token");
+                                if (!token) {
+                                  toast.error("Authentication token is missing");
+                                  return;
+                                }
+
+                                // Create a file input element
+                                const input = document.createElement('input');
+                                input.type = 'file';
+                                input.accept = 'image/*';
+                                
+                                input.onchange = async (e) => {
+                                  const file = e.target.files[0];
+                                  if (!file) return;
+
+                                  const formData = new FormData();
+                                  formData.append('certificate', file);
+
+                                  try {
+                                    const response = await axios.post(
+                                      `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccine-requests/certificate/admin/${rawAppointment._id}`,
+                                      formData,
+                                      {
+                                        headers: {
+                                          Authorization: `Bearer ${token}`,
+                                          'Content-Type': 'multipart/form-data',
+                                        },
+                                      }
+                                    );
+
+                                    if (response.status === 200 || response.status === 201) {
+                                      console.log(response);
+                                      toast.success("Certificate uploaded successfully!");
+                                    }
+                                  } catch (error) {
+                                    console.error("Error uploading certificate:", error);
+                                    toast.error(error.response?.data?.message || "Failed to upload certificate");
+                                  }
+                                };
+
+                                input.click();
+                              }
+                            } catch (error) {
+                              console.error("Error:", error);
+                              toast.error("An error occurred while processing the upload");
+                            }
+                          }}
+                          className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-500 hover:bg-purple-200 transition-colors duration-200 flex items-center gap-1"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                            />
+                          </svg>
+                          Upload certificate
+                        </button>
+                      </div>
                     )}
-                    {/* More options button */}
-                    <button className="text-gray-400 hover:text-gray-500">
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                        />
-                      </svg>
-                    </button>
                   </div>
 
                   {/* Child and Vaccine Info */}

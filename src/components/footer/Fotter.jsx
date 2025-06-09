@@ -98,7 +98,7 @@ export default function Fotter() {
             <ul className="space-y-3">
               <li className="flex items-center text-gray-600">
                 <FaPhone className="text-rose-300 mr-3" />
-                <span>+20 123 456 789</span>
+                <span>+20 109 500 0213</span>
               </li>
               <li className="flex items-center text-gray-600">
                 <FaEnvelope className="text-rose-300 mr-3" />

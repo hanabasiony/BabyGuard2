@@ -180,7 +180,7 @@ export default function MyOrders() {
                                     product.productId && (
                                       <Link
                                         to={`/review/${product.productId}`}
-                                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-500 hover:bg-pink-600 transition-colors duration-200 shadow-sm hover:shadow-md"
+                                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-rose-300 hover:bg-rose-400 transition-colors duration-200 shadow-sm hover:shadow-md"
                                       >
                                         <Star className="h-4 w-4 mr-2" />
                                         Write Review

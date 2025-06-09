@@ -294,7 +294,7 @@ export default function ChildDashboard() {
               </button>
               <button
                 onClick={handleRemoveChild}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                className="px-4 py-2 bg-rose-400 text-white rounded-lg hover:bg-rose-500 transition-colors"
               >
                 Remove
               </button>

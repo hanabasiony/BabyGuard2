@@ -307,7 +307,7 @@ export default function VaccinationForm() {
               {/* Appointment Date Field */}
               <div>
                 <p className="block text-lg font-medium text-gray-900 mb-2">
-                  Preferred Date & Time
+                  Preferred Date
                 </p>
                 <div className="relative">
                   {/* Date selection button */}

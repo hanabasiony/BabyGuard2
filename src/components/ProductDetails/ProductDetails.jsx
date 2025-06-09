@@ -384,9 +384,9 @@ export default function ProductDetails() {
               )}
             </div>
 
-            <p className="text-sm text-gray-500">
+            {/* <p className="text-sm text-gray-500">
               Free delivery for orders above EGP 300
-            </p>
+            </p> */}
           </div>
         </div>
 

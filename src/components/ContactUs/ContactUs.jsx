@@ -141,7 +141,7 @@ export default function ContactUs() {
           <div className="space-y-4 text-center md:text-left">
             <div className="flex items-center gap-2 text-gray-600">
               <i className="fa-solid fa-phone text-[#8BCFE0]"></i>
-              <span>+20 123 456 789</span>
+              <span>+20 109 500 0213</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600">
               <i className="fa-solid fa-location-dot text-[#8BCFE0]"></i>

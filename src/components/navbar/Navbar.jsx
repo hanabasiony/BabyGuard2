@@ -167,14 +167,6 @@ export default function Navbar() {
 
           {/* Desktop Nav Links */}
           <ul className="hidden md:flex items-center space-x-6">
-            <li>
-              <NavLink
-                to="/"
-                className="hover:text-rose-300 text-rose-300 font-semibold"
-              >
-                Home
-              </NavLink>
-            </li>
             {userToken ? (
               <li>
                 <NavLink
@@ -336,16 +328,6 @@ export default function Navbar() {
             <div className="space-y-2">
               <h3 className="text-gray-500 text-sm font-semibold px-4 mb-2">MAIN MENU</h3>
               <ul className="space-y-1">
-                <li>
-                  <NavLink
-                    to="/"
-                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-rose-300 rounded-lg"
-                    onClick={closeSidebar}
-                  >
-                    <i className="fa-solid fa-house mr-3"></i>
-                    Home
-                  </NavLink>
-                </li>
                 {userToken && (
                   <li>
                     <NavLink

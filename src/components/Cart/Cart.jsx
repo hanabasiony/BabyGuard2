@@ -399,7 +399,7 @@ const Cart = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl text-rose-400 font-semibold ">Cart items:</h1>
         <p className="text-rose-400 text-lg font-medium">
-          Total: {cart.totalPrice} EGP
+          Total: {cart.totalPrice} EGP + Delivery: 50 EGP
         </p>
       </div>
 

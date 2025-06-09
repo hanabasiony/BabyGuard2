@@ -125,14 +125,14 @@ export default function PaymentPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Shipping</span>
-                <span className="font-medium">EGP 0</span>
+                <span className="font-medium">EGP 50</span>
               </div>
             </div>
 
             <div className="flex justify-between items-center mb-8">
               <span className="text-xl font-bold text-rose-300">Total</span>
               <span className="text-xl font-bold text-rose-300">
-                EGP {cartData.cart.totalPrice}
+                EGP {cartData.cart.totalPrice + 50}
               </span>
             </div>
 

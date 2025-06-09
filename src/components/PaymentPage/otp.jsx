@@ -343,7 +343,7 @@ export default function OTPInput() {
 
         <button
           onClick={handleSubmit}
-          className="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 mb-4"
+          className="w-full bg-rose-300 hover:bg-rose-400 text-white font-semibold py-3 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 mb-4"
         >
           Verify OTP
         </button>

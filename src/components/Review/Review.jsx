@@ -91,7 +91,7 @@ const Review = () => {
                   <Star
                     className={`w-8 h-8 ${
                       (hoverRating || rating) >= star
-                        ? "fill-pink-500 text-pink-500"
+                        ? "fill-rose-400 text-rose-400"
                         : "text-gray-300"
                     }`}
                   />
@@ -111,7 +111,7 @@ const Review = () => {
               onChange={handleReviewChange}
               className={`w-full h-32 p-3 border ${
                 error ? "border-red-500" : "border-gray-300"
-              } rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent`}
+              } rounded-lg focus:ring-2 focus:ring-rose-400 focus:border-transparent`}
               placeholder="Share your experience with this product... (minimum 10 characters)"
               required
             />
@@ -128,7 +128,7 @@ const Review = () => {
                 loading ||
                 reviewText.trim().length < 10
               }
-              className="bg-pink-500 text-white px-6 py-2 rounded-full hover:bg-pink-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-rose-400 text-white px-6 py-2 rounded-full hover:bg-rose-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Submitting..." : "Submit Review"}
             </button>

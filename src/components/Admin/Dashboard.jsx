@@ -230,7 +230,7 @@ function Dashboard() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link
-            to="/manage-nurses"
+            to="./manage-nurses/add-nurse"
             className="bg-rose-300 text-white py-3 px-4 rounded-md flex items-center justify-center hover:bg-rose-400 transition duration-200"
           >
             <svg

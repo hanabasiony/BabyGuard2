@@ -1,7 +1,7 @@
 import React from 'react'
-import img1 from '../../assets/images/IMG_3224.JPG'
-import img2 from '../../assets/images/IMG_3225.JPG'
-import img3 from '../../assets/images/IMG_3223.JPG'
+import img1 from '../../assets/images/aboutUs1.jpg'
+import img2 from '../../assets/images/aboutUs3.jpg'
+import img3 from '../../assets/images/aboutUs2.jpg'
 
 export default function AboutUs() {
     return (

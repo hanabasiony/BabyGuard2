@@ -244,13 +244,13 @@ export default function Home() {
           <div className="bg-white rounded-lg shadow-lg transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <div className="p-6 flex flex-col items-center text-center">
               <div className="w-16 h-16 rounded-full bg-blue-200 flex items-center justify-center mb-4">
-                <span className="text-blue-400 text-xl font-semibold">AN</span>
+                <span className="text-blue-400 text-xl font-semibold">ZA</span>
               </div>
               <p className="text-gray-600 mb-4">
                 "The pregnancy tips are incredibly detailed and helpful. Highly
                 recommend!"
               </p>
-              <p className="font-semibold">Ahmed Nagy</p>
+              <p className="font-semibold">Zahra Ahmed</p>
             </div>
           </div>
 

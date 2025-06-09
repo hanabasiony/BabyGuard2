@@ -121,7 +121,7 @@ export default function Vacciens() {
                                             }
                                             navigate(`/VaccineReservation/${vaccine._id}`);
                                         }} 
-                                        className="bg-rose-300 mt-7 hover:bg-rose-350 text-white font-medium py-2 px-4 rounded-full cursor-pointer w-[100%]"
+                                        className="bg-rose-300 mt-7 hover:bg-rose-400 text-white font-medium py-2 px-4 rounded-full cursor-pointer w-[100%]"
                                     >
                                         Book now
                                     </button>

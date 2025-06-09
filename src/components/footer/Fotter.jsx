@@ -2,7 +2,7 @@ import React from 'react'
 import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa"
 import { useNavigate } from 'react-router-dom'
 import logo from '../../assets/images/logo-new2.png'
-import newLogo from '../../assets/images/new-logo.png'
+import newLogo from '../../assets/images/very-final-logo.png'
 
 export default function Fotter() {
   const navigate = useNavigate();

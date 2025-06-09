@@ -13,16 +13,23 @@ export default function UpdateLoggedUserPassword() {
 
   // Define validation schema using yup
   const validationSchema = yup.object().shape({
-    oldPassword: yup.string().required("Current password is required"),
+    oldPassword: yup
+      .string()
+      .required("Current password is required")
+      .min(6, "Current password must be at least 6 characters")
+      .max(20, "Current password cannot exceed 20 characters"),
     newPassword: yup
       .string()
       .required("New password is required")
-      .min(8, "New password must be at least 8 characters") // Recommended minimum length
-      .max(20, "New password cannot exceed 20 characters"), // Recommended maximum length
+      .min(6, "New password must be at least 6 characters")
+      .max(20, "New password cannot exceed 20 characters")
+      .test('different-from-old', 'New password must be different from current password', function(value) {
+        return value !== this.parent.oldPassword;
+      }),
     passwordConfirm: yup
       .string()
       .required("Confirm new password is required")
-      .oneOf([yup.ref("newPassword"), null], "New passwords must match"), // Must match newPassword
+      .oneOf([yup.ref("newPassword"), null], "New passwords must match"),
   });
 
   // Initialize formik

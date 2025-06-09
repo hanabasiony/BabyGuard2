@@ -14,6 +14,16 @@ function EditUser() {
   const [isLoading, setIsLoading] = useState(true);
   const [editingFields, setEditingFields] = useState({});
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   // Validation Schema
   const validationSchema = Yup.object().shape({
     fName: Yup.string()
@@ -202,8 +212,8 @@ function EditUser() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 pt-20">
+      <div className="max-w-7xl mx-auto pt-20">
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
           <div className="px-4 py-5 sm:px-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -275,7 +285,7 @@ function EditUser() {
                           </div>
                         ) : (
                           <div className="flex items-center justify-between">
-                            <span>{user[key]}</span>
+                            <span>{key === 'birthDate' ? formatDate(user[key]) : user[key]}</span>
                             <button
                               type="button"
                               onClick={() => handleEditClick(key)}

@@ -61,7 +61,7 @@ const ManageProviders = () => {
             </p>
             <div className="flex gap-2">
               <button
-                className="px-4 py-2 bg-pink-400 text-white rounded hover:bg-pink-500"
+                className="px-4 py-2 bg-rose-300 text-white rounded hover:bg-rose-400"
                 onClick={() => {
                   toast.dismiss(t.id);
                   resolve(true);
@@ -227,12 +227,6 @@ const ManageProviders = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Location
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
                     Working Hours
                   </th>
                   <th
@@ -247,7 +241,7 @@ const ManageProviders = () => {
                 {isLoading ? (
                   <tr>
                     <td
-                      colSpan="5"
+                      colSpan="4"
                       className="px-6 py-4 text-center text-sm text-gray-500"
                     >
                       Loading...
@@ -256,7 +250,7 @@ const ManageProviders = () => {
                 ) : filteredProviders.length === 0 ? (
                   <tr>
                     <td
-                      colSpan="5"
+                      colSpan="4"
                       className="px-6 py-4 text-center text-sm text-gray-500"
                     >
                       No providers found
@@ -273,11 +267,6 @@ const ManageProviders = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-500">
                           {provider.phone}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">
-                          {`${provider.district}, ${provider.city}, ${provider.governorate}`}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

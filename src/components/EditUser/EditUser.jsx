@@ -212,7 +212,7 @@ function EditUser() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 pt-20">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 pt-36">
       <div className="max-w-7xl mx-auto pt-20">
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
           <div className="px-4 py-5 sm:px-6">

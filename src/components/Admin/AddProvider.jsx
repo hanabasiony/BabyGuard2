@@ -42,9 +42,9 @@ export default function AddProvider() {
     initialValues: {
       name: "",
       phone: "",
-      city: "",
-      governorate: "",
-      district: "",
+      governorate: "Cairo",
+      city: "New Cairo",
+      district: "Fifth Settlement",
       workHours: "",
     },
     validationSchema: yourValidationSchema,
@@ -187,85 +187,6 @@ export default function AddProvider() {
                   {formik.errors.phone}
                 </div>
               )}
-            </div>
-
-            {/* Location Information */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label
-                  htmlFor="governorate"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Governorate
-                </label>
-                <input
-                  type="text"
-                  id="governorate"
-                  name="governorate"
-                  {...formik.getFieldProps("governorate")}
-                  className={`w-full px-3 py-2 border rounded-md ${
-                    formik.touched.governorate && formik.errors.governorate
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  } focus:outline-none focus:ring-1 focus:ring-rose-400 focus:border-rose-400`}
-                  placeholder="e.g., Cairo"
-                />
-                {formik.touched.governorate && formik.errors.governorate && (
-                  <div className="text-red-500 text-xs mt-1">
-                    {formik.errors.governorate}
-                  </div>
-                )}
-              </div>
-              <div>
-                <label
-                  htmlFor="city"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  City
-                </label>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  {...formik.getFieldProps("city")}
-                  className={`w-full px-3 py-2 border rounded-md ${
-                    formik.touched.city && formik.errors.city
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  } focus:outline-none focus:ring-1 focus:ring-rose-400 focus:border-rose-400`}
-                  placeholder="e.g., Cairo"
-                />
-                {formik.touched.city && formik.errors.city && (
-                  <div className="text-red-500 text-xs mt-1">
-                    {formik.errors.city}
-                  </div>
-                )}
-              </div>
-              <div>
-                <label
-                  htmlFor="district"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  District
-                </label>
-                <input
-                  type="text"
-                  id="district"
-                  name="district"
-                  {...formik.getFieldProps("district")}
-                  className={`w-full px-3 py-2 border rounded-md ${
-                    formik.touched.district && formik.errors.district
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  } focus:outline-none focus:ring-1 focus:ring-rose-400 focus:border-rose-400`}
-                  placeholder="e.g., Nasr City"
-                />
-                {formik.touched.district && formik.errors.district && (
-                  <div className="text-red-500 text-xs mt-1">
-                    {formik.errors.district}
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* Work Hours */}

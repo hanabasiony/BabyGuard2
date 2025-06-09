@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import axios from "axios";
-import img4 from "../../assets/images/IMG_3224.JPG";
-import img5 from "../../assets/images/IMG_3225.JPG";
-import img6 from "../../assets/images/IMG_3223.JPG";
+import img4 from "../../assets/images/preg.jpg";
+import img5 from "../../assets/images/recommended food.jpg";
+import img6 from "../../assets/images/preg3.jpg";
 import img7 from "../../assets/images/IMG_3220.JPG";
 import img8 from "../../assets/images/IMG_3222.JPG";
 import img9 from "../../assets/images/IMG_3226.JPG";
@@ -80,12 +80,12 @@ export default function Home() {
       </section>
 
       {/* Vaccine Reminder Banner */}
-      <div className="bg-rose-100 py-4">
+      <div className="bg-gradient-to-r from-rose-50 to-blue-50 py-4">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center">
             <div className="flex items-center space-x-2">
-              <span className="text-white text-lg">🔔</span>
-              <p className="text-white text-center font-medium">
+              <span className="text-gray-800 text-lg">🔔</span>
+              <p className="text-gray-800 text-center font-medium">
                 Once you register your child, we will send you vaccine reminders
                 to make sure that you remember
               </p>
@@ -143,15 +143,15 @@ export default function Home() {
           <div className="rounded-lg shadow-lg overflow-hidden transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <img
               src={img4}
-              alt="First Trimester Nutrition"
-              className="w-full h-48 object-cover"
+              alt="Trimesters Nutrition"
+              className="w-full h-48 object-fill"
             />
             <div className="p-4">
               <h3 className="font-semibold text-lg mb-2">
-                First Trimester Nutrition
+                Trimesters advices
               </h3>
               <p className="text-gray-600 text-sm">
-                Essential nutrients for early pregnancy.
+                Essential advices for pregnancy.
               </p>
             </div>
           </div>
@@ -159,13 +159,13 @@ export default function Home() {
           <div className="rounded-lg shadow-lg overflow-hidden transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <img
               src={img5}
-              alt="Safe Exercises"
+              alt="Recommended Food"
               className="w-full h-48 object-cover"
             />
             <div className="p-4">
-              <h3 className="font-semibold text-lg mb-2">Safe Exercises</h3>
+              <h3 className="font-semibold text-lg mb-2">Recommeded Food</h3>
               <p className="text-gray-600 text-sm">
-                Stay active during pregnancy.
+                Food recommendation during pregnancy.
               </p>
             </div>
           </div>
@@ -173,12 +173,12 @@ export default function Home() {
           <div className="rounded-lg shadow-lg overflow-hidden transform-gpu transition-all duration-700 ease-out hover:scale-103 hover:shadow-md">
             <img
               src={img6}
-              alt="Month by Month Guide"
+              alt="Week by Week Guide"
               className="w-full h-48 object-cover"
             />
             <div className="p-4">
               <h3 className="font-semibold text-lg mb-2">
-                Month by Month Guide
+                Week by Week Guide
               </h3>
               <p className="text-gray-600 text-sm">
                 What to expect during pregnancy.

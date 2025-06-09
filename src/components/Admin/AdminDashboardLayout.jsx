@@ -24,6 +24,7 @@ import AddPregnancyTips from './AddPregnancyTips';
 import AddTrimester from './AddTrimester';
 import AddMilestone from './AddMilestone';
 import AddRecommendedFoods from './AddRecommendedFoods';
+import AddNurse from './AddNurse';
 
 const AdminDashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -68,6 +69,7 @@ const AdminDashboardLayout = () => {
               <Route index element={<Dashboard />} />
               <Route path="manage-users" element={<ManageUsers />} />
               <Route path="manage-nurses" element={<ManageNurses />} />
+              <Route path='manage-nurses/add-nurse' element={<AddNurse/>}  />
               <Route path="/manage-children" element={<ManageChildren />} />
               <Route path="vaccinations" element={<Vaccinations />} />
               <Route path="vaccinations/add" element={<AddVaccine />} />

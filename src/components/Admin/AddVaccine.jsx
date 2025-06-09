@@ -20,35 +20,39 @@ const vaccineValidationSchema = yup.object().shape({
     .max(1000, "Description must be between 20 and 1000 characters"),
 
   requiredAge: yup
-    .array()
-    .of(
-      yup
-        .string()
-        .required("Required age must be provided")
-        .oneOf(
-          [
-            "No specific age required",
-            "3 months",
-            "6 months",
-            "9 months",
-            "1 year",
-            "1 year and 3 months",
-            "1 year and 6 months",
-            "1 year and 9 months",
-            "2 years",
-            "2 years and 3 months",
-            "2 years and 6 months",
-            "2 years and 9 months",
-            "3 years",
-            "3 years and 3 months",
-            "3 years and 6 months",
-            "3 years and 9 months",
-            "4 years",
-          ],
-          "'{value}' is not a valid age requirement. Please choose from the predefined age options."
-        )
-    )
-    .min(1, "At least one age requirement must be selected"),
+    .string()
+    .required("Required age must be provided")
+    .oneOf(
+      [
+        "No specific age required",
+        "24 hours",
+        "6 weeks",
+        "10 weeks",
+        "14 weeks",
+        "2 months",
+        "3 months",
+        "4 months",
+        "6 months",
+        "8 months",
+        "9 months",
+        "1 year",
+        "1 year and 3 months",
+        "1 year and 6 months",
+        "1 year and 9 months",
+        "2 years",
+        "2 years and 3 months",
+        "2 years and 6 months",
+        "2 years and 9 months",
+        "3 years",
+        "3 years and 3 months",
+        "3 years and 6 months",
+        "3 years and 9 months",
+        "4 years",
+        "9 years",
+        "9 years and 3 months"
+      ],
+      "'{value}' is not a valid age requirement. Please choose from the predefined age options."
+    ),
 
   price: yup
     .number()
@@ -56,7 +60,10 @@ const vaccineValidationSchema = yup.object().shape({
     .min(0, "Price can't be negative")
     .typeError("Price must be a number"),
 
-  provider: yup.string().required("Provider must be provided"),
+  provider: yup
+    .string()
+    .required("Provider must be provided")
+    .matches(/^[0-9a-fA-F]{24}$/, "Invalid provider ID format"),
 });
 
 export default function AddVaccine() {
@@ -103,7 +110,7 @@ export default function AddVaccine() {
     initialValues: {
       name: "",
       description: "",
-      requiredAge: [],
+      requiredAge: "",
       price: "",
       provider: "",
     },
@@ -119,7 +126,13 @@ export default function AddVaccine() {
 
         const response = await axios.post(
           "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/vaccines/admin",
-          values,
+          {
+            name: values.name,
+            description: values.description,
+            requiredAge: values.requiredAge,
+            price: Number(values.price),
+            provider: values.provider
+          },
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -188,205 +201,222 @@ export default function AddVaccine() {
   });
 
   return (
-    <div className="min-h-screen bg-white-50 pt-24 pb-12">
-      <form
-        className="max-w-2xl mx-auto px-4 sm:px-8"
-        onSubmit={formik.handleSubmit}
-      >
-        {successMsg && (
-          <div className="fixed top-24 left-1/2 transform -translate-x-1/2 p-4 mb-4 text-green-800 rounded-lg text-center bg-green-50 z-50">
-            Vaccine added successfully!
-          </div>
-        )}
-
-        {errorMsg && (
-          <div className="fixed top-24 left-1/2 transform -translate-x-1/2 p-4 mb-4 text-red-800 rounded-lg text-center bg-red-50 z-50">
-            {errorMsg}
-          </div>
-        )}
-
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-            Add New Vaccine
-          </h2>
-
-          {/* Provider Selection */}
-          <div className="relative z-0 w-full mb-5 group">
-            <select
-              id="provider"
-              name="provider"
-              value={formik.values.provider}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              disabled={loadingProviders}
-            >
-              <option value="">Select a Provider</option>
-              {providers.map((provider) => (
-                <option key={provider._id} value={provider._id}>
-                  {provider.name} - {provider.city}, {provider.governorate}
-                </option>
-              ))}
-            </select>
-            <label
-              htmlFor="provider"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Provider
-            </label>
-            {formik.errors.provider && formik.touched.provider && (
-              <div className="p-4 mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
-                {formik.errors.provider}
-              </div>
-            )}
-            {loadingProviders && (
-              <div className="p-4 mt-2 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50">
-                Loading providers...
-              </div>
-            )}
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-lg shadow-md p-8">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Add New Vaccine
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Fill in the details below to add a new vaccine.
+            </p>
           </div>
 
-          {/* Vaccine Name */}
-          <div className="relative z-0 w-full mb-5 group">
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formik.values.name}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-            />
-            <label
-              htmlFor="name"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Vaccine Name
-            </label>
-            {formik.errors.name && formik.touched.name && (
-              <div className="p-4 mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
-                {formik.errors.name}
-              </div>
-            )}
-          </div>
+          <form onSubmit={formik.handleSubmit} className="space-y-6">
+            {/* Provider Selection */}
+            <div>
+              <label
+                htmlFor="provider"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Provider
+              </label>
+              <select
+                id="provider"
+                name="provider"
+                value={formik.values.provider}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  formik.touched.provider && formik.errors.provider
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } focus:outline-none focus:ring-1 focus:ring-rose-400 focus:border-rose-400`}
+                disabled={loadingProviders}
+              >
+                <option value="">Select a Provider</option>
+                {providers.map((provider) => (
+                  <option key={provider._id} value={provider._id}>
+                    {provider.name} - {provider.city}, {provider.governorate}
+                  </option>
+                ))}
+              </select>
+              {formik.touched.provider && formik.errors.provider && (
+                <div className="text-red-500 text-xs mt-1">
+                  {formik.errors.provider}
+                </div>
+              )}
+              {loadingProviders && (
+                <div className="text-blue-500 text-xs mt-1">
+                  Loading providers...
+                </div>
+              )}
+            </div>
 
-          {/* Description */}
-          <div className="relative z-0 w-full mb-5 group">
-            <textarea
-              id="description"
-              name="description"
-              rows="3"
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-            />
-            <label
-              htmlFor="description"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Description
-            </label>
-            {formik.errors.description && formik.touched.description && (
-              <div className="p-4 mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
-                {formik.errors.description}
-              </div>
-            )}
-          </div>
+            {/* Vaccine Name */}
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Vaccine Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  formik.touched.name && formik.errors.name
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } focus:outline-none focus:ring-1 focus:ring-rose-400 focus:border-rose-400`}
+                placeholder="Enter vaccine name"
+              />
+              {formik.touched.name && formik.errors.name && (
+                <div className="text-red-500 text-xs mt-1">
+                  {formik.errors.name}
+                </div>
+              )}
+            </div>
 
-          {/* Required Age */}
-          <div className="relative z-0 w-full mb-5 group">
-            <select
-              id="requiredAge"
-              name="requiredAge"
-              value={formik.values.requiredAge}
-              onChange={(e) => {
-                const options = e.target.options;
-                const selectedValues = [];
-                for (let i = 0; i < options.length; i++) {
-                  if (options[i].selected) {
-                    selectedValues.push(options[i].value);
-                  }
-                }
-                formik.setFieldValue('requiredAge', selectedValues);
-              }}
-              onBlur={formik.handleBlur}
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              multiple
-            >
-              <option value="No specific age required">No specific age required</option>
-              <option value="3 months">3 months</option>
-              <option value="6 months">6 months</option>
-              <option value="9 months">9 months</option>
-              <option value="1 year">1 year</option>
-              <option value="1 year and 3 months">1 year and 3 months</option>
-              <option value="1 year and 6 months">1 year and 6 months</option>
-              <option value="1 year and 9 months">1 year and 9 months</option>
-              <option value="2 years">2 years</option>
-              <option value="2 years and 3 months">2 years and 3 months</option>
-              <option value="2 years and 6 months">2 years and 6 months</option>
-              <option value="2 years and 9 months">2 years and 9 months</option>
-              <option value="3 years">3 years</option>
-              <option value="3 years and 3 months">3 years and 3 months</option>
-              <option value="3 years and 6 months">3 years and 6 months</option>
-              <option value="3 years and 9 months">3 years and 9 months</option>
-              <option value="4 years">4 years</option>
-            </select>
-            <label
-              htmlFor="requiredAge"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Required Age (Hold Ctrl/Cmd to select multiple)
-            </label>
-            {formik.errors.requiredAge && formik.touched.requiredAge && (
-              <div className="p-4 mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
-                {Array.isArray(formik.errors.requiredAge) 
-                  ? formik.errors.requiredAge.join(', ')
-                  : formik.errors.requiredAge}
-              </div>
-            )}
-          </div>
+            {/* Description */}
+            <div>
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Description
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                rows="3"
+                value={formik.values.description}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  formik.touched.description && formik.errors.description
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } focus:outline-none focus:ring-1 focus:ring-rose-400 focus:border-rose-400`}
+                placeholder="Enter vaccine description"
+              />
+              {formik.touched.description && formik.errors.description && (
+                <div className="text-red-500 text-xs mt-1">
+                  {formik.errors.description}
+                </div>
+              )}
+            </div>
 
-          {/* Price */}
-          <div className="relative z-0 w-full mb-5 group">
-            <input
-              type="number"
-              id="price"
-              name="price"
-              step="0.01"
-              value={formik.values.price}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-            />
-            <label
-              htmlFor="price"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Price (EGP)
-            </label>
-            {formik.errors.price && formik.touched.price && (
-              <div className="p-4 mt-2 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
-                {formik.errors.price}
-              </div>
-            )}
-          </div>
+            {/* Required Age */}
+            <div>
+              <label
+                htmlFor="requiredAge"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Required Age
+              </label>
+              <select
+                id="requiredAge"
+                name="requiredAge"
+                value={formik.values.requiredAge}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  formik.touched.requiredAge && formik.errors.requiredAge
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } focus:outline-none focus:ring-1 focus:ring-rose-400 focus:border-rose-400`}
+              >
+                <option value="">Select Required Age</option>
+                <option value="No specific age required">No specific age required</option>
+                <option value="24 hours">24 hours</option>
+                <option value="6 weeks">6 weeks</option>
+                <option value="10 weeks">10 weeks</option>
+                <option value="14 weeks">14 weeks</option>
+                <option value="2 months">2 months</option>
+                <option value="3 months">3 months</option>
+                <option value="4 months">4 months</option>
+                <option value="6 months">6 months</option>
+                <option value="8 months">8 months</option>
+                <option value="9 months">9 months</option>
+                <option value="1 year">1 year</option>
+                <option value="1 year and 3 months">1 year and 3 months</option>
+                <option value="1 year and 6 months">1 year and 6 months</option>
+                <option value="1 year and 9 months">1 year and 9 months</option>
+                <option value="2 years">2 years</option>
+                <option value="2 years and 3 months">2 years and 3 months</option>
+                <option value="2 years and 6 months">2 years and 6 months</option>
+                <option value="2 years and 9 months">2 years and 9 months</option>
+                <option value="3 years">3 years</option>
+                <option value="3 years and 3 months">3 years and 3 months</option>
+                <option value="3 years and 6 months">3 years and 6 months</option>
+                <option value="3 years and 9 months">3 years and 9 months</option>
+                <option value="4 years">4 years</option>
+                <option value="9 years">9 years</option>
+                <option value="9 years and 3 months">9 years and 3 months</option>
+              </select>
+              {formik.touched.requiredAge && formik.errors.requiredAge && (
+                <div className="text-red-500 text-xs mt-1">
+                  {formik.errors.requiredAge}
+                </div>
+              )}
+            </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              disabled={loading || loadingProviders}
-              className="bg-rose-300 text-white px-6 py-2 rounded-lg hover:bg-rose-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? "Adding Vaccine..." : "Add Vaccine"}
-            </button>
-          </div>
+            {/* Price */}
+            <div>
+              <label
+                htmlFor="price"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Price (EGP)
+              </label>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                step="0.01"
+                value={formik.values.price}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  formik.touched.price && formik.errors.price
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } focus:outline-none focus:ring-1 focus:ring-rose-400 focus:border-rose-400`}
+                placeholder="Enter price"
+              />
+              {formik.touched.price && formik.errors.price && (
+                <div className="text-red-500 text-xs mt-1">
+                  {formik.errors.price}
+                </div>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={() => navigate("/admin/vaccinations")}
+                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading || loadingProviders}
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-rose-400 hover:bg-rose-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-400"
+              >
+                {loading ? "Adding..." : "Add Vaccine"}
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
 
 function ManageNurses() {
+  const navigate = useNavigate()
   // State for nurses data
   const [nurses, setNurses] = useState([]);
   const [filteredNurses, setFilteredNurses] = useState([]);
@@ -22,6 +26,34 @@ function ManageNurses() {
   const [pageHistory, setPageHistory] = useState([]);
   const [providers, setProviders] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState("");
+
+  const validationSchema = Yup.object().shape({
+    fName: Yup.string()
+      .required("First name must be specified")
+      .min(3, "First name is too short")
+      .max(15, "First name is too long"),
+    lName: Yup.string()
+      .required("Last name must be specified")
+      .min(3, "Last name is too short")
+      .max(15, "Last name is too long"),
+    email: Yup.string()
+      .required("Email is required")
+      .email("Email is invalid"),
+    phone: Yup.string()
+      .required("Phone number is required")
+      .matches(/^\d{11}$/, "Phone number must be 11 digits"),
+    hospital: Yup.string()
+      .required("Hospital name must be provided")
+      .trim(),
+  });
+
+  const initialValues = {
+    fName: "",
+    lName: "",
+    email: "",
+    phone: "",
+    hospital: "",
+  };
 
   // Fetch providers data
   const fetchProviders = async () => {
@@ -410,6 +442,179 @@ function ManageNurses() {
     }
   };
 
+  // Add Nurse Modal
+  const AddNurseModal = ({ onClose, onSubmit }) => {
+    return (
+      <div className="fixed inset-0 bg-gray-600/30 bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+        <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-full overflow-hidden flex flex-col">
+          <div className="flex justify-between items-center mb-4 p-6 pb-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800">
+              Add New Nurse
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-500"
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div className="p-6 pt-0 overflow-y-auto">
+            <Formik
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={onSubmit}
+            >
+              {({ isSubmitting }) => (
+                <Form>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="fName"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      First Name (3-15 characters)
+                    </label>
+                    <Field
+                      type="text"
+                      id="fName"
+                      name="fName"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-400"
+                      placeholder="Enter first name"
+                    />
+                    <ErrorMessage
+                      name="fName"
+                      component="div"
+                      className="mt-1 text-sm text-red-600"
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label
+                      htmlFor="lName"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Last Name (3-15 characters)
+                    </label>
+                    <Field
+                      type="text"
+                      id="lName"
+                      name="lName"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
+                      placeholder="Enter last name"
+                    />
+                    <ErrorMessage
+                      name="lName"
+                      component="div"
+                      className="mt-1 text-sm text-red-600"
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Email Address
+                    </label>
+                    <Field
+                      type="email"
+                      id="email"
+                      name="email"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-400"
+                      placeholder="Enter email address"
+                    />
+                    <ErrorMessage
+                      name="email"
+                      component="div"
+                      className="mt-1 text-sm text-red-600"
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label
+                      htmlFor="phone"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Phone Number (11 digits)
+                    </label>
+                    <Field
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
+                      placeholder="Enter phone number (11 digits)"
+                    />
+                    <ErrorMessage
+                      name="phone"
+                      component="div"
+                      className="mt-1 text-sm text-red-600"
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label
+                      htmlFor="hospital"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Provider Name
+                    </label>
+                    <Field
+                      as="select"
+                      id="hospital"
+                      name="hospital"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
+                    >
+                      <option value="">Select a provider</option>
+                      {providers.map((provider) => (
+                        <option key={provider._id} value={provider.name}>
+                          {provider.name}
+                        </option>
+                      ))}
+                    </Field>
+                    <ErrorMessage
+                      name="hospital"
+                      component="div"
+                      className="mt-1 text-sm text-red-600"
+                    />
+                  </div>
+
+                  <div className="mt-6 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      className="mr-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-rose-300 hover:bg-rose-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-300"
+                    >
+                      {isSubmitting ? "Adding..." : "Add Nurse"}
+                    </button>
+                  </div>
+                </Form>
+              )}
+            </Formik>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50/35 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
@@ -427,7 +632,7 @@ function ManageNurses() {
             <div className="flex flex-wrap gap-2">
               <button
                 className="px-4 py-2 bg-rose-300 text-white rounded-md hover:bg-rose-400 flex items-center justify-center w-full sm:w-auto"
-                onClick={() => setShowAddModal(true)}
+                onClick={() => navigate('./add-nurse')}
               >
                 <svg
                   className="w-5 h-5 mr-1"
@@ -641,162 +846,19 @@ function ManageNurses() {
 
       {/* Add Nurse Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-gray-600/30 bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-full overflow-hidden flex flex-col">
-            <div className="flex justify-between items-center mb-4 p-6 pb-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">
-                Add New Nurse
-              </h2>
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            <div className="p-6 pt-0 overflow-y-auto">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const formData = new FormData(e.target);
-                  const nurseData = {
-                    fName: formData.get("fName"),
-                    lName: formData.get("lName"),
-                    email: formData.get("email"),
-                    phone: formData.get("phone"),
-                    hospital: formData.get("hospital"),
-                  };
-                  handleAddNurse(nurseData);
-                }}
-              >
-                <div className="mb-4">
-                  <label
-                    htmlFor="fName"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    First Name (3-15 characters)
-                  </label>
-                  <input
-                    type="text"
-                    id="fName"
-                    name="fName"
-                    required
-                    minLength={3}
-                    maxLength={15}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-400"
-                    placeholder="Enter first name"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="lName"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Last Name (3-15 characters)
-                  </label>
-                  <input
-                    type="text"
-                    id="lName"
-                    name="lName"
-                    required
-                    minLength={3}
-                    maxLength={15}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
-                    placeholder="Enter last name"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-400"
-                    placeholder="Enter email address"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="phone"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
-                    placeholder="Enter phone number"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="hospital"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Provider Name
-                  </label>
-                  <select
-                    id="hospital"
-                    name="hospital"
-                    required
-                    value={selectedProvider}
-                    onChange={(e) => setSelectedProvider(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-rose-300 focus:border-rose-300"
-                  >
-                    <option value="">Select a provider</option>
-                    {providers.map((provider) => (
-                      <option key={provider._id} value={provider.name}>
-                        {provider.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="mt-6 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddModal(false)}
-                    className="mr-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-rose-300 hover:rose-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-300"
-                  >
-                    Add Nurse
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
+        <AddNurseModal
+          onClose={() => setShowAddModal(false)}
+          onSubmit={async (values, { setSubmitting }) => {
+            try {
+              await handleAddNurse(values);
+              setShowAddModal(false);
+            } catch (error) {
+              console.error("Error adding nurse:", error);
+            } finally {
+              setSubmitting(false);
+            }
+          }}
+        />
       )}
     </div>
   );

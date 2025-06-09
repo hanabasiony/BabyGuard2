@@ -74,6 +74,7 @@ import AddTrimester from './components/Admin/AddTrimester'
 import AddRecommendedFoods from './components/Admin/AddRecommendedFoods.jsx'
 import AddMilestone from './components/Admin/AddMilestone'
 import ForgotPassChangePage from './components/ForgotPassChangePage/ForgotPassChangePage.jsx'
+import AddNurse from './components/Admin/AddNurse.jsx'
 
 const router = createBrowserRouter([
   {
@@ -201,6 +202,7 @@ const router = createBrowserRouter([
       { path: '', element: <Dashboard /> },    
       { path: 'manage-users', element: <ManageUsers /> },
       { path: 'manage-nurses', element: <ManageNurses /> },
+      { path: 'manage-nurses/add-nurse',element:<AddNurse/> },
       { path: 'manage-children', element:<ManageChildren /> },
       { path: 'vaccinations', element: <Vaccinations /> },
       { path: 'appointments', element: <Appointments /> },

@@ -16,12 +16,15 @@ const AddRecommendedFoods = () => {
       .max(20, "Food name must be at most 20 characters long"),
     image: Yup.mixed()
       .required("Food image is required")
+      .test("required", "Food image is required", (value) => {
+        return value !== null && value !== undefined;
+      })
       .test("fileSize", "File size is too large", (value) => {
-        if (!value) return true;
+        if (!value) return false;
         return value.size <= 5000000; // 5MB
       })
       .test("fileType", "Unsupported file type", (value) => {
-        if (!value) return true;
+        if (!value) return false;
         return ["image/jpeg", "image/png", "image/jpg"].includes(value.type);
       }),
   });

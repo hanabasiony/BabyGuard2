@@ -1,4 +1,3 @@
-"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +15,7 @@ export default function OTPInput() {
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const inputRefs = useRef([]);
   const timerRef = useRef(null);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     if (inputRefs.current[0]) {
@@ -33,6 +33,27 @@ export default function OTPInput() {
         clearInterval(timerRef.current);
       }
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user/me",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setUserData(response.data.user);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   const startTimer = () => {
@@ -130,11 +151,11 @@ export default function OTPInput() {
               "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts",
               {
                 cart: {
-                  governorate: "Cairo",
-                  city: "1st Settlement",
-                  street: "Main Street",
-                  buildingNumber: 123,
-                  apartmentNumber: 45,
+                  governorate: userData?.governorate || "Cairo",
+                  city: userData?.city || "1st Settlement",
+                  street: userData?.street || "Main Street",
+                  buildingNumber: userData?.buildingNumber || 123,
+                  apartmentNumber: userData?.apartmentNumber || 45,
                   paymentType: "Cash",
                 },
               },
@@ -256,11 +277,11 @@ export default function OTPInput() {
             "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts",
             {
               cart: {
-                governorate: "Cairo",
-                city: "1st Settlement",
-                street: "Main Street",
-                buildingNumber: 123,
-                apartmentNumber: 45,
+                governorate: userData?.governorate || "Cairo",
+                city: userData?.city || "1st Settlement",
+                street: userData?.street || "Main Street",
+                buildingNumber: userData?.buildingNumber || 123,
+                apartmentNumber: userData?.apartmentNumber || 45,
                 paymentType: "Cash",
               },
             },

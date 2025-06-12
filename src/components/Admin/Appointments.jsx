@@ -302,62 +302,6 @@ const Appointments = () => {
     }, {});
   };
 
-  // Update the slot selection UI in the render section
-  {
-    selectedNurses[appointments.id] &&
-      nurseSlots[selectedNurses[appointments.id]] && (
-        <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Available Time Slots
-          </label>
-          <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
-            {Object.entries(
-              groupSlotsByDate(nurseSlots[selectedNurses[appointment.id]])
-            ).map(([date, slots]) => (
-              <div
-                key={date}
-                className="border-b border-gray-200 last:border-b-0"
-              >
-                <div className="bg-gray-50 px-4 py-2">
-                  <h3 className="text-sm font-medium text-gray-900">
-                    {formatDate(date)}
-                  </h3>
-                </div>
-                <div className="grid grid-cols-4 gap-2 p-4">
-                  {slots.map((slot, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleSlotSelection(appointment.id, slot)}
-                      className={`p-2 text-sm rounded-md transition-all duration-200 ${
-                        selectedSlot?.appointmentId === appointment.id &&
-                        selectedSlot?.slot.date === slot.date &&
-                        selectedSlot?.slot.time === slot.time
-                          ? "bg-blue-500 text-white ring-2 ring-blue-600 ring-offset-2 transform scale-105"
-                          : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 hover:border-blue-300"
-                      }`}
-                    >
-                      <div className="font-medium">{slot.time}</div>
-                      <div
-                        className={`text-xs ${
-                          selectedSlot?.appointmentId === appointment.id &&
-                          selectedSlot?.slot.date === slot.date &&
-                          selectedSlot?.slot.time === slot.time
-                            ? "text-blue-100"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        {slot.startTime} - {slot.endTime}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-  }
-
   // Update the handleSlotSelection function
   const handleSlotSelection = (appointmentId, slot) => {
     setSelectedSlot({
@@ -871,7 +815,11 @@ const Appointments = () => {
                     <div>
                       <div className="mb-3">
                         <select
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ${
+                            selectedNurses[appointment.id]
+                              ? "border-blue-500 bg-blue-50"
+                              : "border-gray-300 bg-white"
+                          }`}
                           value={selectedNurses[appointment.id] || ""}
                           onChange={(e) =>
                             handleNurseSelection(appointment.id, e.target.value)
@@ -923,8 +871,9 @@ const Appointments = () => {
                                             appointment.id &&
                                           selectedSlot?.slot.date ===
                                             slot.date &&
-                                          selectedSlot?.slot.time === slot.time
-                                            ? "bg-blue-500 text-white ring-2 ring-blue-600 ring-offset-2 transform scale-105"
+                                          selectedSlot?.slot.startTime ===
+                                            slot.startTime
+                                            ? "bg-blue-400 text-white ring-2 ring-blue-400 ring-offset-2 transform scale-105"
                                             : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 hover:border-blue-300"
                                         }`}
                                       >
@@ -937,8 +886,8 @@ const Appointments = () => {
                                               appointment.id &&
                                             selectedSlot?.slot.date ===
                                               slot.date &&
-                                            selectedSlot?.slot.time ===
-                                              slot.time
+                                            selectedSlot?.slot.startTime ===
+                                              slot.startTime
                                               ? "text-blue-100"
                                               : "text-gray-500"
                                           }`}

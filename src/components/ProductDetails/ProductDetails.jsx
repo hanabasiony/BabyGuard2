@@ -479,7 +479,7 @@ export default function ProductDetails() {
                               }
                             )}
                           </span>
-                          {isAdmin && (
+                          {/* {!isAdmin && (
                             <button
                               onClick={async () => {
                                 if (
@@ -514,7 +514,7 @@ export default function ProductDetails() {
                             >
                               <Trash size={16} />
                             </button>
-                          )}
+                          )} */}
                         </div>
                       </div>
                       <p className="text-gray-700 mt-2">{review.message}</p>

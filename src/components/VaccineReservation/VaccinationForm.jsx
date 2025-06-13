@@ -83,17 +83,33 @@ export default function VaccinationForm() {
   }, [vaccineId]);
 
   useEffect(() => {
-    // Get user data from local storage
-    const storedUserData = localStorage.getItem("userData");
-    if (storedUserData) {
+    // Get user data from API instead of localStorage
+    const fetchUserData = async () => {
       try {
-        const parsedUserData = JSON.parse(storedUserData);
-        setUserData(parsedUserData.user); // Assuming user data is nested under 'user' key
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No authentication token found");
+          return;
+        }
+
+        const response = await axios.get(
+          "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user/me",
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+
+        if (response.data.status === "success") {
+          setUserData(response.data.user);
+        } else {
+          console.error("Failed to fetch user data");
+        }
       } catch (error) {
-        console.error("Error parsing user data from local storage:", error);
-        setUserData(null);
+        console.error("Error fetching user data:", error);
       }
-    }
+    };
+
+    fetchUserData();
   }, []);
 
   // Initial form values

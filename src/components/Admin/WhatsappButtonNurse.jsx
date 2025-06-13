@@ -1,7 +1,7 @@
 import React from 'react';
 
 const WhatsAppButton = ({ children }) => {
-  const message = 'Hello';
+  const message = '';
 
   const handleClick = () => {
     const encodedMessage = encodeURIComponent(message);

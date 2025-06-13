@@ -116,6 +116,7 @@ const Cart = () => {
     }
   };
 
+
   const fetchCartData = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -554,7 +555,46 @@ const Cart = () => {
       {/* Payment Options */}
       <div className="mt-6 text-center flex flex-col gap-4 justify-between w-[60%] mx-auto">
         <button
-          onClick={handleOrderPlacement}
+          onClick={async () => {
+            if (!isAddressConfirmed) {
+              toast.error("Please confirm your delivery address");
+              return;
+            }
+            try {
+              const cartId = localStorage.getItem("cartId");
+              const token = localStorage.getItem("token");
+
+              if (!cartId) {
+                toast.error("Cart ID not found. Please try again.");
+                return;
+              }
+
+              if (!token) {
+                toast.error("Please login first");
+                navigate("/login");
+                return;
+              }
+
+              // Update payment type to Online
+              await axios.patch(
+                `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/payment-type/${cartId}`,
+                { paymentType: "Cash" },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              console.log(
+                "Successfully updated payment type from online to cash"
+              );
+              navigate("/payment");
+            } catch (error) {
+              console.error("Error updating payment type:", error);
+              toast.error("Failed to update payment type. Please try again.");
+            }
+            handleOrderPlacement()
+          }}
           className="bg-white-500 text-rose-300 px-6 py-3 bg-rose rounded-full shadow hover:text-white hover:bg-rose-400 cursor-pointer text-lg font-semibold transition-colors duration-200"
         >
           Place Order ( Cash )

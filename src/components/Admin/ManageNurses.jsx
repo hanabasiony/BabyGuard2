@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
+import WhatsAppButton from "./WhatsappButtonNurse";
 
 function ManageNurses() {
   const navigate = useNavigate()
@@ -777,8 +778,9 @@ function ManageNurses() {
                         <div className="text-sm text-gray-900">
                           {nurse.email}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm flex justify-between text-gray-500">
                           {nurse.phone}
+                          <WhatsAppButton children={nurse.phone}/>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

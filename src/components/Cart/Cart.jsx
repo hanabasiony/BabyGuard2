@@ -622,7 +622,7 @@ const Cart = () => {
               }
 
               // Update payment type to Online
-              await axios.patch(
+              const res = await axios.patch(
                 `https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/carts/payment-type/${cartId}`,
                 { paymentType: "Online" },
                 {
@@ -634,6 +634,8 @@ const Cart = () => {
               console.log(
                 "Successfully updated payment type from Cash to Online"
               );
+              console.log(res);
+              
               navigate("/payment");
             } catch (error) {
               console.error("Error updating payment type:", error);

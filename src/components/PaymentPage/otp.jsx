@@ -48,6 +48,7 @@ export default function OTPInput() {
           }
         );
         setUserData(response.data.user);
+        
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -139,8 +140,13 @@ export default function OTPInput() {
           }
         );
 
+        console.log(response);
+        
+
         if (response.status === 200) {
           toast.success("OTP verified successfully!");
+          // console.log(response);
+          
 
           // Reset the current cart state
           resetCart();

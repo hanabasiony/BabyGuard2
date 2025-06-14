@@ -31,9 +31,14 @@ export default function MyOrders() {
           },
         }
       );
+      console.log("All orders from API:", response.data.data.carts);
+      // Log orders with their statuses
+      response.data.data.carts.forEach(order => {
+        console.log(`Order ID: ${order._id}, Status: ${order.status}`);
+      });
+      console.log(response);
+      
       setOrders(response.data.data.carts || []);
-      console.log(response.data.data.carts);
-      console.log(response.data.data);
     } catch (error) {
       console.error("Error fetching orders:", error);
       toast.error("Failed to load orders");
@@ -50,21 +55,6 @@ export default function MyOrders() {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-
-  const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case "Delivered":
-        return "bg-green-100 text-green-800";
-      case "Pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "Waiting for cash payment":
-        return "bg-blue-100 text-blue-800";
-      case " online paid":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
   };
 
   if (loading) {
@@ -129,15 +119,13 @@ export default function MyOrders() {
                       <h3 className="text-lg font-semibold text-gray-800">
                         Order #{order._id?.slice(-5)}
                       </h3>
-                      <p className="text-sm text-gray-500">
+                      {/* <p className="text-sm text-gray-500">
                         Placed on {formatDate(order.createdAt)}
-                      </p>
+                      </p> */}
                     </div>
                     <div className="mt-2 md:mt-0">
                       <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                          order.status
-                        )}`}
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
                       >
                         {order.status}
                       </span>

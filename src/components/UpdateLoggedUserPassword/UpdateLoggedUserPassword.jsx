@@ -66,13 +66,20 @@ export default function UpdateLoggedUserPassword() {
         console.log("Password update successful:", response.data);
         setSuccessMsg(true);
         toast.success("Password updated successfully!");
+        navigate('/')
         // Optionally reset form or navigate
         // formik.resetForm();
         // navigate('/settings');
       } catch (error) {
         console.error("Password update API error:", error);
         if (error.response) {
-          if (error.response.data && error.response.data.errors) {
+          if (error.response.status === 401) {
+            // Handle invalid old password error
+            const errorMessage = "Invalid old password";
+            toast.error(errorMessage);
+            setErrorMsg(errorMessage);
+            formik.setErrors({ oldPassword: errorMessage });
+          } else if (error.response.data && error.response.data.errors) {
             // Handle validation errors from API with 'errors' object
             const apiErrors = error.response.data.errors;
             // Assuming API errors match field names, update formik errors
@@ -102,20 +109,20 @@ export default function UpdateLoggedUserPassword() {
           ) {
             // Handle other API errors with a simple message string
             toast.error(error.response.data.message);
-            setErrorMsg(error.response.data.message); // Set for potential form-level display
+            setErrorMsg(error.response.data.message);
           } else if (typeof error.response.data === "string") {
-            // Handle cases where response data is just a string (like the 401 login error)
+            // Handle cases where response data is just a string
             toast.error(error.response.data);
-            setErrorMsg(error.response.data); // Set for potential form-level display
+            setErrorMsg(error.response.data);
           } else {
             // Fallback for unexpected API response structure
             toast.error(`Password update failed: ${error.response.status}`);
-            setErrorMsg(`Password update failed: ${error.response.status}`); // Set for potential form-level display
+            setErrorMsg(`Password update failed: ${error.response.status}`);
           }
         } else {
           // Handle network errors or other issues without response
           toast.error("Password update failed. Please check your connection.");
-          setErrorMsg("Password update failed. Please check your connection."); // Set for potential form-level display
+          setErrorMsg("Password update failed. Please check your connection.");
         }
       } finally {
         setLoading(false);

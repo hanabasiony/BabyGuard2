@@ -66,6 +66,8 @@ function ManageChildren() {
       setNextPageToken(response.data.nextCursor || null);
       setPrevPageToken(cursor || null);
       setTotalEntries(response.data.totalEntries || 0);
+      console.log(response);
+      
 
       // Update page history
       if (cursor) {

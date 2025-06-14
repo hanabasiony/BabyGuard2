@@ -234,7 +234,7 @@ function Vaccinations() {
                         {vaccine.description}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${vaccine.price}
+                        {vaccine.price}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2 justify-center">

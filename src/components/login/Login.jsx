@@ -150,8 +150,8 @@ export default function Login() {
           console.error("Error checking/creating pending cart:", cartErr);
           // localStorage.removeItem('cartId');
         }
-        console.log("Navigating to /products");
-        navigate("/products");
+       
+        navigate("/");
       }
     } catch (error) {
       console.error("Login API error:", error);

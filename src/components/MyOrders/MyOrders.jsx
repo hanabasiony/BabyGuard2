@@ -181,8 +181,7 @@ export default function MyOrders() {
                                   </p>
                                 </div>
                                 <div className="flex items-center">
-                                  {(order.status === "Delivered" ||
-                                    order.status === "Online paid") &&
+                                  {(order.status === "Delivered") &&
                                     product.productId && (
                                       <Link
                                         to={`/review/${product.productId}`}

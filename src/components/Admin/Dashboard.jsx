@@ -7,7 +7,7 @@ function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [appointmentsNumber, setAppointmentsNumber] = useState(null);
   const [nursesNumber, setNursesNumber] = useState(null);
-  const [usersNumber, setUsersNumber] = useState(null);
+  const [childrenNumber, setChildrenNumber] = useState(null);
 
   const token = localStorage.getItem("token");
 
@@ -67,24 +67,31 @@ function Dashboard() {
     }
   };
 
-  const fetchUsersNumbers = async () => {
+  const fetchChildren = async () => {
     try {
+      if (!token) {
+        console.error("Authentication token not found for admin API");
+        setChildrenNumber(0);
+        return;
+      }
+
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/user",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/child/admin",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      if (response.data && response.data.users) {
-        setUsersNumber(response.data.users.length);
+
+      if (response.data && response.data.data) {
+        setChildrenNumber(response.data.data.length);
       } else {
-        setUsersNumber(0);
+        setChildrenNumber(0);
       }
     } catch (error) {
-      console.error("Error fetching users:", error.response?.data || error.message);
-      setUsersNumber(0);
+      console.error("Error fetching children:", error.response?.data || error.message);
+      setChildrenNumber(0);
     }
   };
 
@@ -94,7 +101,7 @@ function Dashboard() {
         await Promise.all([
           fetchAppointments(),
           fetchNurses(),
-          fetchUsersNumbers()
+          fetchChildren()
         ]);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -166,9 +173,9 @@ function Dashboard() {
             </div>
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-            {usersNumber || 0}
+            {childrenNumber || 0}
           </h2>
-          <p className="text-gray-500">Total Users</p>
+          <p className="text-gray-500">Total Children</p>
         </div>
 
         <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">

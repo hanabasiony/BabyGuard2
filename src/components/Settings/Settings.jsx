@@ -76,7 +76,7 @@ export default function Settings() {
     return (
       <div className="min-h-screen pt-32 pb-30 px-4 max-w-[1300px] mx-auto">
         <div className="bg-white rounded-lg shadow-md p-8 max-w-6xl mx-auto">
-          <h2 className="text-2xl font-semibold text-pink-600 mb-8">
+          <h2 className="text-2xl font-semibold text-rose-300 mb-8">
             Welcome to Baby Guard
           </h2>
           <div className="space-y-4">

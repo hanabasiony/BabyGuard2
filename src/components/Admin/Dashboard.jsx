@@ -6,7 +6,7 @@ import { Oval } from "react-loader-spinner";
 function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [appointmentsNumber, setAppointmentsNumber] = useState(null);
-  const [complaintsNumber, setComplaintsNumber] = useState(null);
+  const [nursesNumber, setNursesNumber] = useState(null);
   const [usersNumber, setUsersNumber] = useState(null);
 
   const token = localStorage.getItem("token");
@@ -39,16 +39,16 @@ function Dashboard() {
     }
   };
 
-  const fetchComplains = async () => {
+  const fetchNurses = async () => {
     try {
       if (!token) {
         console.error("Authentication token not found for admin API");
-        setComplaintsNumber(0);
+        setNursesNumber(0);
         return;
       }
 
       const response = await axios.get(
-        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/complaints/admin",
+        "https://baby-guard-h4hngkauhzawa6he.southafricanorth-01.azurewebsites.net/api/nurse",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,13 +57,13 @@ function Dashboard() {
       );
 
       if (response.data && response.data.data) {
-        setComplaintsNumber(response.data.data.length);
+        setNursesNumber(response.data.data.length);
       } else {
-        setComplaintsNumber(0);
+        setNursesNumber(0);
       }
     } catch (error) {
-      console.error("Error fetching complaints:", error.response?.data || error.message);
-      setComplaintsNumber(0);
+      console.error("Error fetching nurses:", error.response?.data || error.message);
+      setNursesNumber(0);
     }
   };
 
@@ -93,7 +93,7 @@ function Dashboard() {
       try {
         await Promise.all([
           fetchAppointments(),
-          fetchComplains(),
+          fetchNurses(),
           fetchUsersNumbers()
         ]);
       } catch (error) {
@@ -211,15 +211,15 @@ function Dashboard() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
               </svg>
             </div>
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-            {complaintsNumber || 0}
+            {nursesNumber || 0}
           </h2>
-          <p className="text-gray-500">Active Complaints</p>
+          <p className="text-gray-500">Total Nurses</p>
         </div>
       </div>
 

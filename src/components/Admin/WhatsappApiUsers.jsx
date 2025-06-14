@@ -1,6 +1,6 @@
 import React from 'react';
 
-const WhatsAppButton = ({ children }) => {
+const WhatsAppApiUsers = ({ children }) => {
   const message = '';
 
   const handleClick = () => {
@@ -11,9 +11,9 @@ const WhatsAppButton = ({ children }) => {
 
   return (
     <button onClick={handleClick} className='inline-flex items-center ml-2 text-green-600 hover:text-green-700'>
-      <i className="fa-brands fa-whatsapp text-lg"></i>
+      <i className="fa-brands fa-whatsapp text-xl"></i>
     </button>
   );
 };
 
-export default WhatsAppButton;
+export default WhatsAppApiUsers;

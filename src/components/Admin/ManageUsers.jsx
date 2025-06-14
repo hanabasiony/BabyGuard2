@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import WhatsAppButton from "./WhatsappApiUsers";
+import WhatsAppApiUsers from "./WhatsappApiUsers";
 
 function ManageUsers() {
   const [users, setUsers] = useState([]);
@@ -432,6 +434,7 @@ function ManageUsers() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {user.phoneNumber}
+                        <WhatsAppApiUsers children={user.phoneNumber}/>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span

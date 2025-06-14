@@ -12,6 +12,24 @@ import {
 } from "lucide-react";
 import { Oval } from "react-loader-spinner";
 
+
+const getStatusStyles = (status) => {
+  switch (status) {
+    case "Pending":
+      return "bg-yellow-100 text-yellow-800";
+    case "Delivered":
+      return "bg-green-100 text-green-800";
+    case "Cancelled":
+      return "bg-red-100 text-red-800";
+    case "Online paid":
+      return "bg-blue-500 text-blue-800";
+    case "Waiting for cash payment":
+      return "bg-purple-50 text-purple-400";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+};
+
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -125,7 +143,7 @@ export default function MyOrders() {
                     </div>
                     <div className="mt-2 md:mt-0">
                       <span
-                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800  ${getStatusStyles(order.status)} `}
                       >
                         {order.status}
                       </span>

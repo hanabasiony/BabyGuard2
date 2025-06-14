@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import WhatsAppButton from "./WhatsappButtonNurse";
 
 const categoryColors = {
   Complaint: "bg-red-100 text-red-700",
@@ -193,6 +194,7 @@ const Complaints = () => {
                   <div className="mt-1 text-xs text-gray-500">
                     <div>Email: {item.email}</div>
                     <div>Phone: {item.phone}</div>
+                    <div>contact: <WhatsAppButton children={item.phone}/></div>
                     <div>Date: {item.date}</div>
                   </div>
                 </div>

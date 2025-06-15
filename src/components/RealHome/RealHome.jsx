@@ -117,7 +117,7 @@ export default function Home() {
                   <span className="text-gray-800 text-lg">🔔</span>
                   <p className="text-gray-800 text-center font-medium">
                     Once you register your child, we will send you vaccine reminders
-                    to make sure that you remember
+                    to make sure that you remember all the vaccines that your child needs.
                   </p>
                 </div>
               </div>
